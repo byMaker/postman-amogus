@@ -1,0 +1,32 @@
+# OS & Editor
+.idea/
+.vscode/
+.DS_Store
+
+# Backend (Go)
+backend/tmp/
+backend/.go-cache/
+*-app
+
+# Frontend (Node/Svelte)
+node_modules/
+build/
+.svelte-kit/
+frontend/node_modules/
+frontend/.svelte-kit/
+
+# Embedded static files
+backend/frontend/build/*
+!backend/frontend/build/index.html
+!backend/frontend/build/.gitkeep
+
+# Environment & Logs
+.env
+*.log
+
+
+# Prompts
+PROMPT*
+AI_RULES.md
+
+
