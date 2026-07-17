@@ -2,6 +2,8 @@
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import { toast } from '$lib/state/toast.svelte';
+	import { NotePencil, Trash, EnvelopeSimple } from 'phosphor-svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	let { data, form } = $props();
 
@@ -15,7 +17,10 @@
 		fullName: '',
 		password: '',
 		quotaMb: 1024,
-		active: true
+		quotaMessages: 0,
+		description: '',
+		active: true,
+		useForAliasesDomains: true
 	});
 
 	function openAddModal() {
@@ -27,7 +32,10 @@
 			fullName: '', 
 			password: '', 
 			quotaMb: 1024, 
-			active: true 
+			quotaMessages: 0,
+			description: '',
+			active: true,
+			useForAliasesDomains: true
 		};
 		showModal = true;
 	}
@@ -41,9 +49,20 @@
 			fullName: u.fullName || '', 
 			password: '', // Пароль не показываем
 			quotaMb: u.quotaMb || 0, 
-			active: u.active === 1 
+			quotaMessages: u.quotaMessages || 0,
+			description: u.description || '',
+			active: u.active === 1,
+			useForAliasesDomains: u.useForAliasesDomains === 1
 		};
 		showModal = true;
+	}
+
+	let userToDelete: any = $state(null);
+	let showDeleteModal = $state(false);
+
+	function requestDelete(u: any) {
+		userToDelete = u;
+		showDeleteModal = true;
 	}
 </script>
 
@@ -51,10 +70,13 @@
 	<!-- Заголовок и кнопка -->
 	<div class="flex items-center justify-between px-6 pb-2">
 		<div>
-			<h2 class="text-3xl font-bold text-[#1E3A8A]">Mailboxes</h2>
+			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
+				<EnvelopeSimple size={36} weight="fill" class="text-amber-500" />
+				Mailboxes
+			</h2>
 			<p class="text-slate-500 mt-1">Manage users and email accounts</p>
 		</div>
-		<button onclick={openAddModal} class="rounded-full bg-[#1E3A8A] px-6 py-3 font-bold text-white shadow hover:bg-blue-800 active:scale-95 transition-all">
+		<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
 			+ Add Mailbox
 		</button>
 	</div>
@@ -62,7 +84,7 @@
 	<!-- Таблица ящиков -->
 	<div class="overflow-hidden rounded-3xl border border-slate-200 shadow-sm">
 		<table class="w-full text-left text-sm">
-			<thead class="bg-[#E3F2FD] text-xs uppercase tracking-wide text-[#1E3A8A]">
+			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
 					<th class="px-6 py-5">Email Account</th>
 					<th class="px-6 py-5">Full Name</th>
@@ -85,34 +107,33 @@
 								<span class="rounded-full bg-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600">Disabled</span>
 							{/if}
 						</td>
-						<td class="px-6 py-5 font-mono text-slate-600">{user.quotaMb === 0 ? 'Unlimited' : `${user.quotaMb} MB`}</td>
+						<td class="px-6 py-5 w-48">
+							{#if user.quotaMb === 0}
+								<div class="text-slate-500 font-bold">Unlimited</div>
+								<div class="text-xs text-slate-400 font-bold">{(user.usedBytes / 1024 / 1024).toFixed(1)} MB used</div>
+							{:else}
+								{@const percent = Math.min(100, Math.round((user.usedBytes / 1024 / 1024) / user.quotaMb * 100))}
+								<div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1">
+									<span>{(user.usedBytes / 1024 / 1024).toFixed(1)} MB</span>
+									<span>{user.quotaMb} MB</span>
+								</div>
+								<div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+									<div class="h-full rounded-full transition-all duration-500 {percent > 90 ? 'bg-rose-500' : 'bg-amogus-blue'}" style="width: {percent}%"></div>
+								</div>
+							{/if}
+						</td>
 						<td class="px-6 py-5 text-right">
 							<div class="flex justify-end gap-3 transition-opacity">
-								<button onclick={() => openEditModal(user)} class="text-[#0284C7] hover:text-white hover:bg-[#0284C7] bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
-									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-								</button>
-								<form 
-									method="POST" 
-									action="?/delete" 
-									use:enhance={() => {
-										return async ({ result, update }) => {
-											if (result.type === 'success' && result.data?.success) {
-												toast.success('Mailbox deleted!');
-											} else {
-												toast.error(result.data?.error || 'Failed to delete mailbox');
-											}
-											update();
-										};
-									}}
-									onsubmit={(e) => {
-										if (!confirm(`Delete mailbox ${user.localPart}@${user.domain}?`)) e.preventDefault();
-									}}
-								>
-									<input type="hidden" name="id" value={user.id} />
-									<button class="text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-50 p-2 rounded-full transition-colors" title="Delete">
-										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+								<Tooltip text="Edit" position="top">
+									<button onclick={() => openEditModal(user)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
+										<NotePencil size={24} weight="fill" />
 									</button>
-								</form>
+								</Tooltip>
+								<Tooltip text="Delete" position="top">
+									<button onclick={() => requestDelete(user)} class="text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-50 p-2 rounded-full transition-colors" title="Delete">
+										<Trash size={24} weight="fill" />
+									</button>
+								</Tooltip>
 							</div>
 						</td>
 					</tr>
@@ -127,7 +148,29 @@
 	</div>
 </div>
 
-<!-- Модальное окно -->
+<Modal bind:show={showDeleteModal} title="Delete Mailbox">
+	<p class="text-slate-600 font-medium mb-8 text-lg">Are you sure you want to permanently delete the mailbox <span class="font-bold text-rose-600">{userToDelete?.localPart}@{userToDelete?.domain}</span>? This action cannot be undone.</p>
+	<form method="POST" action="?/delete" use:enhance={() => {
+		return async ({ result, update }) => {
+			if (result.type === 'success' && result.data?.success) {
+				toast.success('Mailbox deleted!');
+				showDeleteModal = false;
+			} else {
+				toast.error(result.data?.error || 'Failed to delete mailbox');
+			}
+			update();
+		};
+	}}>
+		<input type="hidden" name="id" value={userToDelete?.id} />
+		<div class="flex justify-between mt-4">
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
+				Yes, Delete
+			</button>
+		</div>
+	</form>
+</Modal>
+
 <Modal bind:show={showModal} title={isEditMode ? 'Edit Mailbox' : 'Add New Mailbox'}>
 	<form method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
 		return async ({ result, update }) => {
@@ -148,18 +191,18 @@
 		<!-- Email Address (Только при создании) -->
 		{#if !isEditMode}
 			<div class="form-control">
-				<label class="label"><span class="label-text font-bold text-slate-700">Email Address</span></label>
+				<div class="label"><span class="label-text font-bold text-slate-700">Email Address</span></div>
 				<div class="flex gap-2">
 					<input 
 						type="text" 
 						name="localPart" 
 						bind:value={currentUser.localPart} 
-						class="input input-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-[#0284C7] focus:ring-2 focus:ring-blue-100 transition-all text-right font-medium" 
+						class="input input-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-right font-medium" 
 						placeholder="username" 
 						required 
 					/>
 					<div class="flex items-center text-slate-400 font-black text-xl">@</div>
-					<select name="domain" bind:value={currentUser.domain} class="select select-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-[#0284C7] focus:ring-2 focus:ring-blue-100 transition-all font-bold">
+					<select name="domain" bind:value={currentUser.domain} class="select select-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-bold">
 						{#each data.domains as domain}
 							<option value={domain.domain}>{domain.domain}</option>
 						{/each}
@@ -170,58 +213,86 @@
 			<!-- В режиме редактирования показываем email как текст -->
 			<div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 mb-6">
 				<p class="text-sm font-medium text-slate-500 mb-1">Editing Account:</p>
-				<p class="text-xl font-black text-[#1E3A8A]">{currentUser.localPart}@{currentUser.domain}</p>
+				<p class="text-xl font-black text-amogus-dark">{currentUser.localPart}@{currentUser.domain}</p>
 			</div>
 		{/if}
 
 		<div class="form-control">
-			<label class="label"><span class="label-text font-bold text-slate-700">Full Name</span></label>
+			<div class="label"><span class="label-text font-bold text-slate-700">Full Name</span></div>
 			<input 
 				type="text" 
 				name="fullName" 
 				bind:value={currentUser.fullName}
-				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-[#0284C7] focus:ring-2 focus:ring-blue-100 transition-all" 
+				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
 				placeholder="John Doe"
 			/>
 		</div>
 
 		<div class="form-control">
-			<label class="label">
+			<div class="label">
 				<span class="label-text font-bold text-slate-700">Password</span>
 				{#if isEditMode}<span class="label-text-alt text-slate-400">Leave empty to keep current</span>{/if}
-			</label>
+			</div>
 			<input 
 				type="password" 
 				name="password" 
 				bind:value={currentUser.password}
-				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-[#0284C7] focus:ring-2 focus:ring-blue-100 transition-all" 
+				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
 				placeholder="••••••••"
 				required={!isEditMode}
 			/>
 		</div>
 
-		<div class="form-control">
-			<label class="label"><span class="label-text font-bold text-slate-700">Quota (MB)</span></label>
-			<input 
-				type="number" 
-				name="quotaMb" 
-				bind:value={currentUser.quotaMb}
-				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-[#0284C7] focus:ring-2 focus:ring-blue-100 transition-all" 
-				min="0"
-			/>
-			<label class="label"><span class="label-text-alt text-slate-500">Set to 0 for unlimited space.</span></label>
+		<div class="flex gap-4">
+			<div class="form-control flex-1">
+				<div class="label"><span class="label-text font-bold text-slate-700">Quota (MB)</span></div>
+				<input 
+					type="number" 
+					name="quotaMb" 
+					bind:value={currentUser.quotaMb}
+					class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
+					min="0"
+				/>
+				<div class="label"><span class="label-text-alt text-slate-500">0 for unlimited.</span></div>
+			</div>
+			<div class="form-control flex-1">
+				<div class="label"><span class="label-text font-bold text-slate-700">Quota (Messages)</span></div>
+				<input 
+					type="number" 
+					name="quotaMessages" 
+					bind:value={currentUser.quotaMessages}
+					class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
+					min="0"
+				/>
+				<div class="label"><span class="label-text-alt text-slate-500">0 for unlimited.</span></div>
+			</div>
 		</div>
 
-		<div class="flex gap-6 pt-2">
-			<label class="cursor-pointer flex items-center gap-3">
+		<div class="form-control">
+			<div class="label"><span class="label-text font-bold text-slate-700">Description</span></div>
+			<input 
+				type="text" 
+				name="description" 
+				bind:value={currentUser.description}
+				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
+				placeholder="Optional note"
+			/>
+		</div>
+
+		<div class="flex flex-col gap-3 pt-2">
+			<label class="cursor-pointer flex items-center gap-3 w-fit">
 				<input type="checkbox" name="active" bind:checked={currentUser.active} class="toggle toggle-info bg-white" />
-				<span class="font-medium text-slate-700">Active</span>
+				<span class="font-bold text-slate-700">Active</span>
+			</label>
+			<label class="cursor-pointer flex items-center gap-3 w-fit">
+				<input type="checkbox" name="useForAliasesDomains" bind:checked={currentUser.useForAliasesDomains} class="toggle toggle-info bg-white" />
+				<span class="font-bold text-slate-700">Use for Domain Aliases</span>
 			</label>
 		</div>
 
 		<div class="modal-action mt-8 pt-4 flex justify-between">
 			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
-			<button type="submit" class="btn border-none bg-[#1E3A8A] text-white hover:bg-[#0284C7] rounded-full px-8 font-bold shadow-md">
+			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
 				{isEditMode ? 'Save Changes' : 'Create Mailbox'}
 			</button>
 		</div>

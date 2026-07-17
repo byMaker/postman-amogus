@@ -36,7 +36,7 @@
 			in:fly={{ y: 40, duration: 400, easing: backOut }}
 			out:fly={{ y: 20, duration: 200, opacity: 0 }}
 		>
-			<h3 class="font-black text-3xl text-[#1E3A8A] mb-8">{title}</h3>
+			<h3 class="text-4xl text-amogus-dark mb-8">{title}</h3>
 			{@render children()}
 		</div>
 	</div>

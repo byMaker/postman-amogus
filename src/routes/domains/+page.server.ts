@@ -1,12 +1,26 @@
 import { db } from '$lib/server/db';
-import { domains } from '$lib/server/db/schema';
+import { domains, users, aliases } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 export async function load() {
 	const allDomains = await db.select().from(domains);
+	const allUsers = await db.select().from(users);
+	const allAliases = await db.select().from(aliases);
+
+	const enrichedDomains = allDomains.map(d => {
+		const mailboxesCount = allUsers.filter(u => u.domain === d.domain).length;
+		// Aliases that end with @domain
+		const aliasesCount = allAliases.filter(a => a.alias.endsWith(`@${d.domain}`)).length;
+		return {
+			...d,
+			mailboxesCount,
+			aliasesCount
+		};
+	});
+
 	return {
-		domains: allDomains
+		domains: enrichedDomains
 	};
 }
 
@@ -14,14 +28,14 @@ export const actions = {
 	create: async ({ request }) => {
 		const data = await request.formData();
 		const domain = data.get('domain') as string;
-		const comment = data.get('comment') as string;
+		const description = data.get('description') as string;
 		const active = data.get('active') ? 1 : 0;
 		const backupmx = data.get('backupmx') ? 1 : 0;
 
 		try {
 			await db.insert(domains).values({
 				domain: domain.trim().toLowerCase(),
-				comment: comment.trim(),
+				description: description.trim(),
 				active,
 				backupmx
 			});
@@ -34,13 +48,13 @@ export const actions = {
 	update: async ({ request }) => {
 		const data = await request.formData();
 		const originalDomain = data.get('originalDomain') as string;
-		const comment = data.get('comment') as string;
+		const description = data.get('description') as string;
 		const active = data.get('active') ? 1 : 0;
 		const backupmx = data.get('backupmx') ? 1 : 0;
 
 		try {
 			await db.update(domains)
-				.set({ comment: comment.trim(), active, backupmx })
+				.set({ description: description.trim(), active, backupmx })
 				.where(eq(domains.domain, originalDomain));
 			return { success: true, message: 'Domain updated' };
 		} catch (error) {

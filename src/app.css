@@ -1,2 +1,20 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@theme {
+	--font-sans: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
+	
+	--color-amogus-dark: #1E3A8A;
+	--color-amogus-blue: #0284C7;
+	--color-amogus-light: #E3F2FD;
+	--color-amogus-bg: #F5F7FA;
+	--color-amogus-brown: #8B4513;
+}
+
+body, input, textarea, select, button {
+	font-family: 'Baloo 2', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Sniglet', sans-serif;
+}

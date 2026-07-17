@@ -6,7 +6,7 @@ CREATE TABLE `aliases` (
   `alias` varchar(32) NOT NULL,
   `target` varchar(32) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`alias`),
   KEY `email` (`target`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -16,7 +16,7 @@ CREATE TABLE `aliases_domains` (
   `alias_domain` varchar(255) NOT NULL,
   `target_domain` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`alias_domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -69,7 +69,7 @@ CREATE TABLE `domains` (
   `domain` char(32) NOT NULL,
   `backupmx` tinyint(1) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   UNIQUE KEY `domain` (`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 
@@ -92,7 +92,7 @@ CREATE TABLE `users` (
   `quota_messages` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Messages',
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `use_for_aliases_domains` tinyint(4) DEFAULT 1 COMMENT 'If "1" then alias used for domani aliases in table aliases_domains',
-  `comment` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 

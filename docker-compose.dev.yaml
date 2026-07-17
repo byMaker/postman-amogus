@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-mail_pass}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mail_nodata.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./mail_nodata.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
     networks:
       - amogus-net
 

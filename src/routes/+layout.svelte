@@ -1,55 +1,96 @@
 <script lang="ts">
 	import '../app.css';
 	import Toast from '$lib/components/Toast.svelte';
-	let { children } = $props();
+	import { SquaresFour, At, EnvelopeSimple, Ghost, Skull, Star, ChartPieSlice } from 'phosphor-svelte';
+	import { page } from '$app/stores';
+	let { data, children } = $props();
 
-	// Определение разделов навигации (используем чистые SVG вместо эмодзи)
-	const sections = [
+	// Определение разделов навигации
+	const baseSections = [
 		{ 
 			id: 'dashboard', 
 			name: 'Dashboard', 
 			path: '/',
-			icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7v10"/><path d="M11 7v10"/><path d="M15 7v10"/></svg>`
-		},
+			icon: SquaresFour,
+			colorClass: 'text-cyan-500'
+		}
+	];
+
+	const analyticsSection = {
+		id: 'analytics',
+		name: 'Analytics',
+		path: '/analytics',
+		icon: ChartPieSlice,
+		colorClass: 'text-indigo-500'
+	};
+
+	const otherSections = [
 		{ 
 			id: 'domains', 
 			name: 'Domains', 
 			path: '/domains',
-			icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`
+			icon: At,
+			colorClass: 'text-violet-500'
 		},
 		{ 
 			id: 'mailboxes', 
 			name: 'Mailboxes', 
 			path: '/mailboxes',
-			icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`
+			icon: EnvelopeSimple,
+			colorClass: 'text-amber-500'
 		},
 		{ 
 			id: 'aliases', 
 			name: 'Aliases', 
 			path: '/aliases',
-			icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>`
+			icon: Ghost,
+			colorClass: 'text-indigo-500'
+		},
+		{ 
+			id: 'blacklists', 
+			name: 'Blacklists', 
+			path: '/blacklists',
+			icon: Skull,
+			colorClass: 'text-rose-500'
+		},
+		{ 
+			id: 'whitelists', 
+			name: 'Whitelists', 
+			path: '/whitelists',
+			icon: Star,
+			colorClass: 'text-emerald-500'
 		}
 	];
+
+	let sections = $derived(data.hasAnalytics ? [...baseSections, analyticsSection, ...otherSections] : [...baseSections, ...otherSections]);
 </script>
 
-<div class="min-h-screen bg-[#F5F7FA] p-6 font-sans text-slate-800">
+<div class="min-h-screen bg-amogus-bg p-6 font-sans text-slate-800">
 	<!-- Header / Navigation Bar -->
-	<header class="mx-auto max-w-6xl mb-8 flex items-center justify-between rounded-full bg-[#E3F2FD] p-4 shadow-sm border border-blue-100">
+	<header class="mx-auto max-w-6xl mb-8 flex items-center justify-between rounded-[32px] bg-amogus-light p-4 shadow-sm border border-blue-100">
 		<!-- Logo and Title -->
 		<div class="flex items-center gap-4 pl-2">
 			<img src="/postman_amogus_logo_small.png" alt="Postman Amogus Logo" class="h-24 w-24 object-cover rounded-full -ml-2" />
-			<h1 class="text-2xl font-black text-[#1E3A8A] tracking-wide uppercase">Postman <br/> <span class="text-[#0284C7]">Amogus</span></h1>
+			<h1 class="text-3xl text-amogus-dark tracking-wide uppercase mt-1">Postman <br/> <span class="text-amogus-blue">Amogus</span></h1>
 		</div>
 
-		<!-- Navigation Circles -->
-		<nav class="flex gap-4 pr-2">
+		<nav class="flex gap-6 pr-6">
 			{#each sections as section}
+				{@const active = section.path === '/' ? $page.url.pathname === '/' : $page.url.pathname.startsWith(section.path)}
+				{@const Icon = section.icon}
 				<a 
 					href={section.path}
-					class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-[#1E3A8A] shadow-md transition-all hover:bg-[#1E3A8A] hover:text-white hover:scale-105 active:scale-95"
+					class="group flex w-20 flex-col items-center justify-center gap-2 transition-opacity active:scale-95 {active ? '' : 'opacity-70 hover:opacity-100'}"
 					title={section.name}
+					onmouseenter={(e) => {
+						const angle = Math.random() > 0.5 ? 45 : -45;
+						e.currentTarget.style.setProperty('--hover-rotate', `${angle}deg`);
+					}}
 				>
-					{@html section.icon}
+					<div class="transition-transform duration-300 group-hover:[transform:rotate(var(--hover-rotate))] flex items-center justify-center">
+						<Icon size={36} weight={active ? "fill" : "regular"} class={section.colorClass} />
+					</div>
+					<span class="text-[11px] font-bold uppercase tracking-wider {active ? 'text-amogus-dark' : 'text-slate-500 group-hover:text-amogus-dark'} transition-colors">{section.name}</span>
 				</a>
 			{/each}
 		</nav>

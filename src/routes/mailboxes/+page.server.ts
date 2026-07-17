@@ -1,13 +1,25 @@
 import { db } from '$lib/server/db';
-import { users, domains } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { users, domains, quota } from '$lib/server/db/schema';
+import { eq, sql } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 export async function load() {
 	const allUsers = await db.select().from(users);
 	const allDomains = await db.select().from(domains).where(eq(domains.active, 1));
+	const allQuotas = await db.select().from(quota);
+
+	const usersWithQuota = allUsers.map(u => {
+		const email = `${u.localPart}@${u.domain}`;
+		const q = allQuotas.find(q => q.email === email);
+		return {
+			...u,
+			usedBytes: q?.bytes || 0,
+			usedMessages: q?.messages || 0
+		};
+	});
+
 	return {
-		users: allUsers,
+		users: usersWithQuota,
 		domains: allDomains
 	};
 }
@@ -20,19 +32,24 @@ export const actions = {
 		const fullName = data.get('fullName') as string;
 		const password = data.get('password') as string;
 		const quotaMb = Number(data.get('quotaMb')) || 0;
+		const quotaMessages = Number(data.get('quotaMessages')) || 0;
+		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
+		const useForAliasesDomains = data.get('useForAliasesDomains') ? 1 : 0;
 
 		try {
-			// Используем функцию ENCRYPT() самой MariaDB для создания SHA512-CRYPT хеша
 			const passwordHash = sql`ENCRYPT(${password}, CONCAT('$6$', SUBSTRING(SHA(RAND()), -16)))`;
 
 			await db.insert(users).values({
 				localPart,
 				domain,
 				fullName: fullName.trim(),
-				password: passwordHash as any, // Cast as any because it's a SQL template
+				password: passwordHash as any,
 				quotaMb,
-				active
+				quotaMessages,
+				description,
+				active,
+				useForAliasesDomains
 			});
 			return { success: true, message: 'Mailbox created' };
 		} catch (error) {
@@ -47,16 +64,21 @@ export const actions = {
 		const fullName = data.get('fullName') as string;
 		const password = data.get('password') as string;
 		const quotaMb = Number(data.get('quotaMb')) || 0;
+		const quotaMessages = Number(data.get('quotaMessages')) || 0;
+		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
+		const useForAliasesDomains = data.get('useForAliasesDomains') ? 1 : 0;
 
 		try {
 			const updateData: any = {
 				fullName: fullName.trim(),
 				quotaMb,
-				active
+				quotaMessages,
+				description,
+				active,
+				useForAliasesDomains
 			};
 
-			// Обновляем пароль только если пользователь ввел новый
 			if (password && password.trim() !== '') {
 				updateData.password = sql`ENCRYPT(${password}, CONCAT('$6$', SUBSTRING(SHA(RAND()), -16)))`;
 			}
