@@ -1,0 +1,50 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: postman_amogus_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-mail}
+      MYSQL_USER: ${DB_USER:-mail_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-mail_pass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mail_nodata.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - amogus-net
+
+  app:
+    image: node:22-alpine
+    container_name: postman_amogus_app
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "if [ -f package.json ]; then npm install && npm run dev -- --host 0.0.0.0 --port 5173; else echo 'Project not initialized. Please run init command.' && tail -f /dev/null; fi"
+    ports:
+      - "${HOST_APP_PORT:-8473}:5173"
+    depends_on:
+      - mariadb
+    networks:
+      - amogus-net
+    env_file:
+      - .env
+
+  dbadmin:
+    image: phpmyadmin:latest
+    container_name: postman_amogus_dbadmin
+    restart: always
+    ports:
+      - "${HOST_PMA_PORT:-8474}:80"
+    environment:
+      - PMA_HOST=postman_amogus_db
+      - PMA_USER=${DB_USER:-mail_user}
+      - PMA_PASSWORD=${DB_PASSWORD:-mail_pass}
+    networks:
+      - amogus-net
+
+volumes:
+  mysql_data:
+
+networks:
+  amogus-net:
+    driver: bridge

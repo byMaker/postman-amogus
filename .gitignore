@@ -1,32 +1,33 @@
-# OS & Editor
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# IDEs
 .idea/
 .vscode/
-.DS_Store
 
-# Backend (Go)
-backend/tmp/
-backend/.go-cache/
-*-app
+# Docker / Database
+mysql_data/
 
-# Frontend (Node/Svelte)
-node_modules/
-build/
-.svelte-kit/
-frontend/node_modules/
-frontend/.svelte-kit/
-
-# Embedded static files
-backend/frontend/build/*
-!backend/frontend/build/index.html
-!backend/frontend/build/.gitkeep
-
-# Environment & Logs
-.env
-*.log
-
-
-# Prompts
-PROMPT*
 AI_RULES.md
-
-
+PROMPT*
