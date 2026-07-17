@@ -1,11 +1,6 @@
 <script lang="ts">
-	// Здесь позже будут данные из базы
-	let stats = {
-		totalMailboxes: 5,
-		activeMailboxes: 4,
-		totalDomains: 3,
-		totalQuotaMb: 3886
-	};
+	let { data } = $props();
+	let stats = data.stats;
 </script>
 
 <div class="space-y-6">

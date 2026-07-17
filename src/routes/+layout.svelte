@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import Toast from '$lib/components/Toast.svelte';
 	let { children } = $props();
 
 	// Определение разделов навигации (используем чистые SVG вместо эмодзи)
@@ -55,9 +56,12 @@
 	</header>
 
 	<!-- Main Content Area -->
-	<main class="mx-auto max-w-6xl rounded-3xl bg-white p-8 shadow-lg min-h-[60vh] border border-slate-200">
+	<main class="mx-auto max-w-6xl">
 		{@render children()}
 	</main>
+
+	<!-- Toasts Layer -->
+	<Toast />
 </div>
 
 <style>

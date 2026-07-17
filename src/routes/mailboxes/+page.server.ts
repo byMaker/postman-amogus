@@ -1,0 +1,84 @@
+import { db } from '$lib/server/db';
+import { users, domains } from '$lib/server/db/schema';
+import { eq, and, sql } from 'drizzle-orm';
+import type { Actions } from './$types';
+
+export async function load() {
+	const allUsers = await db.select().from(users);
+	const allDomains = await db.select().from(domains).where(eq(domains.active, 1));
+	return {
+		users: allUsers,
+		domains: allDomains
+	};
+}
+
+export const actions = {
+	create: async ({ request }) => {
+		const data = await request.formData();
+		const localPart = (data.get('localPart') as string).trim().toLowerCase();
+		const domain = data.get('domain') as string;
+		const fullName = data.get('fullName') as string;
+		const password = data.get('password') as string;
+		const quotaMb = Number(data.get('quotaMb')) || 0;
+		const active = data.get('active') ? 1 : 0;
+
+		try {
+			// Используем функцию ENCRYPT() самой MariaDB для создания SHA512-CRYPT хеша
+			const passwordHash = sql`ENCRYPT(${password}, CONCAT('$6$', SUBSTRING(SHA(RAND()), -16)))`;
+
+			await db.insert(users).values({
+				localPart,
+				domain,
+				fullName: fullName.trim(),
+				password: passwordHash as any, // Cast as any because it's a SQL template
+				quotaMb,
+				active
+			});
+			return { success: true, message: 'Mailbox created' };
+		} catch (error) {
+			console.error(error);
+			return { success: false, error: 'Could not create mailbox. Email might already exist.' };
+		}
+	},
+
+	update: async ({ request }) => {
+		const data = await request.formData();
+		const id = Number(data.get('id'));
+		const fullName = data.get('fullName') as string;
+		const password = data.get('password') as string;
+		const quotaMb = Number(data.get('quotaMb')) || 0;
+		const active = data.get('active') ? 1 : 0;
+
+		try {
+			const updateData: any = {
+				fullName: fullName.trim(),
+				quotaMb,
+				active
+			};
+
+			// Обновляем пароль только если пользователь ввел новый
+			if (password && password.trim() !== '') {
+				updateData.password = sql`ENCRYPT(${password}, CONCAT('$6$', SUBSTRING(SHA(RAND()), -16)))`;
+			}
+
+			await db.update(users).set(updateData).where(eq(users.id, id));
+			return { success: true, message: 'Mailbox updated' };
+		} catch (error) {
+			console.error(error);
+			return { success: false, error: 'Could not update mailbox.' };
+		}
+	},
+
+	delete: async ({ request }) => {
+		const data = await request.formData();
+		const id = Number(data.get('id'));
+
+		try {
+			await db.delete(users).where(eq(users.id, id));
+			return { success: true, message: 'Mailbox deleted' };
+		} catch (error) {
+			console.error(error);
+			return { success: false, error: 'Could not delete mailbox.' };
+		}
+	}
+} satisfies Actions;
