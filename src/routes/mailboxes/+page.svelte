@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
+	import CommentPopover from '$lib/components/CommentPopover.svelte';
+	import MailRoutingGraph from '$lib/components/MailRoutingGraph.svelte';
 	import { toast } from '$lib/state/toast.svelte';
-	import { NotePencil, Trash, EnvelopeSimple } from 'phosphor-svelte';
+	import { NotePencil, Trash, EnvelopeSimple, Shuffle, WarningCircle } from 'phosphor-svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data, form } = $props();
 
@@ -64,6 +67,104 @@
 		userToDelete = u;
 		showDeleteModal = true;
 	}
+
+	let showGraphModal = $state(false);
+	let graphUser: any = $state(null);
+
+	let graphSources = $derived.by(() => {
+		if (!graphUser) return [];
+		const email = `${graphUser.localPart}@${graphUser.domain}`;
+		const sources = [];
+		
+		const isDomainActive = !!data.domains?.find(d => d.domain === graphUser.domain);
+		
+		// 1. Прямая доставка
+		sources.push({ id: `direct-${email}`, type: 'direct', label: email, active: graphUser.active === 1 && isDomainActive });
+		
+		// 2. Личные алиасы
+		if (data.aliases) {
+			const myAliases = data.aliases.filter(a => a.target === email);
+			for (const a of myAliases) {
+				sources.push({ id: `alias-${a.alias}`, type: 'alias', label: a.alias, active: a.active === 1 && isDomainActive });
+			}
+		}
+		
+		// 3. Алиасы доменов
+		if (data.aliasesDomains) {
+			const myDomainAliases = data.aliasesDomains.filter(ad => ad.targetDomain === graphUser.domain);
+			for (const ad of myDomainAliases) {
+				sources.push({ 
+					id: `domain_alias-${ad.aliasDomain}`, 
+					type: 'domain_alias', 
+					label: `${graphUser.localPart}@${ad.aliasDomain}`, 
+					active: ad.active === 1 && graphUser.useForAliasesDomains === 1 && isDomainActive 
+				});
+			}
+		}
+		
+		return sources;
+	});
+
+	function openGraphModal(u: any) {
+		graphUser = u;
+		showGraphModal = true;
+	}
+
+	let selectedDomain = $state('all');
+	let selectedStatus = $state('all');
+	let sortField = $state('localPart');
+	let sortDir = $state('asc');
+
+	async function handleQuickComment(user: any) {
+		const fd = new FormData();
+		fd.append('id', user.id);
+		fd.append('fullName', user.fullName || '');
+		fd.append('quotaMb', user.quotaMb.toString());
+		fd.append('quotaMessages', user.quotaMessages.toString());
+		fd.append('description', user.description || '');
+		if (user.active) fd.append('active', 'on');
+		if (user.useForAliasesDomains) fd.append('useForAliasesDomains', 'on');
+
+		try {
+			await fetch('?/update', { method: 'POST', body: fd });
+			toast.success('Description saved!');
+			await invalidateAll();
+		} catch (e) {
+			toast.error('Failed to save description');
+		}
+	}
+
+	function toggleSort(field: string) {
+		if (sortField === field) {
+			sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortField = field;
+			sortDir = 'asc';
+		}
+	}
+
+	let filteredUsers = $derived(data.users.filter(u => {
+		if (selectedDomain !== 'all' && u.domain !== selectedDomain) return false;
+		if (selectedStatus === 'active' && !u.active) return false;
+		if (selectedStatus === 'disabled' && u.active) return false;
+		return true;
+	}).sort((a, b) => {
+		let valA, valB;
+		if (sortField === 'localPart') {
+			valA = `${a.localPart}@${a.domain}`.toLowerCase();
+			valB = `${b.localPart}@${b.domain}`.toLowerCase();
+		} else if (sortField === 'fullName') {
+			valA = (a.fullName || '').toLowerCase();
+			valB = (b.fullName || '').toLowerCase();
+		} else if (sortField === 'quotaMb') {
+			valA = a.quotaMb === 0 ? Infinity : a.quotaMb;
+			valB = b.quotaMb === 0 ? Infinity : b.quotaMb;
+		}
+
+		if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+		if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+		return 0;
+	}));
 </script>
 
 <div class="space-y-6">
@@ -76,9 +177,63 @@
 			</h2>
 			<p class="text-slate-500 mt-1">Manage users and email accounts</p>
 		</div>
-		<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
-			+ Add Mailbox
-		</button>
+		<div class="flex items-center gap-4">
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+					{selectedStatus === 'all' ? 'All Statuses' : (selectedStatus === 'active' ? 'Active Only' : 'Disabled Only')}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+				</div>
+				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl min-w-full w-max mt-2 border border-slate-100 font-sans text-slate-600">
+					<li>
+						<button onclick={() => selectedStatus = 'all'} class="whitespace-nowrap {selectedStatus === 'all' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block">{selectedStatus === 'all' ? '✓' : ''}</span> All Statuses
+						</button>
+					</li>
+					<li>
+						<button onclick={() => selectedStatus = 'active'} class="whitespace-nowrap {selectedStatus === 'active' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block text-emerald-500">{selectedStatus === 'active' ? '✓' : ''}</span> Active Only
+						</button>
+					</li>
+					<li>
+						<button onclick={() => selectedStatus = 'disabled'} class="whitespace-nowrap {selectedStatus === 'disabled' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block text-slate-500">{selectedStatus === 'disabled' ? '✓' : ''}</span> Disabled Only
+						</button>
+					</li>
+				</ul>
+			</div>
+
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+					{selectedDomain === 'all' ? 'All Domains' : selectedDomain}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+				</div>
+				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl min-w-full w-max max-h-[60vh] overflow-y-auto mt-2 border border-slate-100 font-sans text-slate-600 flex-nowrap">
+					<li>
+						<button 
+							onclick={() => selectedDomain = 'all'} 
+							class="whitespace-nowrap {selectedDomain === 'all' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}"
+						>
+							<span class="w-4 inline-block">{selectedDomain === 'all' ? '✓' : ''}</span> All Domains
+						</button>
+					</li>
+					<div class="divider my-0"></div>
+					{#each data.domains as domain}
+						<li>
+							<button 
+								onclick={() => selectedDomain = domain.domain} 
+								class="whitespace-nowrap {selectedDomain === domain.domain ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}"
+							>
+								<span class="w-4 inline-block text-amogus-blue">{selectedDomain === domain.domain ? '✓' : ''}</span> {domain.domain}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</div>
+
+			<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
+				+ Add Mailbox
+			</button>
+		</div>
 	</div>
 
 	<!-- Таблица ящиков -->
@@ -86,35 +241,53 @@
 		<table class="w-full text-left text-sm">
 			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
-					<th class="px-6 py-5">Email Account</th>
-					<th class="px-6 py-5">Full Name</th>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('localPart')}>
+						Email Account <span class="text-amogus-blue ml-1 font-bold">{sortField === 'localPart' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+					</th>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('fullName')}>
+						Full Name <span class="text-amogus-blue ml-1 font-bold">{sortField === 'fullName' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+					</th>
 					<th class="px-6 py-5">Status</th>
-					<th class="px-6 py-5">Quota</th>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('quotaMb')}>
+						Quota <span class="text-amogus-blue ml-1 font-bold">{sortField === 'quotaMb' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+					</th>
+					<th class="px-6 py-5">Description</th>
 					<th class="px-6 py-5 text-right">Actions</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-slate-100 bg-white">
-				{#each data.users as user}
+				{#each filteredUsers as user}
+					{@const email = `${user.localPart}@${user.domain}`}
+					{@const aliasCount = data.aliases ? data.aliases.filter(a => a.target === email && a.active === 1).length : 0}
+					{@const domainAliasCount = (user.useForAliasesDomains === 1 && data.aliasesDomains) ? data.aliasesDomains.filter(ad => ad.targetDomain === user.domain && ad.active === 1).length : 0}
+					{@const totalRoutes = aliasCount + domainAliasCount}
+					{@const isDomainActive = !!data.domains?.find(d => d.domain === user.domain)}
 					<tr class="hover:bg-slate-50 transition-colors">
 						<td class="px-6 py-5">
-							<div class="font-bold text-slate-800 text-base">{user.localPart}<span class="text-slate-400">@{user.domain}</span></div>
+							<div class="font-bold {user.active ? 'text-amber-600' : 'text-slate-400'} text-base transition-colors">{user.localPart}<span class="{isDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{user.domain}</span></div>
 						</td>
-						<td class="px-6 py-5 font-medium text-slate-600">{user.fullName || '—'}</td>
+						<td class="px-6 py-5 font-medium text-slate-600">{user.fullName || ''}</td>
 						<td class="px-6 py-5">
-							{#if user.active}
-								<span class="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700">Active</span>
-							{:else}
-								<span class="rounded-full bg-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600">Disabled</span>
-							{/if}
+							<div class="flex flex-wrap gap-2 items-center">
+								{#if user.active}
+									<span class="whitespace-nowrap rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">Active</span>
+								{:else}
+									<span class="whitespace-nowrap rounded-full bg-slate-200 px-3 py-1 text-xs font-bold text-slate-600">Disabled</span>
+								{/if}
+								{#if user.useForAliasesDomains === 1}
+									<span class="whitespace-nowrap rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">Domain Alias</span>
+								{/if}
+							</div>
 						</td>
 						<td class="px-6 py-5 w-48">
 							{#if user.quotaMb === 0}
 								<div class="text-slate-500 font-bold">Unlimited</div>
 								<div class="text-xs text-slate-400 font-bold">{(user.usedBytes / 1024 / 1024).toFixed(1)} MB used</div>
 							{:else}
-								{@const percent = Math.min(100, Math.round((user.usedBytes / 1024 / 1024) / user.quotaMb * 100))}
+								{@const usedMb = user.usedBytes / 1024 / 1024}
+								{@const percent = Math.min(100, usedMb > 0 ? Math.max(1.5, Math.round(usedMb / user.quotaMb * 100)) : 0)}
 								<div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1">
-									<span>{(user.usedBytes / 1024 / 1024).toFixed(1)} MB</span>
+									<span>{usedMb.toFixed(1)} MB</span>
 									<span>{user.quotaMb} MB</span>
 								</div>
 								<div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
@@ -122,8 +295,30 @@
 								</div>
 							{/if}
 						</td>
+						<td class="px-6 py-5">
+							<div class="flex items-center gap-2">
+								<CommentPopover 
+									comment={user.description || ''} 
+									onsave={(newComment) => {
+										user.description = newComment;
+										handleQuickComment(user);
+									}} 
+								/>
+								<span class="text-slate-500 truncate max-w-[150px] block">{user.description || ''}</span>
+							</div>
+						</td>
 						<td class="px-6 py-5 text-right">
 							<div class="flex justify-end gap-3 transition-opacity">
+								<Tooltip text="Routing Graph" position="top">
+									<button onclick={() => openGraphModal(user)} class="relative p-2 rounded-full transition-colors {totalRoutes > 0 ? 'text-amber-500 hover:text-white hover:bg-amber-500 bg-amber-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 bg-slate-50'}" title="Routing Graph">
+										<Shuffle size={24} weight="bold" />
+										{#if totalRoutes > 0}
+											<span class="absolute -top-1 -right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-sm border border-white">
+												{totalRoutes}
+											</span>
+										{/if}
+									</button>
+								</Tooltip>
 								<Tooltip text="Edit" position="top">
 									<button onclick={() => openEditModal(user)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
 										<NotePencil size={24} weight="fill" />
@@ -138,7 +333,7 @@
 						</td>
 					</tr>
 				{/each}
-				{#if data.users.length === 0}
+				{#if filteredUsers.length === 0}
 					<tr>
 						<td colspan="5" class="px-6 py-12 text-center text-slate-500">No mailboxes found.</td>
 					</tr>
@@ -297,4 +492,26 @@
 			</button>
 		</div>
 	</form>
+</Modal>
+
+<Modal bind:show={showGraphModal} title="Routing Graph" maxWidth="max-w-6xl">
+	<p class="text-slate-500 mb-2 -mt-4 font-medium">All incoming email routes delivering to this mailbox.</p>
+	
+	{#if graphUser}
+		{@const isDomainActive = !!data.domains?.find(d => d.domain === graphUser.domain)}
+		{#if !isDomainActive}
+			<div class="mb-6 mt-4 rounded-xl bg-rose-50 p-4 border border-rose-100 flex items-center gap-4 text-rose-700">
+				<WarningCircle size={28} weight="fill" class="shrink-0" />
+				<div>
+					<p class="font-bold text-base mb-0.5">Domain is Disabled</p>
+					<p class="text-sm">The domain <strong>{graphUser.domain}</strong> is currently disabled. All incoming mail routing is suspended, regardless of individual alias or mailbox settings.</p>
+				</div>
+			</div>
+		{/if}
+		<MailRoutingGraph 
+			sources={graphSources} 
+			target={`${graphUser.localPart}@${graphUser.domain}`} 
+			targetActive={graphUser.active === 1 && isDomainActive}
+		/>
+	{/if}
 </Modal>

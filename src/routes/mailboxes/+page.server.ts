@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { users, domains, quota } from '$lib/server/db/schema';
+import { users, domains, quota, aliases, aliasesDomains } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { Actions } from './$types';
 
@@ -7,6 +7,8 @@ export async function load() {
 	const allUsers = await db.select().from(users);
 	const allDomains = await db.select().from(domains).where(eq(domains.active, 1));
 	const allQuotas = await db.select().from(quota);
+	const allAliases = await db.select().from(aliases);
+	const allAliasesDomains = await db.select().from(aliasesDomains);
 
 	const usersWithQuota = allUsers.map(u => {
 		const email = `${u.localPart}@${u.domain}`;
@@ -20,7 +22,9 @@ export async function load() {
 
 	return {
 		users: usersWithQuota,
-		domains: allDomains
+		domains: allDomains,
+		aliases: allAliases,
+		aliasesDomains: allAliasesDomains
 	};
 }
 

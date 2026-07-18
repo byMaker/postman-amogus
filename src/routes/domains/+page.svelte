@@ -104,7 +104,7 @@
 			<tbody class="divide-y divide-slate-100 bg-white rounded-b-[32px]">
 				{#each data.domains as domain, index}
 					<tr class="hover:bg-slate-50 transition-colors group">
-						<td class="px-6 py-5 font-bold text-amogus-dark text-lg {index === data.domains.length - 1 ? 'rounded-bl-[32px]' : ''}">{domain.domain}</td>
+						<td class="px-6 py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-lg {index === data.domains.length - 1 ? 'rounded-bl-[32px]' : ''} transition-colors">@{domain.domain}</td>
 						<td class="px-6 py-5">
 							<div class="flex gap-2 items-center">
 								{#if domain.active}
@@ -183,7 +183,7 @@
 <Modal bind:show={showDeleteModal} title="Delete Domain">
 	<div class="bg-rose-50 border border-rose-200 text-rose-800 p-6 rounded-2xl mb-8 shadow-sm">
 		<h3 class="font-bold text-xl mb-3 text-rose-900">Are you absolutely sure?</h3>
-		<p class="mb-5 text-sm">You are about to permanently delete <span class="font-bold px-1.5 py-0.5 bg-rose-200 rounded text-rose-900">{domainToDelete?.domain}</span>.</p>
+		<p class="mb-5 text-sm">You are about to permanently delete <span class="font-bold px-1.5 py-0.5 bg-rose-200 rounded text-rose-900">@{domainToDelete?.domain}</span>.</p>
 		
 		<div class="bg-white rounded-xl p-4 space-y-3 font-medium text-sm">
 			<div class="flex justify-between items-center text-slate-600">

@@ -176,15 +176,19 @@
 			<div class="label">
 				<span class="label-text font-bold text-slate-700">Forward To</span>
 			</div>
-			<input 
-				type="text" 
+			<select 
 				name="target" 
 				bind:value={currentAlias.target}
-				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
-				placeholder="admin@example.com, john@gmail.com"
+				class="select select-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium text-slate-700" 
 				required
-			/>
-			<div class="label"><span class="label-text-alt text-slate-500">You can specify multiple addresses separated by commas.</span></div>
+			>
+				<option value="" disabled selected>Select destination mailbox...</option>
+				{#each data.users as user}
+					{@const email = `${user.localPart}@${user.domain}`}
+					<option value={email}>{email}</option>
+				{/each}
+			</select>
+			<div class="label"><span class="label-text-alt text-slate-500">Only active local mailboxes are available to prevent routing loops.</span></div>
 		</div>
 
 		<div class="form-control">

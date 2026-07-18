@@ -7,10 +7,12 @@
 	let {
 		show = $bindable(false),
 		title,
+		maxWidth = "max-w-xl",
 		children
 	}: {
 		show: boolean;
 		title: string;
+		maxWidth?: string;
 		children: Snippet;
 	} = $props();
 
@@ -33,7 +35,7 @@
 
 		<!-- Само окно -->
 		<div 
-			class="relative z-10 w-full max-w-xl rounded-[40px] bg-white p-10 shadow-2xl border border-slate-100"
+			class="relative z-10 w-full {maxWidth} rounded-[40px] bg-white p-10 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto"
 			in:fly={{ y: 40, duration: 400, easing: backOut }}
 			out:fly={{ y: 20, duration: 200, opacity: 0 }}
 		>
