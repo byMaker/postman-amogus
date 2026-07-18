@@ -157,7 +157,7 @@
 
 	<!-- Top Stats Row -->
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Storage Used</div>
 			<div class="stat-value text-amogus-blue text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{formatBytes(data.summary.totalSize)} 
@@ -168,7 +168,7 @@
 			<div class="stat-desc text-slate-400 mt-2">Used {#if data.summary.totalQuotaMb > 0}/ Total Quota{/if}</div>
 		</div>
 
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Messages</div>
 			<div class="stat-value text-indigo-500 text-4xl mt-3">{data.summary.totalMessages.toLocaleString()}</div>
 			<div class="stat-desc text-slate-400 mt-2 truncate flex items-center gap-1">
@@ -177,7 +177,7 @@
 			</div>
 		</div>
 
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Attachments</div>
 			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{formatBytes(data.attachmentSummary.totalSize)} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-500 text-2xl">{data.attachmentSummary.fileCount.toLocaleString()} <span class="text-lg font-sans font-normal text-slate-400">files</span></span>
@@ -185,7 +185,7 @@
 			<div class="stat-desc text-slate-400 mt-2">Total size / File count</div>
 		</div>
 
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Received Emails</div>
 			<div class="stat-value text-emerald-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{data.inboxStats.totalCount.toLocaleString()} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-600 text-2xl">{formatBytes(data.inboxStats.totalSize)}</span>
@@ -193,7 +193,7 @@
 			<div class="stat-desc text-slate-400 mt-2">Count / Total size</div>
 		</div>
 
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Sent Emails</div>
 			<div class="stat-value text-orange-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{data.sentStats.totalCount.toLocaleString()} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-600 text-2xl">{formatBytes(data.sentStats.totalSize)}</span>
@@ -201,7 +201,7 @@
 			<div class="stat-desc text-slate-400 mt-2">Count / Total size</div>
 		</div>
 
-		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md hover:-translate-y-1">
+		<div class="stat bg-white shadow-sm rounded-2xl border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Oldest Email</div>
 			<div class="stat-value text-amber-500 text-4xl mt-3 truncate">
 				{data.summary.oldestDate ? new Date(data.summary.oldestDate).toLocaleDateString() : 'N/A'}
@@ -212,7 +212,7 @@
 
 	<!-- Charts Row -->
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-		<div class="bg-white p-6 shadow-sm rounded-2xl border border-slate-100 h-[28rem] flex flex-col">
+		<div class="bg-white p-6 shadow-sm rounded-2xl border border-slate-100 h-[28rem] flex flex-col transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<h3 class="text-2xl text-amogus-dark mb-4">Top 10 Storage by Folder</h3>
 			<div class="flex-1 relative py-4">
 				{#if folderData.reduce((a, b) => a + b, 0) > 0.001}
@@ -223,7 +223,7 @@
 			</div>
 		</div>
 
-		<div class="bg-white p-6 shadow-sm rounded-2xl border border-slate-100 h-[28rem] flex flex-col">
+		<div class="bg-white p-6 shadow-sm rounded-2xl border border-slate-100 h-[28rem] flex flex-col transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<h3 class="text-2xl text-amogus-dark mb-4">Top 10 Attachment Types</h3>
 			<div class="flex-1 relative py-4">
 				{#if attachmentData.reduce((a, b) => a + b, 0) > 0.001}

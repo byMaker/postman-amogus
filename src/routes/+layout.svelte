@@ -74,21 +74,23 @@
 			<h1 class="text-3xl text-amogus-dark tracking-wide uppercase mt-1">Postman <br/> <span class="text-amogus-blue">Amogus</span></h1>
 		</div>
 
-		<nav class="flex gap-6 pr-6">
+		<nav class="flex gap-2 pr-6">
 			{#each sections as section}
 				{@const active = section.path === '/' ? $page.url.pathname === '/' : $page.url.pathname.startsWith(section.path)}
 				{@const Icon = section.icon}
 				<a 
 					href={section.path}
-					class="group flex w-20 flex-col items-center justify-center gap-2 transition-opacity active:scale-95 {active ? '' : 'opacity-70 hover:opacity-100'}"
+					class="group flex w-24 py-2 rounded-2xl flex-col items-center justify-center gap-1 transition-all duration-200 active:![transform:translateY(2px)_scale(0.95)] active:!shadow-none {active ? 'bg-white/50 shadow-sm opacity-100' : 'opacity-70 hover:opacity-100 hover:bg-white hover:shadow-md hover:[transform:translateY(-4px)_rotate(var(--hover-angle))]'}"
 					title={section.name}
 					onmouseenter={(e) => {
-						const angle = Math.random() > 0.5 ? 45 : -45;
-						e.currentTarget.style.setProperty('--hover-rotate', `${angle}deg`);
+						if (!active) {
+							const angle = Math.random() > 0.5 ? 1.5 : -1.5;
+							e.currentTarget.style.setProperty('--hover-angle', `${angle}deg`);
+						}
 					}}
 				>
-					<div class="transition-transform duration-300 group-hover:[transform:rotate(var(--hover-rotate))] flex items-center justify-center">
-						<Icon size={36} weight={active ? "fill" : "regular"} class={section.colorClass} />
+					<div class="flex items-center justify-center mt-1">
+						<Icon size={32} weight={active ? "fill" : "regular"} class={section.colorClass} />
 					</div>
 					<span class="text-[11px] font-bold uppercase tracking-wider {active ? 'text-amogus-dark' : 'text-slate-500 group-hover:text-amogus-dark'} transition-colors">{section.name}</span>
 				</a>

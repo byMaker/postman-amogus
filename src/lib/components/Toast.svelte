@@ -10,9 +10,8 @@
 			in:fly={{ y: 50, duration: 400, easing: backOut }}
 			out:fly={{ y: 50, duration: 300, easing: cubicIn }}
 			class="alert rounded-full shadow-2xl font-bold text-white px-8 py-4 border-none flex justify-center"
-			class:bg-emerald-500={t.type === 'success'}
+			class:bg-amogus-brown={t.type === 'success' || t.type === 'info'}
 			class:bg-rose-500={t.type === 'error'}
-			class:bg-blue-500={t.type === 'info'}
 		>
 			<span class="text-lg">{t.message}</span>
 		</div>

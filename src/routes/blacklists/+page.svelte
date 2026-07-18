@@ -185,7 +185,10 @@
 
 		<div class="form-control">
 			<div class="label"><span class="label-text font-bold text-slate-700">{getTargetLabel()}</span></div>
-			<input type="text" name="target" bind:value={currentEntry.target} readonly={isEditMode && activeTableKey === 'dnsgBlacklist'} class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all {isEditMode && activeTableKey === 'dnsgBlacklist' ? 'opacity-60 cursor-not-allowed' : ''}" required />
+			<input type="text" name="target" bind:value={currentEntry.target} required 
+				pattern={activeSubTab === 'domains' ? "^([a-zA-Z0-9\-]+\\.)+[a-zA-Z]{2,}$" : (activeSubTab === 'emails' ? "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" : undefined)}
+				title={activeSubTab === 'domains' ? "Please enter a valid domain name (e.g. example.com)" : (activeSubTab === 'emails' ? "Please enter a valid email address" : "Please enter a valid IP address")}
+				readonly={isEditMode && activeTableKey === 'dnsgBlacklist'} class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all {isEditMode && activeTableKey === 'dnsgBlacklist' ? 'opacity-60 cursor-not-allowed' : ''}" />
 		</div>
 
 		<div class="form-control">

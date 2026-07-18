@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
+	import { X } from 'phosphor-svelte';
 
 	let {
 		show = $bindable(false),
@@ -36,7 +37,14 @@
 			in:fly={{ y: 40, duration: 400, easing: backOut }}
 			out:fly={{ y: 20, duration: 200, opacity: 0 }}
 		>
-			<h3 class="text-4xl text-amogus-dark mb-8">{title}</h3>
+			<button 
+				type="button" 
+				class="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+				onclick={close}
+			>
+				<X size={24} weight="bold" />
+			</button>
+			<h3 class="text-4xl text-amogus-dark mb-8 pr-8">{title}</h3>
 			{@render children()}
 		</div>
 	</div>

@@ -21,29 +21,56 @@
 	let activeTab = $state('general');
 	let domainToDelete: any = $state(null);
 	let showDeleteModal = $state(false);
+	
+	let originalDomainName = $state('');
+	let currentDomainData = $derived(data.domains.find(d => d.domain === originalDomainName) || { domainAliases: [], dkimActive: false, active: 1, backupmx: 0, description: '' });
+	let editForm: HTMLFormElement;
+	let showUpdateConfirm = $state(false);
 
 	function openAddModal() {
 		isEditMode = false;
 		activeTab = 'general';
-		currentDomain = { domain: '', description: '', active: true, backupmx: false };
+		originalDomainName = '';
+		currentDomain = { domain: '', description: '', active: true, backupmx: false, dkimActive: false };
 		showModal = true;
 	}
 
 	function openEditModal(d: any) {
 		isEditMode = true;
 		activeTab = 'general';
+		originalDomainName = d.domain;
 		currentDomain = { 
 			domain: d.domain, 
 			description: d.description || '', 
 			active: d.active === 1, 
-			backupmx: d.backupmx === 1 
+			backupmx: d.backupmx === 1,
+			dkimActive: d.dkimActive === true
 		};
 		showModal = true;
 	}
 
+	import { invalidateAll } from '$app/navigation';
 	function requestDelete(d: any) {
 		domainToDelete = d;
 		showDeleteModal = true;
+	}
+
+	async function handleQuickComment(domain: any) {
+		const fd = new FormData();
+		fd.append('originalDomain', domain.domain);
+		fd.append('domain', domain.domain);
+		fd.append('description', domain.description || '');
+		fd.append('active', domain.active ? '1' : '');
+		fd.append('backupmx', domain.backupmx ? '1' : '');
+		if (domain.dkimActive) fd.append('dkimActive', 'on');
+
+		try {
+			await fetch('?/update', { method: 'POST', body: fd });
+			toast.success('Description saved!');
+			await invalidateAll();
+		} catch (e) {
+			toast.error('Failed to save description');
+		}
 	}
 </script>
 
@@ -88,6 +115,9 @@
 								{#if domain.backupmx}
 									<span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">Backup MX</span>
 								{/if}
+								{#if domain.dkimActive}
+									<span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">DKIM Enforced</span>
+								{/if}
 							</div>
 						</td>
 						<td class="px-6 py-5">
@@ -98,10 +128,16 @@
 										{domain.mailboxesCount}
 									</div>
 								</Tooltip>
-								<Tooltip text="Aliases" position="top">
+								<Tooltip text="Email Aliases" position="top">
 									<div class="flex items-center gap-1">
 										<Ghost size={18} weight="fill" />
 										{domain.aliasesCount}
+									</div>
+								</Tooltip>
+								<Tooltip text="Domain Aliases" position="top">
+									<div class="flex items-center gap-1">
+										<At size={18} weight="fill" />
+										{(domain.domainAliases || []).length}
 									</div>
 								</Tooltip>
 							</div>
@@ -145,7 +181,25 @@
 </div>
 
 <Modal bind:show={showDeleteModal} title="Delete Domain">
-	<p class="text-slate-600 font-medium mb-8 text-lg">Are you sure you want to permanently delete the domain <span class="font-bold text-rose-600">{domainToDelete?.domain}</span>? This action cannot be undone.</p>
+	<div class="bg-rose-50 border border-rose-200 text-rose-800 p-6 rounded-2xl mb-8 shadow-sm">
+		<h3 class="font-bold text-xl mb-3 text-rose-900">Are you absolutely sure?</h3>
+		<p class="mb-5 text-sm">You are about to permanently delete <span class="font-bold px-1.5 py-0.5 bg-rose-200 rounded text-rose-900">{domainToDelete?.domain}</span>.</p>
+		
+		<div class="bg-white rounded-xl p-4 space-y-3 font-medium text-sm">
+			<div class="flex justify-between items-center text-slate-600">
+				<div class="flex items-center gap-2"><EnvelopeSimple size={18} weight="fill" /> Mailboxes lost</div>
+				<span class="font-bold text-rose-600 text-base">{domainToDelete?.mailboxesCount || 0}</span>
+			</div>
+			<div class="flex justify-between items-center text-slate-600">
+				<div class="flex items-center gap-2"><Ghost size={18} weight="fill" /> Email Aliases removed</div>
+				<span class="font-bold text-rose-600 text-base">{domainToDelete?.aliasesCount || 0}</span>
+			</div>
+			<div class="flex justify-between items-center text-slate-600">
+				<div class="flex items-center gap-2"><At size={18} weight="fill" /> Domain Aliases orphaned</div>
+				<span class="font-bold text-rose-600 text-base">{(domainToDelete?.domainAliases || []).length}</span>
+			</div>
+		</div>
+	</div>
 	<form method="POST" action="?/delete" use:enhance={() => {
 		return async ({ result, update }) => {
 			if (result.type === 'success' && result.data?.success) {
@@ -170,19 +224,26 @@
 <Modal bind:show={showModal} title={isEditMode ? 'Manage Domain' : 'Add New Domain'}>
 	
 	{#if isEditMode}
-		<div role="tablist" class="tabs tabs-bordered mb-8">
-			<button type="button" role="tab" class="tab {activeTab === 'general' ? 'tab-active font-black text-amogus-dark border-[#1E3A8A]' : 'font-bold text-slate-400 hover:text-slate-600'}" onclick={() => activeTab = 'general'}>General Settings</button>
-			<button type="button" role="tab" class="tab {activeTab === 'aliases' ? 'tab-active font-black text-amogus-dark border-[#1E3A8A]' : 'font-bold text-slate-400 hover:text-slate-600'}" onclick={() => activeTab = 'aliases'}>Domain Aliases</button>
-			<button type="button" role="tab" class="tab {activeTab === 'dkim' ? 'tab-active font-black text-amogus-dark border-[#1E3A8A]' : 'font-bold text-slate-400 hover:text-slate-600'}" onclick={() => activeTab = 'dkim'}>DKIM Security</button>
+		<div class="flex justify-center mb-8">
+			<div class="inline-flex bg-slate-100 p-1.5 rounded-full border border-slate-200 shadow-inner">
+				<button type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all duration-300 {activeTab === 'general' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeTab = 'general'}>
+					General
+				</button>
+				<button type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all duration-300 {activeTab === 'aliases' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeTab = 'aliases'}>
+					<At size={16} weight="fill" />
+					Aliases
+				</button>
+			</div>
 		</div>
 	{/if}
 
 	{#if activeTab === 'general' || !isEditMode}
-		<form method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
+		<form bind:this={editForm} method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
 			return async ({ result, update }) => {
 				if (result.type === 'success' && result.data?.success) {
 					toast.success(isEditMode ? 'Domain saved!' : 'Domain created!');
 					showModal = false;
+					showUpdateConfirm = false;
 				} else {
 					toast.error(result.data?.error || 'An error occurred');
 				}
@@ -191,7 +252,7 @@
 		}} class="space-y-5 animate-in fade-in duration-300">
 			
 			{#if isEditMode}
-				<input type="hidden" name="originalDomain" value={currentDomain.domain} />
+				<input type="hidden" name="originalDomain" value={originalDomainName} />
 			{/if}
 
 			<div class="form-control">
@@ -200,10 +261,11 @@
 					type="text" 
 					name="domain" 
 					bind:value={currentDomain.domain} 
-					readonly={isEditMode}
-					class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all {isEditMode ? 'opacity-60 cursor-not-allowed' : ''}" 
+					class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
 					placeholder="example.com" 
 					required 
+					pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"}
+					title="Please enter a valid domain name (e.g. example.com)"
 				/>
 			</div>
 
@@ -217,49 +279,152 @@
 				/>
 			</div>
 
-			<div class="flex gap-6 pt-2">
-				<label class="cursor-pointer flex items-center gap-3">
+			<div class="pt-2 pb-2">
+				<label class="cursor-pointer inline-flex items-center gap-3">
 					<input type="checkbox" name="active" bind:checked={currentDomain.active} class="toggle toggle-info bg-white" />
-					<span class="font-medium text-slate-700">Active</span>
-				</label>
-				<label class="cursor-pointer flex items-center gap-3">
-					<input type="checkbox" name="backupmx" bind:checked={currentDomain.backupmx} class="toggle toggle-info bg-white" />
-					<span class="font-medium text-slate-700">Backup MX</span>
+					<span class="font-medium text-slate-700">Active Domain</span>
 				</label>
 			</div>
 
+			<div class="mt-8 space-y-4 border-t border-slate-100 pt-6">
+				<!-- Backup MX Block -->
+				<div class="bg-amber-50/70 p-5 rounded-2xl border border-amber-100/70">
+					<div class="flex items-center justify-between">
+						<div class="pr-4">
+							<div class="font-bold text-slate-700">Backup MX (Secondary Mail Exchanger)</div>
+							<div class="text-sm text-slate-600 mt-1 leading-snug">Turn ON only if this server acts as a backup for another primary mail server. If this is your main server, leave OFF.</div>
+						</div>
+						<label class="cursor-pointer shrink-0">
+							<input type="checkbox" name="backupmx" bind:checked={currentDomain.backupmx} class="toggle toggle-warning bg-white" />
+						</label>
+					</div>
+				</div>
+
+				<!-- DKIM Block -->
+				<div class="bg-indigo-50/70 p-5 rounded-2xl border border-indigo-100/70">
+						<div class="flex items-center justify-between">
+							<div class="pr-4">
+								<div class="font-bold text-slate-700">Enforce DKIM Required</div>
+								<div class="text-sm text-slate-500 mt-1 leading-snug">Reject emails without a valid DKIM signature to prevent spoofing.</div>
+							</div>
+							<label class="cursor-pointer shrink-0">
+								<input 
+									type="checkbox" 
+									name="dkimActive"
+									bind:checked={currentDomain.dkimActive} 
+									class="toggle toggle-success bg-white" 
+								/>
+							</label>
+						</div>
+					</div>
+				</div>
+
 			<div class="modal-action mt-8 pt-4 flex justify-between">
 				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
-				<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
-					{isEditMode ? 'Save Changes' : 'Create Domain'}
-				</button>
+				{#if isEditMode}
+					<button type="button" onclick={() => {
+						const isDangerousChange = 
+							currentDomain.domain !== originalDomainName ||
+							currentDomain.active !== (currentDomainData.active === 1) ||
+							currentDomain.backupmx !== (currentDomainData.backupmx === 1) ||
+							currentDomain.dkimActive !== currentDomainData.dkimActive;
+						
+						if (isDangerousChange) {
+							showUpdateConfirm = true;
+						} else {
+							editForm.requestSubmit();
+						}
+					}} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+						Save Changes
+					</button>
+				{:else}
+					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+						Create Domain
+					</button>
+				{/if}
 			</div>
 		</form>
 	{/if}
 
 	{#if activeTab === 'aliases'}
 		<div class="space-y-6 animate-in fade-in duration-300">
-			<div class="bg-blue-50 text-blue-800 p-5 rounded-2xl font-medium text-sm border border-blue-100">
-				All emails sent to the domains listed below will be seamlessly forwarded to <span class="font-black">@{currentDomain.domain}</span>.
+			<div class="bg-blue-50 text-blue-800 p-5 rounded-2xl font-medium text-sm border border-blue-100 leading-relaxed">
+				All emails sent to the domains listed below will be seamlessly forwarded to <span class="font-black">@{currentDomain.domain}</span>.<br>
+				<span class="text-blue-700/80 mt-1 block">Note: You do not need to create these aliases as primary domains first. If an alias also exists as a primary domain, this forwarding rule will override its local mailboxes. Additionally, each mailbox can individually enable or disable receiving mail from these domain aliases in its own settings.</span>
 			</div>
 			
-			<div class="text-center py-8 text-slate-400">
-				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-50"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-				<p>Domain Aliases backend logic coming soon.</p>
+			<div class="space-y-3">
+				{#each currentDomainData.domainAliases || [] as alias}
+					<div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+						<div class="font-bold text-slate-700">@{alias.aliasDomain}</div>
+						<form method="POST" action="?/deleteDomainAlias" use:enhance={() => {
+							return async ({ result, update }) => {
+								if (result.type === 'success') { toast.success('Alias deleted'); }
+								update();
+							};
+						}}>
+							<input type="hidden" name="aliasDomain" value={alias.aliasDomain} />
+							<button type="submit" class="text-rose-500 hover:bg-rose-100 p-2 rounded-full transition-colors"><Trash size={20} weight="fill" /></button>
+						</form>
+					</div>
+				{:else}
+					<div class="text-center py-4 text-slate-400 text-sm">No domain aliases configured.</div>
+				{/each}
 			</div>
+			
+			{#if (currentDomainData.domainAliases || []).length < 5}
+				<form method="POST" action="?/addDomainAlias" use:enhance={() => {
+					return async ({ result, update }) => {
+						if (result.type === 'success' && result.data?.success) { toast.success('Alias added'); }
+						else { toast.error(result.data?.error || 'Failed to add alias'); }
+						update();
+					};
+				}} class="flex gap-3">
+					<input type="hidden" name="targetDomain" value={currentDomain.domain} />
+					<input type="text" name="aliasDomain" placeholder="e.g. example.net" required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" class="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
+					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-2xl px-6 font-bold shadow-sm">Add Alias</button>
+				</form>
+			{:else}
+				<div class="p-4 bg-amber-50 text-amber-800 text-sm font-bold rounded-2xl text-center border border-amber-200">
+					Maximum limit of 5 aliases reached for this domain.
+				</div>
+			{/if}
 		</div>
 	{/if}
 
-	{#if activeTab === 'dkim'}
-		<div class="space-y-6 animate-in fade-in duration-300">
-			<div class="bg-emerald-50 text-emerald-800 p-5 rounded-2xl font-medium text-sm border border-emerald-100">
-				Enforce strict DKIM signature validation for all incoming mail to <span class="font-black">@{currentDomain.domain}</span> to prevent spoofing.
-			</div>
 
-			<div class="text-center py-8 text-slate-400">
-				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 opacity-50"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
-				<p>DKIM Security backend logic coming soon.</p>
-			</div>
+</Modal>
+
+<Modal bind:show={showUpdateConfirm} title="Confirm Changes">
+	<p class="text-slate-600 font-medium mb-6 text-base">You are changing critical settings for <span class="font-bold text-amogus-dark">@{currentDomain.domain}</span>. Please review:</p>
+	<div class="space-y-4 mb-8">
+		<div class="flex flex-col">
+			<span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Status</span>
+			<span class="font-medium {currentDomain.active !== (currentDomainData.active === 1) ? 'text-rose-600 font-bold' : (currentDomain.active ? 'text-emerald-600' : 'text-slate-500')}">
+				{currentDomain.active ? 'Active' : 'Disabled'} {currentDomain.active !== (currentDomainData.active === 1) ? '(changed)' : ''}
+			</span>
 		</div>
-	{/if}
+		<div class="flex flex-col">
+			<span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Routing</span>
+			<span class="font-medium {currentDomain.backupmx !== (currentDomainData.backupmx === 1) ? 'text-rose-600 font-bold' : (currentDomain.backupmx ? 'text-amber-600' : 'text-slate-500')}">
+				{currentDomain.backupmx ? 'Backup MX' : 'Primary MX'} {currentDomain.backupmx !== (currentDomainData.backupmx === 1) ? '(changed)' : ''}
+			</span>
+		</div>
+		<div class="flex flex-col">
+			<span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">DKIM Enforced</span>
+			<span class="font-medium {currentDomain.dkimActive !== currentDomainData.dkimActive ? 'text-rose-600 font-bold' : (currentDomain.dkimActive ? 'text-indigo-600' : 'text-slate-500')}">
+				{currentDomain.dkimActive ? 'Yes' : 'No'} {currentDomain.dkimActive !== currentDomainData.dkimActive ? '(changed)' : ''}
+			</span>
+		</div>
+		<div class="flex flex-col">
+			<span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Domain Name</span>
+			<span class="font-medium {currentDomain.domain !== originalDomainName ? 'text-rose-600 font-bold' : 'text-slate-700'}">
+				{currentDomain.domain} {currentDomain.domain !== originalDomainName ? '(changed)' : ''}
+			</span>
+		</div>
+	</div>
+	<div class="modal-action flex justify-between mt-6">
+		<button type="button" onclick={() => { showUpdateConfirm = false; showModal = true; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Back to Edit</button>
+		<button type="button" onclick={() => { showUpdateConfirm = false; editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">Confirm & Save</button>
+	</div>
 </Modal>

@@ -66,8 +66,8 @@
 
 			<!-- Popover/Modal Content -->
 			<div class="relative w-full max-w-sm sm:max-w-none bg-white border border-slate-200 rounded-3xl shadow-xl p-5 sm:p-4 flex flex-col gap-3 mx-auto">
-				<div class="flex justify-between items-center mb-1">
-					<h3 class="text-sm font-bold text-amogus-dark">{title}</h3>
+				<div class="flex justify-between items-center mb-2">
+					<h3 class="text-2xl text-amogus-dark">{title}</h3>
 					<button aria-label="Close" onclick={() => isOpen = false} class="text-slate-400 hover:text-rose-500 transition-colors p-1 bg-slate-50 hover:bg-rose-50 rounded-full">
 						<X size={16} weight="bold" />
 					</button>
