@@ -4,6 +4,8 @@
 	import { toast } from '$lib/state/toast.svelte';
 	import { NotePencil, Trash, ArrowRight, Ghost } from 'phosphor-svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import CommentPopover from '$lib/components/CommentPopover.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data, form } = $props();
 
@@ -41,21 +43,134 @@
 		aliasToDelete = a;
 		showDeleteModal = true;
 	}
+
+	let sortField = $state('alias');
+	let sortDir = $state('asc');
+	let selectedDomain = $state('all');
+	let selectedStatus = $state('all');
+
+	function toggleSort(field: string) {
+		if (sortField === field) {
+			sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortField = field;
+			sortDir = 'asc';
+		}
+	}
+
+	let filteredAliases = $derived.by(() => {
+		let result = [...data.aliases];
+		
+		result = result.filter(a => {
+			const sourceDomain = a.alias.split('@')[1] || '';
+			if (selectedDomain !== 'all' && sourceDomain !== selectedDomain) return false;
+			if (selectedStatus === 'active' && !a.active) return false;
+			if (selectedStatus === 'disabled' && a.active) return false;
+			return true;
+		});
+
+		result.sort((a, b) => {
+			let valA = a[sortField as keyof typeof a] || '';
+			let valB = b[sortField as keyof typeof b] || '';
+			if (typeof valA === 'string' && typeof valB === 'string') {
+				valA = valA.toLowerCase();
+				valB = valB.toLowerCase();
+			}
+			if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+			if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+			return 0;
+		});
+		return result;
+	});
+
+	async function handleQuickComment(alias: any) {
+		const fd = new FormData();
+		fd.append('originalAlias', alias.alias);
+		fd.append('alias', alias.alias);
+		fd.append('target', alias.target);
+		fd.append('description', alias.description || '');
+		fd.append('active', alias.active ? '1' : '');
+
+		try {
+			await fetch('?/update', { method: 'POST', body: fd });
+			toast.success('Description saved!');
+			await invalidateAll();
+		} catch (e) {
+			toast.error('Failed to save description');
+		}
+	}
 </script>
 
 <div class="space-y-6">
-	<!-- Заголовок и кнопка -->
-	<div class="flex items-center justify-between px-6 pb-2">
+	<!-- Заголовок и фильтры -->
+	<div class="flex flex-col md:flex-row md:items-center justify-between px-6 pb-2 gap-6">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
-				<Ghost size={36} weight="fill" class="text-indigo-500" />
+				<Ghost size={36} weight="fill" class="text-teal-600" />
 				Aliases
 			</h2>
 			<p class="text-slate-500 mt-1">Manage email forwarding rules</p>
 		</div>
-		<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
-			+ Add Alias
-		</button>
+		
+		<div class="flex items-center gap-4 flex-wrap">
+			<!-- Status Filter -->
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+					{selectedStatus === 'all' ? 'All Statuses' : selectedStatus === 'active' ? 'Active Only' : 'Disabled Only'}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+				</div>
+				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl w-52 mt-2 border border-slate-100 font-sans text-slate-600">
+					<li>
+						<button onclick={() => selectedStatus = 'all'} class="whitespace-nowrap {selectedStatus === 'all' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block">{selectedStatus === 'all' ? '✓' : ''}</span> All Statuses
+						</button>
+					</li>
+					<li>
+						<button onclick={() => selectedStatus = 'active'} class="whitespace-nowrap {selectedStatus === 'active' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block text-emerald-500">{selectedStatus === 'active' ? '✓' : ''}</span> Active Only
+						</button>
+					</li>
+					<li>
+						<button onclick={() => selectedStatus = 'disabled'} class="whitespace-nowrap {selectedStatus === 'disabled' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
+							<span class="w-4 inline-block text-slate-500">{selectedStatus === 'disabled' ? '✓' : ''}</span> Disabled Only
+						</button>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Domain Filter -->
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+					{selectedDomain === 'all' ? 'All Domains' : selectedDomain}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+				</div>
+				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl min-w-full w-max max-h-[60vh] overflow-y-auto mt-2 border border-slate-100 font-sans text-slate-600 flex-nowrap">
+					<li>
+						<button 
+							onclick={() => selectedDomain = 'all'} 
+							class="whitespace-nowrap {selectedDomain === 'all' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}"
+						>
+							<span class="w-4 inline-block">{selectedDomain === 'all' ? '✓' : ''}</span> All Domains
+						</button>
+					</li>
+					<div class="divider my-0"></div>
+					{#each data.domains as domain}
+						<li>
+							<button 
+								onclick={() => selectedDomain = domain.domain} 
+								class="whitespace-nowrap {selectedDomain === domain.domain ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}"
+							>
+								<span class="w-4 inline-block text-amogus-blue">{selectedDomain === domain.domain ? '✓' : ''}</span> {domain.domain}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</div>
+
+			<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
+				+ Add Alias
+			</button>
+		</div>
 	</div>
 
 	<!-- Таблица алиасов -->
@@ -63,21 +178,40 @@
 		<table class="w-full text-left text-sm">
 			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
-					<th class="px-6 py-5">Alias</th>
-					<th class="px-6 py-5">Forward To</th>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('alias')}>
+						Alias <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+					</th>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('target')}>
+						Forward To <span class="text-amogus-blue ml-1 font-bold">{sortField === 'target' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+					</th>
 					<th class="px-6 py-5">Status</th>
 					<th class="px-6 py-5">Description</th>
 					<th class="px-6 py-5 text-right">Actions</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-slate-100 bg-white">
-				{#each data.aliases as alias}
+				{#each filteredAliases as alias}
+					{@const sourceParts = alias.alias.split('@')}
+					{@const sourceLocal = sourceParts[0]}
+					{@const sourceDomain = sourceParts[1] || ''}
+					{@const isSourceDomainActive = !!data.domains?.find(d => d.domain === sourceDomain)}
+					
+					{@const targetParts = alias.target.split('@')}
+					{@const targetLocal = targetParts[0]}
+					{@const targetDomain = targetParts[1] || ''}
+					{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
 					<tr class="hover:bg-slate-50 transition-colors group">
-						<td class="px-6 py-5 font-bold text-amogus-dark text-base">{alias.alias}</td>
 						<td class="px-6 py-5">
-							<div class="flex items-center gap-2 font-medium text-slate-700 bg-slate-100 w-fit px-3 py-1 rounded-full">
-								<ArrowRight size={16} weight="bold" class="text-slate-400" />
-								{alias.target}
+							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-base transition-colors">
+								{sourceLocal}<span class="{isSourceDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{sourceDomain}</span>
+							</div>
+						</td>
+						<td class="px-6 py-5">
+							<div class="flex items-center gap-2 font-medium bg-slate-50 border border-slate-100 w-fit px-3 py-1.5 rounded-full transition-colors">
+								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0" />
+								<div class="font-bold {alias.active ? 'text-amber-600' : 'text-slate-400'} transition-colors truncate">
+									{targetLocal}<span class="{isTargetDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{targetDomain}</span>
+								</div>
 							</div>
 						</td>
 						<td class="px-6 py-5">
@@ -87,7 +221,18 @@
 								<span class="rounded-full bg-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600">Disabled</span>
 							{/if}
 						</td>
-						<td class="px-6 py-5 text-slate-500">{alias.description || '—'}</td>
+						<td class="px-6 py-5">
+							<div class="flex items-center gap-2">
+								<CommentPopover 
+									comment={alias.description || ''} 
+									onsave={(newComment) => {
+										alias.description = newComment;
+										handleQuickComment(alias);
+									}} 
+								/>
+								<span class="text-slate-500 truncate max-w-[150px] block">{alias.description || ''}</span>
+							</div>
+						</td>
 						<td class="px-6 py-5 text-right">
 							<div class="flex justify-end gap-3 transition-opacity">
 								<Tooltip text="Edit" position="top">

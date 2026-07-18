@@ -30,7 +30,7 @@
 
 		const colorMap: Record<string, string> = {
 			'direct': '#fbbf24', // amber-400
-			'alias': '#818cf8', // indigo-400
+			'alias': '#0d9488', // teal-600
 			'domain_alias': '#a78bfa' // violet-400
 		};
 
@@ -102,7 +102,7 @@
 								{/if}
 								<div 
 									bind:this={sourceNodes[source.id]}
-									class="px-5 py-3 w-full rounded-full font-bold text-sm flex items-center justify-center cursor-default z-10 {source.active === false ? 'bg-slate-100 text-slate-400' : (source.type === 'direct' ? 'bg-amber-100 text-amber-800' : source.type === 'alias' ? 'bg-indigo-100 text-indigo-800' : 'bg-violet-100 text-violet-800')}"
+									class="px-5 py-3 w-full rounded-full font-bold text-sm flex items-center justify-center cursor-default z-10 {source.active === false ? 'bg-slate-100 text-slate-400' : (source.type === 'direct' ? 'bg-amber-100 text-amber-800' : source.type === 'alias' ? 'bg-teal-100 text-teal-800' : 'bg-violet-100 text-violet-800')}"
 								>
 									{source.label}
 								</div>

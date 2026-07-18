@@ -54,7 +54,7 @@
 	<div class="flex items-center justify-between px-6 pb-2">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
-				<Star size={36} weight="fill" class="text-emerald-500" />
+				<Star size={36} weight="fill" class="text-yellow-500" />
 				Whitelists
 			</h2>
 			<p class="text-slate-500 mt-1">Allow incoming mail from trusted sources</p>

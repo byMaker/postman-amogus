@@ -73,31 +73,43 @@
 
 	let graphSources = $derived.by(() => {
 		if (!graphUser) return [];
-		const email = `${graphUser.localPart}@${graphUser.domain}`;
+		const email = `${graphUser.localPart}@${graphUser.domain}`.toLowerCase();
+		const targetDomain = graphUser.domain.toLowerCase();
 		const sources = [];
 		
-		const isDomainActive = !!data.domains?.find(d => d.domain === graphUser.domain);
+		const isDomainActive = !!data.domains?.find(d => d.domain.toLowerCase() === targetDomain);
 		
 		// 1. Прямая доставка
-		sources.push({ id: `direct-${email}`, type: 'direct', label: email, active: graphUser.active === 1 && isDomainActive });
+		sources.push({ 
+			id: `direct-${email}`, 
+			type: 'direct', 
+			label: email, 
+			active: !!graphUser.active && isDomainActive 
+		});
 		
 		// 2. Личные алиасы
 		if (data.aliases) {
-			const myAliases = data.aliases.filter(a => a.target === email);
+			const myAliases = data.aliases.filter(a => (a.target || '').toLowerCase() === email);
 			for (const a of myAliases) {
-				sources.push({ id: `alias-${a.alias}`, type: 'alias', label: a.alias, active: a.active === 1 && isDomainActive });
+				sources.push({ 
+					id: `alias-${a.alias}`, 
+					type: 'alias', 
+					label: a.alias.toLowerCase(), 
+					active: !!a.active && isDomainActive 
+				});
 			}
 		}
 		
 		// 3. Алиасы доменов
 		if (data.aliasesDomains) {
-			const myDomainAliases = data.aliasesDomains.filter(ad => ad.targetDomain === graphUser.domain);
+			const myDomainAliases = data.aliasesDomains.filter(ad => (ad.targetDomain || '').toLowerCase() === targetDomain);
 			for (const ad of myDomainAliases) {
 				sources.push({ 
 					id: `domain_alias-${ad.aliasDomain}`, 
 					type: 'domain_alias', 
-					label: `${graphUser.localPart}@${ad.aliasDomain}`, 
-					active: ad.active === 1 && graphUser.useForAliasesDomains === 1 && isDomainActive 
+					label: `${graphUser.localPart.toLowerCase()}@${ad.aliasDomain.toLowerCase()}`, 
+					// Exim explicitly checks users.active = 1 AND users.use_for_aliases_domains = 1
+					active: !!ad.active && !!graphUser.useForAliasesDomains && isDomainActive && !!graphUser.active
 				});
 			}
 		}
@@ -274,7 +286,7 @@
 								{:else}
 									<span class="whitespace-nowrap rounded-full bg-slate-200 px-3 py-1 text-xs font-bold text-slate-600">Disabled</span>
 								{/if}
-								{#if user.useForAliasesDomains === 1}
+								{#if !!user.useForAliasesDomains}
 									<span class="whitespace-nowrap rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">Domain Alias</span>
 								{/if}
 							</div>

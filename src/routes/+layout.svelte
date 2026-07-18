@@ -44,7 +44,7 @@
 			name: 'Aliases', 
 			path: '/aliases',
 			icon: Ghost,
-			colorClass: 'text-indigo-500'
+			colorClass: 'text-teal-600'
 		},
 		{ 
 			id: 'blacklists', 
@@ -58,7 +58,7 @@
 			name: 'Whitelists', 
 			path: '/whitelists',
 			icon: Star,
-			colorClass: 'text-emerald-500'
+			colorClass: 'text-yellow-500'
 		}
 	];
 

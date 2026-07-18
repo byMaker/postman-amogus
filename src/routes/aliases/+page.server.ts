@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { aliases, users } from '$lib/server/db/schema';
+import { aliases, users, domains } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
@@ -9,10 +9,12 @@ export async function load() {
 		localPart: users.localPart,
 		domain: users.domain
 	}).from(users).where(eq(users.active, 1));
+	const allDomains = await db.select().from(domains).where(eq(domains.active, 1));
 
 	return {
 		aliases: allAliases,
-		users: allUsers
+		users: allUsers,
+		domains: allDomains
 	};
 }
 
