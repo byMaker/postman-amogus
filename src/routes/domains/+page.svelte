@@ -3,6 +3,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import { toast } from '$lib/state/toast.svelte';
 	import { NotePencil, Trash, WarningCircle, At, EnvelopeSimple, Ghost } from 'phosphor-svelte';
 
@@ -90,7 +91,7 @@
 	</div>
 
 	<!-- Таблица доменов -->
-	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white">
+	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white overflow-hidden">
 		<table class="w-full text-left text-sm">
 			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
@@ -213,7 +214,7 @@
 	}}>
 		<input type="hidden" name="domain" value={domainToDelete?.domain} />
 		<div class="flex justify-between mt-4">
-			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
 				Yes, Delete
 			</button>
@@ -257,11 +258,10 @@
 
 			<div class="form-control">
 				<div class="label"><span class="label-text font-bold text-slate-700">Domain Name</span></div>
-				<input 
-					type="text" 
+				<ValidatedInput
 					name="domain" 
 					bind:value={currentDomain.domain} 
-					class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
+					className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
 					placeholder="example.com" 
 					required 
 					pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"}
@@ -281,7 +281,7 @@
 
 			<div class="pt-2 pb-2">
 				<label class="cursor-pointer inline-flex items-center gap-3">
-					<input type="checkbox" name="active" bind:checked={currentDomain.active} class="toggle toggle-info bg-white" />
+					<input type="checkbox" name="active" bind:checked={currentDomain.active} class="toggle toggle-amogus" />
 					<span class="font-medium text-slate-700">Active Domain</span>
 				</label>
 			</div>
@@ -295,7 +295,7 @@
 							<div class="text-sm text-slate-600 mt-1 leading-snug">Turn ON only if this server acts as a backup for another primary mail server. If this is your main server, leave OFF.</div>
 						</div>
 						<label class="cursor-pointer shrink-0">
-							<input type="checkbox" name="backupmx" bind:checked={currentDomain.backupmx} class="toggle toggle-warning bg-white" />
+							<input type="checkbox" name="backupmx" bind:checked={currentDomain.backupmx} class="toggle toggle-amogus" />
 						</label>
 					</div>
 				</div>
@@ -312,7 +312,7 @@
 									type="checkbox" 
 									name="dkimActive"
 									bind:checked={currentDomain.dkimActive} 
-									class="toggle toggle-success bg-white" 
+									class="toggle toggle-amogus" 
 								/>
 							</label>
 						</div>
@@ -320,7 +320,7 @@
 				</div>
 
 			<div class="modal-action mt-8 pt-4 flex justify-between">
-				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 				{#if isEditMode}
 					<button type="button" onclick={() => {
 						const isDangerousChange = 
@@ -381,7 +381,7 @@
 					};
 				}} class="flex gap-3">
 					<input type="hidden" name="targetDomain" value={currentDomain.domain} />
-					<input type="text" name="aliasDomain" placeholder="e.g. example.net" required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" class="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
+					<ValidatedInput name="aliasDomain" placeholder="e.g. example.net" required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" className="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
 					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-2xl px-6 font-bold shadow-sm">Add Alias</button>
 				</form>
 			{:else}

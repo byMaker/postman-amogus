@@ -19,6 +19,29 @@
 	function close() {
 		show = false;
 	}
+
+	$effect(() => {
+		if (show) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
+
+	function flyModal(node: HTMLElement, { delay = 0, duration = 400, easing = backOut, y = 40, rotate = -5 }) {
+		return {
+			delay,
+			duration,
+			easing,
+			css: (t: number, u: number) => `
+				transform: translateY(${u * y}px) rotate(${u * rotate}deg);
+				opacity: ${t};
+			`
+		};
+	}
 </script>
 
 {#if show}
@@ -35,19 +58,44 @@
 
 		<!-- Само окно -->
 		<div 
-			class="relative z-10 w-full {maxWidth} rounded-[40px] bg-white p-10 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto"
-			in:fly={{ y: 40, duration: 400, easing: backOut }}
-			out:fly={{ y: 20, duration: 200, opacity: 0 }}
+			class="relative z-10 w-full {maxWidth} rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+			in:flyModal={{ y: 60, duration: 500, rotate: -3, easing: backOut }}
+			out:flyModal={{ y: 40, duration: 300, rotate: 3, easing: cubicOut }}
 		>
-			<button 
-				type="button" 
-				class="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-				onclick={close}
-			>
-				<X size={24} weight="bold" />
-			</button>
-			<h3 class="text-4xl text-amogus-dark mb-8 pr-8">{title}</h3>
-			{@render children()}
+			<!-- Airmail stripes border -->
+			<div class="absolute inset-0 airmail-stripes opacity-90 pointer-events-none"></div>
+			
+			<!-- Inner white envelope background -->
+			<div class="absolute inset-[8px] bg-white rounded-[32px] shadow-sm pointer-events-none"></div>
+
+			<!-- Контент окна -->
+			<div class="relative z-10 p-10 overflow-y-auto w-full h-full">
+				<button 
+					type="button" 
+					class="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-amogus-brown hover:bg-orange-50 transition-colors z-20"
+					onclick={close}
+				>
+					<X size={24} weight="bold" />
+				</button>
+				<h3 class="text-4xl text-amogus-dark mb-8 pr-8">{title}</h3>
+				{@render children()}
+			</div>
 		</div>
 	</div>
 {/if}
+
+<style>
+	.airmail-stripes {
+		background: repeating-linear-gradient(
+			-45deg,
+			#e11d48 0, /* rose-600 */
+			#e11d48 24px,
+			#ffffff 24px,
+			#ffffff 48px,
+			#0ea5e9 48px, /* sky-500 */
+			#0ea5e9 72px,
+			#ffffff 72px,
+			#ffffff 96px
+		);
+	}
+</style>

@@ -5,6 +5,7 @@
 	import MailRoutingGraph from '$lib/components/MailRoutingGraph.svelte';
 	import { toast } from '$lib/state/toast.svelte';
 	import { NotePencil, Trash, EnvelopeSimple, Shuffle, WarningCircle } from 'phosphor-svelte';
+	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { invalidateAll } from '$app/navigation';
 
@@ -249,11 +250,11 @@
 	</div>
 
 	<!-- Таблица ящиков -->
-	<div class="overflow-hidden rounded-3xl border border-slate-200 shadow-sm">
+	<div class="rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 		<table class="w-full text-left text-sm">
 			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
-					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('localPart')}>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors rounded-tl-3xl" onclick={() => toggleSort('localPart')}>
 						Email Account <span class="text-amogus-blue ml-1 font-bold">{sortField === 'localPart' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
 					</th>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('fullName')}>
@@ -264,7 +265,7 @@
 						Quota <span class="text-amogus-blue ml-1 font-bold">{sortField === 'quotaMb' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
 					</th>
 					<th class="px-6 py-5">Description</th>
-					<th class="px-6 py-5 text-right">Actions</th>
+					<th class="px-6 py-5 text-right rounded-tr-3xl">Actions</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-slate-100 bg-white">
@@ -370,7 +371,7 @@
 	}}>
 		<input type="hidden" name="id" value={userToDelete?.id} />
 		<div class="flex justify-between mt-4">
-			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
 				Yes, Delete
 			</button>
@@ -400,13 +401,14 @@
 			<div class="form-control">
 				<div class="label"><span class="label-text font-bold text-slate-700">Email Address</span></div>
 				<div class="flex gap-2">
-					<input 
-						type="text" 
+					<ValidatedInput 
 						name="localPart" 
 						bind:value={currentUser.localPart} 
-						class="input input-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-right font-medium" 
+						className="input input-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-right font-medium" 
 						placeholder="username" 
 						required 
+						pattern={"^[a-zA-Z0-9._%+-]+$"}
+						title="Please enter a valid username (no spaces or @ symbol)"
 					/>
 					<div class="flex items-center text-slate-400 font-black text-xl">@</div>
 					<select name="domain" bind:value={currentUser.domain} class="select select-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-bold">
@@ -488,17 +490,17 @@
 
 		<div class="flex flex-col gap-3 pt-2">
 			<label class="cursor-pointer flex items-center gap-3 w-fit">
-				<input type="checkbox" name="active" bind:checked={currentUser.active} class="toggle toggle-info bg-white" />
+				<input type="checkbox" name="active" bind:checked={currentUser.active} class="toggle toggle-amogus" />
 				<span class="font-bold text-slate-700">Active</span>
 			</label>
 			<label class="cursor-pointer flex items-center gap-3 w-fit">
-				<input type="checkbox" name="useForAliasesDomains" bind:checked={currentUser.useForAliasesDomains} class="toggle toggle-info bg-white" />
+				<input type="checkbox" name="useForAliasesDomains" bind:checked={currentUser.useForAliasesDomains} class="toggle toggle-amogus" />
 				<span class="font-bold text-slate-700">Use for Domain Aliases</span>
 			</label>
 		</div>
 
 		<div class="modal-action mt-8 pt-4 flex justify-between">
-			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
 				{isEditMode ? 'Save Changes' : 'Create Mailbox'}
 			</button>

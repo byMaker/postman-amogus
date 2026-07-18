@@ -2,8 +2,9 @@
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import { toast } from '$lib/state/toast.svelte';
-	import { NotePencil, Trash, ArrowRight, Ghost } from 'phosphor-svelte';
+	import { NotePencil, Trash, ArrowRight, XCircle, Ghost } from 'phosphor-svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
 	import { invalidateAll } from '$app/navigation';
 
@@ -174,11 +175,11 @@
 	</div>
 
 	<!-- Таблица алиасов -->
-	<div class="overflow-hidden rounded-3xl border border-slate-200 shadow-sm">
+	<div class="rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 		<table class="w-full text-left text-sm">
 			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
 				<tr>
-					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('alias')}>
+					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors rounded-tl-3xl" onclick={() => toggleSort('alias')}>
 						Alias <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
 					</th>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('target')}>
@@ -186,7 +187,7 @@
 					</th>
 					<th class="px-6 py-5">Status</th>
 					<th class="px-6 py-5">Description</th>
-					<th class="px-6 py-5 text-right">Actions</th>
+					<th class="px-6 py-5 text-right rounded-tr-3xl">Actions</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-slate-100 bg-white">
@@ -274,7 +275,7 @@
 	}}>
 		<input type="hidden" name="alias" value={aliasToDelete?.alias} />
 		<div class="flex justify-between mt-4">
-			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
 				Yes, Delete
 			</button>
@@ -300,26 +301,21 @@
 		{/if}
 
 		<div class="form-control">
-			<div class="label"><span class="label-text font-bold text-slate-700">Source Email Address</span></div>
-			<input 
-				type="email" 
+			<div class="label"><span class="label-text font-bold text-slate-700">Alias Address</span></div>
+			<ValidatedInput 
 				name="alias" 
 				bind:value={currentAlias.alias} 
-				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
+				className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
 				placeholder="sales@example.com" 
 				required 
+				pattern={"^[^@\\s]+@[^@\\s]+\\.[^@\\s0-9]{2,}$"}
+				title="Please enter a valid email address"
 			/>
-		</div>
-
-		<div class="flex justify-center -my-2 opacity-50 relative z-10">
-			<div class="bg-white p-2 rounded-full border border-slate-200">
-				<ArrowRight size={24} weight="bold" class="text-slate-400" />
-			</div>
 		</div>
 
 		<div class="form-control">
 			<div class="label">
-				<span class="label-text font-bold text-slate-700">Forward To</span>
+				<span class="label-text font-bold text-slate-700">Forward To Mailbox</span>
 			</div>
 			<select 
 				name="target" 
@@ -327,13 +323,15 @@
 				class="select select-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium text-slate-700" 
 				required
 			>
-				<option value="" disabled selected>Select destination mailbox...</option>
+				<option value="" disabled>Select destination...</option>
+				{#if currentAlias.target && !data.users.find(u => `${u.localPart}@${u.domain}` === currentAlias.target)}
+					<option value={currentAlias.target}>{currentAlias.target} (Current, Invalid/Inactive)</option>
+				{/if}
 				{#each data.users as user}
 					{@const email = `${user.localPart}@${user.domain}`}
 					<option value={email}>{email}</option>
 				{/each}
 			</select>
-			<div class="label"><span class="label-text-alt text-slate-500">Only active local mailboxes are available to prevent routing loops.</span></div>
 		</div>
 
 		<div class="form-control">
@@ -347,14 +345,14 @@
 		</div>
 
 		<div class="flex gap-6 pt-2">
-			<label class="cursor-pointer flex items-center gap-3">
-				<input type="checkbox" name="active" bind:checked={currentAlias.active} class="toggle toggle-info bg-white" />
-				<span class="font-medium text-slate-700">Active</span>
+			<label class="cursor-pointer flex items-center gap-3 pt-2">
+				<input type="checkbox" name="active" bind:checked={currentAlias.active} class="toggle toggle-amogus" />
+				<span class="font-bold text-slate-700">Active</span>
 			</label>
 		</div>
 
 		<div class="modal-action mt-8 pt-4 flex justify-between">
-			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Cancel</button>
+			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
 			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
 				{isEditMode ? 'Save Changes' : 'Create Alias'}
 			</button>

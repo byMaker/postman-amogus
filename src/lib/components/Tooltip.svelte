@@ -57,7 +57,7 @@
 	{#if show}
 		<div 
 			transition:fade={{ duration: 150 }}
-			class={`absolute z-[9999] px-3 py-2 text-xs font-bold text-white bg-amogus-dark rounded-xl shadow-lg whitespace-nowrap pointer-events-none 
+			class={`absolute z-[9999] px-3 py-2 text-xs font-bold text-white bg-amogus-brown rounded-xl shadow-lg whitespace-nowrap pointer-events-none 
 				${currentPosition === 'top' ? 'bottom-full mb-3' : ''}
 				${currentPosition === 'bottom' ? 'top-full mt-3' : ''}
 				${(currentPosition === 'top' || currentPosition === 'bottom') && align === 'center' ? 'left-1/2 -translate-x-1/2' : ''}
@@ -70,7 +70,7 @@
 			{text}
 			<!-- Arrow -->
 			<div 
-				class={`absolute w-3 h-3 bg-amogus-dark rotate-45 
+				class={`absolute w-3 h-3 bg-amogus-brown rotate-45 
 					${currentPosition === 'top' ? 'bottom-[-4px]' : ''}
 					${currentPosition === 'bottom' ? 'top-[-4px]' : ''}
 					${(currentPosition === 'top' || currentPosition === 'bottom') && align === 'center' ? 'left-1/2 -translate-x-1/2' : ''}

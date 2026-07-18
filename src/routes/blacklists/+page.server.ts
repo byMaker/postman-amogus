@@ -40,16 +40,17 @@ export const actions = {
 		const data = await request.formData();
 		const table = data.get('table') as string;
 		const id = data.get('id') as string;
+		const target = data.get('target') as string;
 		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
 
 		try {
 			switch(table) {
-				case 'blackDomains': await db.update(blackDomains).set({ description, active }).where(eq(blackDomains.id, Number(id))); break;
-				case 'blackEmails': await db.update(blackEmails).set({ description, active }).where(eq(blackEmails.id, Number(id))); break;
-				case 'blackIps': await db.update(blackIps).set({ description, active }).where(eq(blackIps.id, Number(id))); break;
-				case 'dnsgBlacklist': await db.update(dnsgBlacklist).set({ dnsDescription: description, dnsgKey: active }).where(eq(dnsgBlacklist.dnsDomain, id)); break;
-				case 'dkimRequiredDomains': await db.update(dkimRequiredDomains).set({ description, active }).where(eq(dkimRequiredDomains.id, Number(id))); break;
+				case 'blackDomains': await db.update(blackDomains).set({ domain: target, description, active }).where(eq(blackDomains.id, Number(id))); break;
+				case 'blackEmails': await db.update(blackEmails).set({ email: target, description, active }).where(eq(blackEmails.id, Number(id))); break;
+				case 'blackIps': await db.update(blackIps).set({ host: target, description, active }).where(eq(blackIps.id, Number(id))); break;
+				case 'dnsgBlacklist': await db.update(dnsgBlacklist).set({ dnsDomain: target, dnsDescription: description, dnsgKey: active }).where(eq(dnsgBlacklist.dnsDomain, id)); break;
+				case 'dkimRequiredDomains': await db.update(dkimRequiredDomains).set({ domain: target, description, active }).where(eq(dkimRequiredDomains.id, Number(id))); break;
 			}
 			return { success: true, message: 'Entry updated' };
 		} catch (error) {

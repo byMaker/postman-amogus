@@ -18,3 +18,19 @@ body, input, textarea, select, button {
 h1, h2, h3, h4, h5, h6 {
 	font-family: 'Sniglet', sans-serif;
 }
+
+.toggle-amogus {
+	background-color: transparent !important;
+	border-color: #cbd5e1 !important; /* slate-300 */
+	--tglbg: #94a3b8 !important; /* slate-400 */
+	color: #94a3b8 !important;
+}
+.toggle-amogus:hover {
+	background-color: #f8fafc !important; /* slate-50 */
+}
+.toggle-amogus:checked {
+	background-color: transparent !important;
+	border-color: #0284C7 !important; /* amogus-blue */
+	--tglbg: #0284C7 !important; /* amogus-blue */
+	color: #0284C7 !important;
+}

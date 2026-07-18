@@ -36,14 +36,15 @@ export const actions = {
 		const data = await request.formData();
 		const table = data.get('table') as string;
 		const id = data.get('id') as string;
+		const target = data.get('target') as string;
 		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
 
 		try {
 			switch(table) {
-				case 'whiteDomains': await db.update(whiteDomains).set({ description, active }).where(eq(whiteDomains.id, Number(id))); break;
-				case 'whiteEmails': await db.update(whiteEmails).set({ description, active }).where(eq(whiteEmails.id, Number(id))); break;
-				case 'whiteIps': await db.update(whiteIps).set({ description, active }).where(eq(whiteIps.id, Number(id))); break;
+				case 'whiteDomains': await db.update(whiteDomains).set({ domain: target, description, active }).where(eq(whiteDomains.id, Number(id))); break;
+				case 'whiteEmails': await db.update(whiteEmails).set({ email: target, description, active }).where(eq(whiteEmails.id, Number(id))); break;
+				case 'whiteIps': await db.update(whiteIps).set({ host: target, description, active }).where(eq(whiteIps.id, Number(id))); break;
 			}
 			return { success: true, message: 'Entry updated' };
 		} catch (error) {
