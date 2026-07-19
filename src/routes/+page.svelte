@@ -1,15 +1,21 @@
 <script lang="ts">
-	import { Envelope, GlobeHemisphereWest, Ghost, Skull, Star, SquaresFour, At, EnvelopeSimple, Numpad, ThumbsUp, Gear } from 'phosphor-svelte';
+	import { Envelope, GlobeHemisphereWest, Ghost, Skull, Star, SquaresFour, At, EnvelopeSimple, Numpad, ThumbsUp, Gear, Mailbox, Info } from 'phosphor-svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 
 	let { data } = $props();
 	let stats = data.stats;
 	let showSettings = $state(false);
+	let settingsTab = $state('general');
+
+	function openSettings(tab: string) {
+		settingsTab = tab;
+		showSettings = true;
+	}
 </script>
 
 <div class="space-y-6">
 	<!-- Заголовок -->
-	<div class="flex items-center justify-between px-6 pb-2">
+	<div class="flex items-center justify-between px-0 md:px-6 pb-2">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<SquaresFour size={36} weight="fill" class="text-cyan-500" />
@@ -34,7 +40,7 @@
 
 		<!-- Mailboxes Card -->
 		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<EnvelopeSimple size={48} weight="regular" class="text-amber-500 mb-4" />
+			<Mailbox size={48} weight="regular" class="text-amber-500 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">Mailboxes</p>
 			<p class="mt-2 text-5xl font-black text-amber-500">{stats.totalMailboxes}</p>
 			{#if stats.inactiveMailboxes > 0}
@@ -107,15 +113,22 @@
 	</div>
 
 	<!-- Dashboard Footer -->
-	<div class="flex justify-center mt-8">
+	<div class="flex justify-center mt-8 gap-4">
 		<button 
-			onclick={() => showSettings = true}
-			class="flex items-center gap-2 px-6 py-3 text-slate-400 hover:text-amber-900 hover:bg-amber-900/5 rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
+			onclick={() => openSettings('general')}
+			class="flex items-center gap-2 px-6 py-3 text-slate-400 hover:text-amogus-blue hover:bg-slate-50 rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
 		>
 			<Gear size={20} weight="bold" />
 			Settings
 		</button>
+		<button 
+			onclick={() => openSettings('about')}
+			class="flex items-center gap-2 px-6 py-3 text-slate-400 hover:text-amogus-blue hover:bg-slate-50 rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
+		>
+			<Info size={20} weight="bold" />
+			About
+		</button>
 	</div>
 </div>
 
-<SettingsModal bind:show={showSettings} />
+<SettingsModal bind:show={showSettings} bind:activeTab={settingsTab} />

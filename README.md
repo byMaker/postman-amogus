@@ -1,22 +1,16 @@
-# sv
+# Postman Amogus
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A sophisticated alternative to PostfixAdmin, built upon a custom, highly-optimized database schema. Designed for seamless orchestration of Exim and Dovecot server environments. Powered by SvelteKit.
 
-## Creating a project
+Built entirely using the **vibe coding** approach, powered by the **Gemini 3.1 Pro** AI model.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
 
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.16.3 create --template minimal --types ts --install npm .
-```
+- **Mobile-First Administration**: Fully responsive UI built with TailwindCSS.
+- **Custom Schema**: Highly optimized MariaDB database structure for fast routing lookups.
+- **Mail Management**: Manage Domains, Mailboxes, and Aliases effortlessly.
+- **Security & Routing**: Global Blacklist and Whitelist management (compatible with Rspamd).
+- **Analytics Dashboard**: Real-time statistical overview and visual charts.
 
 ## Developing
 
@@ -39,4 +33,7 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. 
+See the [LICENSE](LICENSE) file for the full text of the license.

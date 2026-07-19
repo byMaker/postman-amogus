@@ -1,3 +1,48 @@
+<script module lang="ts">
+	// Helpers
+	const formatBytes = (mb: number) => {
+		if (mb < 1) return (mb * 1024).toFixed(1) + ' KB';
+		if (mb > 1024) return (mb / 1024).toFixed(2) + ' GB';
+		return mb.toFixed(1) + ' MB';
+	};
+
+	export const doughnutOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: {
+			legend: { 
+				position: 'right' as const,
+				labels: {
+					usePointStyle: true,
+					pointStyle: 'circle'
+				}
+			},
+			tooltip: {
+				callbacks: {
+					label: (context: any) => ` ${context.label}: ${formatBytes(context.raw)}`
+				}
+			}
+		}
+	};
+
+	export const barOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: {
+			legend: { display: false },
+			tooltip: {
+				callbacks: {
+					label: (context: any) => ` Size: ${formatBytes(context.raw)}`
+				}
+			}
+		},
+		scales: {
+			y: { beginAtZero: true, grid: { display: false }, border: { display: false } },
+			x: { grid: { display: false }, border: { display: false } }
+		}
+	};
+</script>
+
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js';
@@ -9,13 +54,6 @@
 
 	// Register Chart.js elements
 	ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement);
-
-	// Helpers
-	const formatBytes = (mb: number) => {
-		if (mb < 1) return (mb * 1024).toFixed(1) + ' KB';
-		if (mb > 1024) return (mb / 1024).toFixed(2) + ' GB';
-		return mb.toFixed(1) + ' MB';
-	};
 
 	const generateColors = (count: number) => {
 		const colors = ['#0ea5e9', '#8b5cf6', '#f43f5e', '#10b981', '#f59e0b', '#6366f1', '#14b8a6', '#ec4899', '#84cc16', '#64748b'];
@@ -55,25 +93,6 @@
 		]
 	});
 
-	const doughnutOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		plugins: {
-			legend: { 
-				position: 'right' as const,
-				labels: {
-					usePointStyle: true,
-					pointStyle: 'circle'
-				}
-			},
-			tooltip: {
-				callbacks: {
-					label: (context: any) => ` ${context.label}: ${formatBytes(context.raw)}`
-				}
-			}
-		}
-	};
-
 	// 2. Attachments Bar Chart Data
 	const attachmentLabels = $derived(data.attachments.map(a => a.extension.toUpperCase() || 'UNKNOWN'));
 	const attachmentData = $derived(data.attachments.map(a => a.totalSize));
@@ -92,22 +111,6 @@
 		]
 	});
 
-	const barOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		plugins: {
-			legend: { display: false },
-			tooltip: {
-				callbacks: {
-					label: (context: any) => ` Size: ${formatBytes(context.raw)}`
-				}
-			}
-		},
-		scales: {
-			y: { beginAtZero: true, grid: { display: false }, border: { display: false } },
-			x: { grid: { display: false }, border: { display: false } }
-		}
-	};
 </script>
 
 <svelte:head>
@@ -116,7 +119,7 @@
 
 <div class="space-y-6">
 	<!-- Page Header -->
-	<div class="flex flex-col md:flex-row md:items-center justify-between px-6 pb-2 gap-4">
+	<div class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<ChartPieSlice size={36} weight="fill" class="text-indigo-500" />
@@ -124,9 +127,9 @@
 			</h2>
 			<p class="text-slate-500 mt-1">{data.currentEmail ? `Statistics for ${data.currentEmail}` : 'Aggregated statistics across all mailboxes'}</p>
 		</div>
-		<div>
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+		<div class="w-full sm:w-auto">
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
 					{data.currentEmail || 'All Mailboxes'}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
@@ -241,27 +244,39 @@
 			<h3 class="text-2xl text-amogus-dark">Top 10 Senders</h3>
 			<p class="text-sm text-slate-500 mt-1">Most frequent senders across all mailboxes</p>
 		</div>
-		<div class="overflow-x-auto p-4">
-			<table class="w-full text-sm border-separate border-spacing-y-1">
-				<thead>
+		<div class="overflow-hidden p-0 md:p-4">
+			<table class="w-full text-sm border-separate md:border-collapse border-spacing-y-1 block md:table">
+				<thead class="hidden md:table-header-group">
 					<tr class="text-slate-500">
-						<th class="text-left font-bold uppercase text-xs tracking-wide pb-2 px-5">#</th>
-						<th class="text-left font-bold uppercase text-xs tracking-wide pb-2 px-5">Sender Email</th>
-						<th class="text-right font-bold uppercase text-xs tracking-wide pb-2 px-5">Messages</th>
-						<th class="text-right font-bold uppercase text-xs tracking-wide pb-2 px-5">Total Size</th>
+						<th class="text-left font-bold uppercase text-xs tracking-wide py-2 px-5">#</th>
+						<th class="text-left font-bold uppercase text-xs tracking-wide py-2 px-5">Sender Email</th>
+						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">Messages</th>
+						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">Total Size</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="divide-y divide-slate-100 bg-white block md:table-row-group">
 					{#each data.topSenders as sender, i}
-						<tr class="even:bg-slate-50 hover:bg-slate-100/60 transition-colors">
-							<td class="px-5 py-3 font-medium text-slate-400 rounded-l-full">{i + 1}</td>
-							<td class="px-5 py-3 font-bold text-slate-700">{sender.sender}</td>
-							<td class="px-5 py-3 text-right text-indigo-500 text-base font-bold">{sender.totalMessages.toLocaleString()}</td>
-							<td class="px-5 py-3 text-right text-slate-600 text-base font-bold rounded-r-full">{formatBytes(sender.totalSize)}</td>
+						<tr class="even:bg-slate-50 hover:bg-slate-100/60 transition-colors block md:table-row p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none">
+							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 font-medium text-slate-400 border-b border-slate-50 md:border-none md:rounded-l-full">
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Rank</span>
+								<span>{i + 1}</span>
+							</td>
+							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 font-bold text-slate-700 border-b border-slate-50 md:border-none">
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sender Email</span>
+								<span class="text-right md:text-left truncate max-w-[200px] md:max-w-none">{sender.sender}</span>
+							</td>
+							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 md:text-right text-indigo-500 text-base font-bold border-b border-slate-50 md:border-none">
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Messages</span>
+								<span>{sender.totalMessages.toLocaleString()}</span>
+							</td>
+							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 md:text-right text-slate-600 text-base font-bold md:rounded-r-full">
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Size</span>
+								<span>{formatBytes(sender.totalSize)}</span>
+							</td>
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="4" class="text-center py-8 text-slate-400">No senders data available</td>
+							<td colspan="4" class="text-center py-8 text-slate-400 block md:table-cell">No senders data available</td>
 						</tr>
 					{/each}
 				</tbody>

@@ -32,12 +32,16 @@
 	});
 
 	function flyModal(node: HTMLElement, { delay = 0, duration = 400, easing = backOut, y = 40, rotate = -5 }) {
+		const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+		const r = isMobile ? 0 : rotate;
+		const slideY = isMobile ? 100 : y;
+		const activeEasing = isMobile ? cubicOut : easing;
 		return {
 			delay,
 			duration,
-			easing,
+			easing: activeEasing,
 			css: (t: number, u: number) => `
-				transform: translateY(${u * y}px) rotate(${u * rotate}deg);
+				transform: translateY(${u * slideY}px) rotate(${u * r}deg);
 				opacity: ${t};
 			`
 		};
@@ -45,7 +49,7 @@
 </script>
 
 {#if show}
-	<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+	<div class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
 		<!-- Затемненный фон -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -58,7 +62,7 @@
 
 		<!-- Само окно -->
 		<div 
-			class="relative z-10 w-full {maxWidth} rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+			class="relative z-10 w-full {maxWidth} rounded-t-[40px] md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-auto max-h-[95dvh] md:max-h-[90vh]"
 			in:flyModal={{ y: 60, duration: 500, rotate: -3, easing: backOut }}
 			out:flyModal={{ y: 40, duration: 300, rotate: 3, easing: cubicOut }}
 		>
@@ -66,19 +70,26 @@
 			<div class="absolute inset-0 airmail-stripes opacity-90 pointer-events-none"></div>
 			
 			<!-- Inner white envelope background -->
-			<div class="absolute inset-[8px] bg-white rounded-[32px] shadow-sm pointer-events-none"></div>
+			<div class="absolute inset-x-[6px] top-[6px] bottom-0 md:inset-[8px] bg-white rounded-t-[34px] md:rounded-[32px] shadow-sm pointer-events-none"></div>
 
 			<!-- Контент окна -->
-			<div class="relative z-10 p-10 overflow-y-auto w-full h-full">
-				<button 
-					type="button" 
-					class="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-amogus-brown hover:bg-orange-50 transition-colors z-20"
-					onclick={close}
-				>
-					<X size={24} weight="bold" />
-				</button>
-				<h3 class="text-4xl text-amogus-dark mb-8 pr-8">{title}</h3>
-				{@render children()}
+			<div class="relative z-10 flex flex-col w-full h-full flex-1 min-h-[40vh] overflow-hidden">
+				<!-- Фиксированная шапка -->
+				<div class="shrink-0 px-6 pt-6 md:px-10 md:pt-10 pb-4 md:pb-6 flex justify-between items-start">
+					<h3 class="text-3xl md:text-4xl text-amogus-dark m-0 pr-4">{title}</h3>
+					<button 
+						type="button" 
+						class="p-2 -mr-2 -mt-2 rounded-full text-slate-400 hover:text-amogus-brown hover:bg-orange-50 transition-colors shrink-0"
+						onclick={close}
+					>
+						<X size={24} weight="bold" />
+					</button>
+				</div>
+				
+				<!-- Скроллируемое тело -->
+				<div class="flex-1 overflow-y-auto px-6 pb-6 md:px-10 md:pb-10">
+					{@render children()}
+				</div>
 			</div>
 		</div>
 	</div>

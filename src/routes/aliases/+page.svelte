@@ -103,8 +103,8 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Заголовок и фильтры -->
-	<div class="flex flex-col md:flex-row md:items-center justify-between px-6 pb-2 gap-6">
+	<!-- Заголовок и кнопка -->
+	<div class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<Ghost size={36} weight="fill" class="text-teal-600" />
@@ -113,10 +113,10 @@
 			<p class="text-slate-500 mt-1">Manage email forwarding rules</p>
 		</div>
 		
-		<div class="flex items-center gap-4 flex-wrap">
+		<div class="flex flex-wrap items-center gap-2 md:gap-4 w-full md:w-auto">
 			<!-- Status Filter -->
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
 					{selectedStatus === 'all' ? 'All Statuses' : selectedStatus === 'active' ? 'Active Only' : 'Disabled Only'}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
@@ -140,8 +140,8 @@
 			</div>
 
 			<!-- Domain Filter -->
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
 					{selectedDomain === 'all' ? 'All Domains' : selectedDomain}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
@@ -168,16 +168,16 @@
 				</ul>
 			</div>
 
-			<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
+			<button onclick={openAddModal} class="w-full sm:w-auto rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all mt-2 sm:mt-0">
 				+ Add Alias
 			</button>
 		</div>
 	</div>
 
 	<!-- Таблица алиасов -->
-	<div class="rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-		<table class="w-full text-left text-sm">
-			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
+	<div class="rounded-[32px] border border-slate-200 shadow-sm overflow-hidden bg-white">
+		<table class="w-full text-left text-sm block md:table">
+			<thead class="bg-slate-50 border-b border-slate-200 text-xs font-black uppercase tracking-widest text-amogus-blue hidden md:table-header-group">
 				<tr>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors rounded-tl-3xl" onclick={() => toggleSort('alias')}>
 						Alias <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
@@ -190,7 +190,7 @@
 					<th class="px-6 py-5 text-right rounded-tr-3xl">Actions</th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-slate-100 bg-white">
+			<tbody class="divide-y divide-slate-100 bg-white block md:table-row-group">
 				{#each filteredAliases as alias}
 					{@const sourceParts = alias.alias.split('@')}
 					{@const sourceLocal = sourceParts[0]}
@@ -201,29 +201,33 @@
 					{@const targetLocal = targetParts[0]}
 					{@const targetDomain = targetParts[1] || ''}
 					{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
-					<tr class="hover:bg-slate-50 transition-colors group">
-						<td class="px-6 py-5">
-							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-base transition-colors">
+					<tr class="hover:bg-slate-50 transition-colors block md:table-row p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none group">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Alias</span>
+							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-base transition-colors text-right md:text-left truncate max-w-[200px] md:max-w-none">
 								{sourceLocal}<span class="{isSourceDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{sourceDomain}</span>
 							</div>
 						</td>
-						<td class="px-6 py-5">
-							<div class="flex items-center gap-2 font-medium bg-slate-50 border border-slate-100 w-fit px-3 py-1.5 rounded-full transition-colors">
-								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0" />
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Forward To</span>
+							<div class="flex items-center justify-end md:justify-start gap-2 font-medium bg-slate-50 border border-slate-100 w-fit px-3 py-1.5 rounded-full transition-colors ml-auto md:ml-0">
+								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0 hidden md:block" />
 								<div class="font-bold {alias.active ? 'text-amber-600' : 'text-slate-400'} transition-colors truncate">
 									{targetLocal}<span class="{isTargetDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{targetDomain}</span>
 								</div>
 							</div>
 						</td>
-						<td class="px-6 py-5">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Status</span>
 							{#if alias.active}
 								<span class="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700">Active</span>
 							{:else}
 								<span class="rounded-full bg-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600">Disabled</span>
 							{/if}
 						</td>
-						<td class="px-6 py-5">
-							<div class="flex items-center gap-2">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Description</span>
+							<div class="flex items-center justify-end md:justify-start gap-2">
 								<CommentPopover 
 									comment={alias.description || ''} 
 									onsave={(newComment) => {
@@ -234,7 +238,8 @@
 								<span class="text-slate-500 truncate max-w-[150px] block">{alias.description || ''}</span>
 							</div>
 						</td>
-						<td class="px-6 py-5 text-right">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:text-right">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Actions</span>
 							<div class="flex justify-end gap-3 transition-opacity">
 								<Tooltip text="Edit" position="top">
 									<button onclick={() => openEditModal(alias)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
@@ -274,9 +279,9 @@
 		};
 	}}>
 		<input type="hidden" name="alias" value={aliasToDelete?.alias} />
-		<div class="flex justify-between mt-4">
-			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
-			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
+		<div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-4">
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">Cancel</button>
+			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md w-full sm:w-auto">
 				Yes, Delete
 			</button>
 		</div>
@@ -351,9 +356,9 @@
 			</label>
 		</div>
 
-		<div class="modal-action mt-8 pt-4 flex justify-between">
-			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
-			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+		<div class="modal-action mt-8 pt-4 flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0">
+			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">Cancel</button>
+			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
 				{isEditMode ? 'Save Changes' : 'Create Alias'}
 			</button>
 		</div>

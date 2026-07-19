@@ -4,14 +4,20 @@
 	import {
 		SquaresFour,
 		At,
-		EnvelopeSimple,
+		Mailbox,
 		Ghost,
 		Skull,
 		Star,
 		ChartPieSlice,
+		List,
+		X
 	} from "phosphor-svelte";
+	import ScrollToTop from "$lib/components/ScrollToTop.svelte";
 	import { page } from "$app/stores";
+	import { fade, fly } from 'svelte/transition';
 	let { data, children } = $props();
+
+	let mobileMenuOpen = $state(false);
 
 	// Определение разделов навигации
 	const baseSections = [
@@ -44,7 +50,7 @@
 			id: "mailboxes",
 			name: "Mailboxes",
 			path: "/mailboxes",
-			icon: EnvelopeSimple,
+			icon: Mailbox,
 			colorClass: "text-amber-500",
 		},
 		{
@@ -94,7 +100,8 @@
 			</h1>
 		</div>
 
-		<nav class="flex gap-2 pr-6">
+		<!-- Desktop Navigation -->
+		<nav class="hidden md:flex gap-2 pr-6">
 			{#each sections as section}
 				{@const active =
 					section.path === "/"
@@ -133,7 +140,65 @@
 				</a>
 			{/each}
 		</nav>
+
+		<!-- Mobile Menu Button -->
+		<button 
+			class="md:hidden p-4 text-amogus-dark hover:bg-slate-50 rounded-2xl mr-2"
+			onclick={() => mobileMenuOpen = true}
+		>
+			<List size={32} weight="bold" />
+		</button>
 	</header>
+
+	<!-- Mobile Full-screen Navigation Overlay -->
+	{#if mobileMenuOpen}
+
+		<div 
+			class="fixed inset-0 z-[200] bg-white flex flex-col"
+			in:fade={{ duration: 200 }}
+			out:fade={{ duration: 200 }}
+		>
+			<div class="flex justify-between items-center p-6 border-b border-slate-100">
+				<h2 class="text-2xl text-amogus-dark tracking-wide uppercase font-black">Menu</h2>
+				<button 
+					class="p-2 text-slate-400 hover:text-amogus-dark bg-slate-50 rounded-full"
+					onclick={() => mobileMenuOpen = false}
+				>
+					<X size={28} weight="bold" />
+				</button>
+			</div>
+			
+			<div class="flex-1 overflow-y-auto p-6">
+				<div class="grid grid-cols-2 gap-4">
+					{#each sections as section, i}
+						{@const active =
+							section.path === "/"
+								? $page.url.pathname === "/"
+								: $page.url.pathname.startsWith(section.path)}
+						{@const Icon = section.icon}
+						<a
+							href={section.path}
+							class="flex flex-col items-center justify-center gap-3 p-6 rounded-[32px] border-2 transition-all duration-200 active:scale-95
+								{active ? 'border-amogus-blue bg-amogus-blue/5' : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'}"
+							onclick={() => mobileMenuOpen = false}
+							in:fly={{ y: 20, duration: 300, delay: i * 50 }}
+						>
+							<Icon
+								size={48}
+								weight={active ? "fill" : "regular"}
+								class={section.colorClass}
+							/>
+							<span
+								class="text-sm font-black uppercase tracking-widest {active ? 'text-amogus-dark' : 'text-slate-500'}"
+							>
+								{section.name}
+							</span>
+						</a>
+					{/each}
+				</div>
+			</div>
+		</div>
+	{/if}
 
 	<!-- Main Content Area -->
 	<main class="mx-auto max-w-6xl relative z-10">
@@ -143,7 +208,7 @@
 	<!-- Page Mascot Container -->
 	{#if $page.url.pathname !== "/" && $page.url.pathname !== "/analytics"}
 		<div
-			class="w-full h-[250px] bg-no-repeat bg-right-bottom bg-contain mt-8 relative z-0"
+			class="w-full h-[250px] bg-no-repeat bg-right-bottom bg-contain mt-0 md:mt-8 relative z-0"
 			style={$page.url.pathname.startsWith("/mailboxes")
 				? "background-image: url(/scene02.png);"
 				: $page.url.pathname.startsWith("/aliases")
@@ -160,6 +225,8 @@
 
 	<!-- Toasts Layer -->
 	<Toast />
+
+	<ScrollToTop />
 </div>
 
 <style>

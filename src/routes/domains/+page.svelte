@@ -5,7 +5,7 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import { toast } from '$lib/state/toast.svelte';
-	import { NotePencil, Trash, WarningCircle, At, EnvelopeSimple, Ghost } from 'phosphor-svelte';
+	import { NotePencil, Trash, WarningCircle, At, Mailbox, Ghost } from 'phosphor-svelte';
 
 	let { data, form } = $props();
 
@@ -77,7 +77,7 @@
 
 <div class="space-y-6">
 	<!-- Заголовок и кнопка добавления -->
-	<div class="flex items-center justify-between px-6 pb-2">
+	<div class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<At size={36} weight="fill" class="text-violet-500" />
@@ -85,16 +85,16 @@
 			</h2>
 			<p class="text-slate-500 mt-1">Manage email domains</p>
 		</div>
-		<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
+		<button onclick={openAddModal} class="w-full md:w-auto rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
 			+ Add Domain
 		</button>
 	</div>
 
 	<!-- Таблица доменов -->
-	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white overflow-hidden">
-		<table class="w-full text-left text-sm">
-			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
-				<tr>
+	<div class="bg-white rounded-[32px] border border-slate-200 overflow-hidden shadow-sm">
+		<table class="w-full text-left border-collapse block md:table">
+			<thead class="hidden md:table-header-group">
+				<tr class="bg-slate-50 border-b border-slate-200 text-xs font-black uppercase tracking-widest text-amogus-blue">
 					<th class="px-6 py-5 first:rounded-tl-[32px]">Domain Name</th>
 					<th class="px-6 py-5">Status & Roles</th>
 					<th class="px-6 py-5">Usage</th>
@@ -102,11 +102,15 @@
 					<th class="px-6 py-5 text-right last:rounded-tr-[32px]">Actions</th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-slate-100 bg-white rounded-b-[32px]">
+			<tbody class="block md:table-row-group divide-y divide-slate-100 bg-white md:rounded-b-[32px]">
 				{#each data.domains as domain, index}
-					<tr class="hover:bg-slate-50 transition-colors group">
-						<td class="px-6 py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-lg {index === data.domains.length - 1 ? 'rounded-bl-[32px]' : ''} transition-colors">@{domain.domain}</td>
-						<td class="px-6 py-5">
+					<tr class="block md:table-row hover:bg-slate-50 transition-colors group p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-lg {index === data.domains.length - 1 ? 'md:rounded-bl-[32px]' : ''} transition-colors border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Domain</span>
+							<span>@{domain.domain}</span>
+						</td>
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Status</span>
 							<div class="flex gap-2 items-center">
 								{#if domain.active}
 									<span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">Active</span>
@@ -121,11 +125,12 @@
 								{/if}
 							</div>
 						</td>
-						<td class="px-6 py-5">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Usage</span>
 							<div class="flex items-center gap-4 text-slate-500 font-bold">
 								<Tooltip text="Mailboxes" position="top">
 									<div class="flex items-center gap-1">
-										<EnvelopeSimple size={18} weight="fill" />
+										<Mailbox size={18} weight="fill" />
 										{domain.mailboxesCount}
 									</div>
 								</Tooltip>
@@ -143,8 +148,9 @@
 								</Tooltip>
 							</div>
 						</td>
-						<td class="px-6 py-5">
-							<div class="flex items-center gap-2">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Description</span>
+							<div class="flex items-center justify-end md:justify-start gap-2">
 								<CommentPopover 
 									comment={domain.description || ''} 
 									onsave={(newComment) => {
@@ -155,7 +161,8 @@
 								<span class="text-slate-500 truncate max-w-[150px] block">{domain.description || '—'}</span>
 							</div>
 						</td>
-						<td class="px-6 py-5 text-right {index === data.domains.length - 1 ? 'rounded-br-[32px]' : ''}">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:text-right {index === data.domains.length - 1 ? 'md:rounded-br-[32px]' : ''}">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Actions</span>
 							<div class="flex justify-end gap-3 transition-opacity">
 								<Tooltip text="Edit" position="top">
 									<button onclick={() => openEditModal(domain)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors">
@@ -188,7 +195,7 @@
 		
 		<div class="bg-white rounded-xl p-4 space-y-3 font-medium text-sm">
 			<div class="flex justify-between items-center text-slate-600">
-				<div class="flex items-center gap-2"><EnvelopeSimple size={18} weight="fill" /> Mailboxes lost</div>
+				<div class="flex items-center gap-2"><Mailbox size={18} weight="fill" /> Mailboxes lost</div>
 				<span class="font-bold text-rose-600 text-base">{domainToDelete?.mailboxesCount || 0}</span>
 			</div>
 			<div class="flex justify-between items-center text-slate-600">
@@ -319,8 +326,8 @@
 					</div>
 				</div>
 
-			<div class="modal-action mt-8 pt-4 flex justify-between">
-				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
+			<div class="modal-action mt-8 pt-4 flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0">
+				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">Cancel</button>
 				{#if isEditMode}
 					<button type="button" onclick={() => {
 						const isDangerousChange = 
@@ -334,11 +341,11 @@
 						} else {
 							editForm.requestSubmit();
 						}
-					}} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+					}} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
 						Save Changes
 					</button>
 				{:else}
-					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
 						Create Domain
 					</button>
 				{/if}
@@ -379,10 +386,10 @@
 						else { toast.error(result.data?.error || 'Failed to add alias'); }
 						update();
 					};
-				}} class="flex gap-3">
+				}} class="flex flex-col sm:flex-row gap-3">
 					<input type="hidden" name="targetDomain" value={currentDomain.domain} />
 					<ValidatedInput name="aliasDomain" placeholder="e.g. example.net" required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" className="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
-					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-2xl px-6 font-bold shadow-sm">Add Alias</button>
+					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-2xl px-6 font-bold shadow-sm w-full sm:w-auto">Add Alias</button>
 				</form>
 			{:else}
 				<div class="p-4 bg-amber-50 text-amber-800 text-sm font-bold rounded-2xl text-center border border-amber-200">
@@ -423,8 +430,8 @@
 			</span>
 		</div>
 	</div>
-	<div class="modal-action flex justify-between mt-6">
-		<button type="button" onclick={() => { showUpdateConfirm = false; showModal = true; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6">Back to Edit</button>
-		<button type="button" onclick={() => { showUpdateConfirm = false; editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">Confirm & Save</button>
+	<div class="modal-action flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-6">
+		<button type="button" onclick={() => { showUpdateConfirm = false; showModal = true; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6 w-full sm:w-auto">Back to Edit</button>
+		<button type="button" onclick={() => { showUpdateConfirm = false; editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">Confirm & Save</button>
 	</div>
 </Modal>

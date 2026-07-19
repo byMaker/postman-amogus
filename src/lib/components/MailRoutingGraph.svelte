@@ -69,9 +69,9 @@
 <div 
 	bind:this={containerNode} 
 	onscroll={updatePaths}
-	class="w-full max-h-[500px] overflow-y-auto custom-scrollbar"
+	class="w-full h-[calc(100dvh-200px)] md:h-[600px] overflow-auto custom-scrollbar border border-slate-100 bg-slate-50 rounded-2xl"
 >
-	<div class="relative min-h-[500px] w-full flex justify-between">
+	<div class="relative min-h-[600px] min-w-[1000px] w-full flex justify-between">
 		<!-- SVG Lines -->
 		<svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible" style="z-index: 0;">
 			{#each paths as path}
@@ -133,6 +133,7 @@
 <style>
 	.custom-scrollbar::-webkit-scrollbar {
 		width: 6px;
+		height: 6px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-track {
 		background: transparent;

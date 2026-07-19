@@ -4,7 +4,7 @@
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
 	import MailRoutingGraph from '$lib/components/MailRoutingGraph.svelte';
 	import { toast } from '$lib/state/toast.svelte';
-	import { NotePencil, Trash, EnvelopeSimple, Shuffle, WarningCircle } from 'phosphor-svelte';
+	import { NotePencil, Trash, Mailbox, Shuffle, WarningCircle } from 'phosphor-svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { invalidateAll } from '$app/navigation';
@@ -182,17 +182,17 @@
 
 <div class="space-y-6">
 	<!-- Заголовок и кнопка -->
-	<div class="flex items-center justify-between px-6 pb-2">
+	<div class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
-				<EnvelopeSimple size={36} weight="fill" class="text-amber-500" />
+				<Mailbox size={36} weight="fill" class="text-amber-500" />
 				Mailboxes
 			</h2>
 			<p class="text-slate-500 mt-1">Manage users and email accounts</p>
 		</div>
-		<div class="flex items-center gap-4">
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+		<div class="flex flex-wrap items-center gap-2 md:gap-4">
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
 					{selectedStatus === 'all' ? 'All Statuses' : (selectedStatus === 'active' ? 'Active Only' : 'Disabled Only')}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
@@ -215,8 +215,8 @@
 				</ul>
 			</div>
 
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
+			<div class="dropdown dropdown-end w-full sm:w-auto">
+				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
 					{selectedDomain === 'all' ? 'All Domains' : selectedDomain}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
@@ -243,16 +243,16 @@
 				</ul>
 			</div>
 
-			<button onclick={openAddModal} class="rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all">
+			<button onclick={openAddModal} class="w-full sm:w-auto rounded-full bg-amogus-blue px-6 py-3 font-bold text-white shadow hover:bg-amogus-brown active:scale-95 transition-all mt-2 sm:mt-0">
 				+ Add Mailbox
 			</button>
 		</div>
 	</div>
 
 	<!-- Таблица ящиков -->
-	<div class="rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-		<table class="w-full text-left text-sm">
-			<thead class="bg-amogus-light text-xs uppercase tracking-wide text-amogus-dark">
+	<div class="rounded-[32px] border border-slate-200 shadow-sm overflow-hidden bg-white">
+		<table class="w-full text-left text-sm block md:table">
+			<thead class="bg-slate-50 border-b border-slate-200 text-xs font-black uppercase tracking-widest text-amogus-blue hidden md:table-header-group">
 				<tr>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors rounded-tl-3xl" onclick={() => toggleSort('localPart')}>
 						Email Account <span class="text-amogus-blue ml-1 font-bold">{sortField === 'localPart' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
@@ -268,19 +268,24 @@
 					<th class="px-6 py-5 text-right rounded-tr-3xl">Actions</th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-slate-100 bg-white">
+			<tbody class="divide-y divide-slate-100 bg-white block md:table-row-group">
 				{#each filteredUsers as user}
 					{@const email = `${user.localPart}@${user.domain}`}
 					{@const aliasCount = data.aliases ? data.aliases.filter(a => a.target === email && a.active === 1).length : 0}
 					{@const domainAliasCount = (user.useForAliasesDomains === 1 && data.aliasesDomains) ? data.aliasesDomains.filter(ad => ad.targetDomain === user.domain && ad.active === 1).length : 0}
 					{@const totalRoutes = aliasCount + domainAliasCount}
 					{@const isDomainActive = !!data.domains?.find(d => d.domain === user.domain)}
-					<tr class="hover:bg-slate-50 transition-colors">
-						<td class="px-6 py-5">
-							<div class="font-bold {user.active ? 'text-amber-600' : 'text-slate-400'} text-base transition-colors">{user.localPart}<span class="{isDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{user.domain}</span></div>
+					<tr class="hover:bg-slate-50 transition-colors block md:table-row p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none group">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Email</span>
+							<div class="font-bold {user.active ? 'text-amber-600' : 'text-slate-400'} text-base transition-colors text-right md:text-left truncate max-w-[200px] md:max-w-none">{user.localPart}<span class="{isDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{user.domain}</span></div>
 						</td>
-						<td class="px-6 py-5 font-medium text-slate-600">{user.fullName || ''}</td>
-						<td class="px-6 py-5">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 font-medium text-slate-600 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Name</span>
+							<span class="text-right md:text-left">{user.fullName || '—'}</span>
+						</td>
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Status</span>
 							<div class="flex flex-wrap gap-2 items-center">
 								{#if user.active}
 									<span class="whitespace-nowrap rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">Active</span>
@@ -292,7 +297,9 @@
 								{/if}
 							</div>
 						</td>
-						<td class="px-6 py-5 w-48">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:w-48 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Quota</span>
+							<div class="text-right md:text-left">
 							{#if user.quotaMb === 0}
 								<div class="text-slate-500 font-bold">Unlimited</div>
 								<div class="text-xs text-slate-400 font-bold">{(user.usedBytes / 1024 / 1024).toFixed(1)} MB used</div>
@@ -307,9 +314,11 @@
 									<div class="h-full rounded-full transition-all duration-500 {percent > 90 ? 'bg-rose-500' : 'bg-amogus-blue'}" style="width: {percent}%"></div>
 								</div>
 							{/if}
+							</div>
 						</td>
-						<td class="px-6 py-5">
-							<div class="flex items-center gap-2">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Description</span>
+							<div class="flex items-center justify-end md:justify-start gap-2">
 								<CommentPopover 
 									comment={user.description || ''} 
 									onsave={(newComment) => {
@@ -320,8 +329,9 @@
 								<span class="text-slate-500 truncate max-w-[150px] block">{user.description || ''}</span>
 							</div>
 						</td>
-						<td class="px-6 py-5 text-right">
-							<div class="flex justify-end gap-3 transition-opacity">
+						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:text-right">
+							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Actions</span>
+							<div class="flex justify-end gap-3 opacity-100 md:opacity-40 group-hover:opacity-100 transition-opacity">
 								<Tooltip text="Routing Graph" position="top">
 									<button onclick={() => openGraphModal(user)} class="relative p-2 rounded-full transition-colors {totalRoutes > 0 ? 'text-amber-500 hover:text-white hover:bg-amber-500 bg-amber-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 bg-slate-50'}" title="Routing Graph">
 										<Shuffle size={24} weight="bold" />
@@ -400,22 +410,29 @@
 		{#if !isEditMode}
 			<div class="form-control">
 				<div class="label"><span class="label-text font-bold text-slate-700">Email Address</span></div>
-				<div class="flex gap-2">
-					<ValidatedInput 
-						name="localPart" 
-						bind:value={currentUser.localPart} 
-						className="input input-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-right font-medium" 
-						placeholder="username" 
-						required 
-						pattern={"^[a-zA-Z0-9._%+-]+$"}
-						title="Please enter a valid username (no spaces or @ symbol)"
-					/>
-					<div class="flex items-center text-slate-400 font-black text-xl">@</div>
-					<select name="domain" bind:value={currentUser.domain} class="select select-bordered flex-1 rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-bold">
-						{#each data.domains as domain}
-							<option value={domain.domain}>{domain.domain}</option>
-						{/each}
-					</select>
+				<div class="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center">
+					<div class="w-full sm:flex-1 min-w-0">
+						<ValidatedInput 
+							name="localPart" 
+							bind:value={currentUser.localPart} 
+							className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-left sm:text-right font-medium min-w-0" 
+							placeholder="username" 
+							required 
+							pattern={"^[a-zA-Z0-9._%+-]+$"}
+							title="Please enter a valid username (no spaces or @ symbol)"
+						/>
+					</div>
+					<div class="hidden sm:flex items-center text-slate-400 font-black text-xl shrink-0">@</div>
+					<div class="relative w-full sm:flex-1 min-w-0">
+						<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none sm:hidden z-10">
+							<span class="text-slate-400 font-black text-xl">@</span>
+						</div>
+						<select name="domain" bind:value={currentUser.domain} class="select select-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-bold pl-10 sm:pl-4">
+							{#each data.domains as domain}
+								<option value={domain.domain}>{domain.domain}</option>
+							{/each}
+						</select>
+					</div>
 				</div>
 			</div>
 		{:else}
@@ -452,7 +469,7 @@
 			/>
 		</div>
 
-		<div class="flex gap-4">
+		<div class="flex flex-col sm:flex-row gap-4">
 			<div class="form-control flex-1">
 				<div class="label"><span class="label-text font-bold text-slate-700">Quota (MB)</span></div>
 				<input 
@@ -499,9 +516,9 @@
 			</label>
 		</div>
 
-		<div class="modal-action mt-8 pt-4 flex justify-between">
-			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">Cancel</button>
-			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md">
+		<div class="modal-action mt-8 pt-4 flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0">
+			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">Cancel</button>
+			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
 				{isEditMode ? 'Save Changes' : 'Create Mailbox'}
 			</button>
 		</div>
@@ -522,10 +539,12 @@
 				</div>
 			</div>
 		{/if}
-		<MailRoutingGraph 
-			sources={graphSources} 
-			target={`${graphUser.localPart}@${graphUser.domain}`} 
-			targetActive={graphUser.active === 1 && isDomainActive}
-		/>
+		<div class="mt-4 border-t border-slate-100 pt-4">
+			<MailRoutingGraph 
+				sources={graphSources} 
+				target={`${graphUser.localPart}@${graphUser.domain}`} 
+				targetActive={graphUser.active === 1 && isDomainActive}
+			/>
+		</div>
 	{/if}
 </Modal>
