@@ -73,7 +73,7 @@
 			<div class="absolute inset-x-[6px] top-[6px] bottom-0 md:inset-[8px] bg-white rounded-t-[34px] md:rounded-[32px] shadow-sm pointer-events-none"></div>
 
 			<!-- Контент окна -->
-			<div class="relative z-10 flex flex-col w-full h-full flex-1 min-h-[40vh] overflow-hidden">
+			<div class="relative z-10 flex flex-col w-full max-h-full overflow-hidden">
 				<!-- Фиксированная шапка -->
 				<div class="shrink-0 px-6 pt-6 md:px-10 md:pt-10 pb-4 md:pb-6 flex justify-between items-start">
 					<h3 class="text-3xl md:text-4xl text-amogus-dark m-0 pr-4">{title}</h3>

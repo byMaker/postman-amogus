@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import { t } from '$lib/i18n';
 
 	let { sources, target, targetActive = true } = $props();
 
@@ -10,9 +11,9 @@
 	let paths: { d: string, color: string }[] = $state([]);
 
 	let groupedSources = $derived([
-		{ title: 'Direct Delivery', items: sources.filter(s => s.type === 'direct') },
-		{ title: 'Mailbox Aliases', items: sources.filter(s => s.type === 'alias') },
-		{ title: 'Domain Aliases', items: sources.filter(s => s.type === 'domain_alias') }
+		{ title: t('graph.direct'), items: sources.filter(s => s.type === 'direct') },
+		{ title: t('graph.alias'), items: sources.filter(s => s.type === 'alias') },
+		{ title: t('graph.domain_alias'), items: sources.filter(s => s.type === 'domain_alias') }
 	]);
 
 	async function updatePaths() {
@@ -55,12 +56,20 @@
 	}
 
 	onMount(() => {
-		// Small delay to ensure DOM is fully rendered
-		setTimeout(updatePaths, 100);
+		updatePaths();
+		
+		// Update continuously during the first 600ms to sync with the modal's fly animation
+		let ticks = 0;
+		const interval = setInterval(() => {
+			updatePaths();
+			ticks++;
+			if (ticks > 40) clearInterval(interval);
+		}, 15);
 		
 		// Update on resize
 		window.addEventListener('resize', updatePaths);
 		return () => {
+			clearInterval(interval);
 			window.removeEventListener('resize', updatePaths);
 		};
 	});
@@ -98,7 +107,7 @@
 						{#each group.items as source}
 							<div class="relative flex items-center justify-center">
 								{#if source.active === false}
-									<div class="absolute -top-3 right-0 bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm z-20 border-2 border-white">Disabled</div>
+									<div class="absolute -top-3 right-0 bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm z-20 border-2 border-white">{t('status.inactive')}</div>
 								{/if}
 								<div 
 									bind:this={sourceNodes[source.id]}
@@ -117,7 +126,7 @@
 		<div class="z-10 w-[450px] flex justify-center items-center py-10 pr-8 sticky top-0 h-[500px]">
 			<div class="relative w-full flex items-center justify-center">
 				{#if !targetActive}
-					<div class="absolute -top-3 right-0 bg-slate-200 text-slate-500 px-3 py-1 rounded-full text-xs font-bold shadow-sm z-20 border-2 border-white">Disabled</div>
+					<div class="absolute -top-3 right-0 bg-slate-200 text-slate-500 px-3 py-1 rounded-full text-xs font-bold shadow-sm z-20 border-2 border-white">{t('status.inactive')}</div>
 				{/if}
 				<div 
 					bind:this={targetNode}

@@ -2,9 +2,10 @@
 	import { backOut } from 'svelte/easing';
 	import { X, Gear, Info, Translate, GithubLogo, FileText } from 'phosphor-svelte';
 	import licenseText from '../../../LICENSE?raw';
+	import { t } from '$lib/i18n';
+	import { settings } from '$lib/stores/settings.svelte';
 
 	let { show = $bindable(false), activeTab = $bindable('general') } = $props();
-	let activeLang = $state('auto');
 	let showLicense = $state(false);
 
 	function close() {
@@ -71,11 +72,13 @@
 						</div>
 						<div>
 							<div class="font-sans text-2xl md:text-3xl font-black uppercase tracking-widest text-amogus-dark leading-none mt-1">
-								{activeTab === 'general' ? 'Settings' : 'About'}
+								{activeTab === 'general' ? t('settings.title') : t('about.title')}
 							</div>
-							<p class="text-slate-400 font-mono text-[10px] md:text-xs uppercase tracking-widest mt-1">
-								{activeTab === 'general' ? 'Application Preferences' : 'System Information'}
-							</p>
+							{#if activeTab === 'general'}
+								<p class="text-slate-400 font-mono text-[10px] md:text-xs uppercase tracking-widest mt-1">
+									{t('settings.subtitle')}
+								</p>
+							{/if}
 						</div>
 					</div>
 					<button 
@@ -103,35 +106,55 @@
 					<div class="space-y-8 animate-in fade-in duration-300">
 						<div>
 							<div class="font-sans text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
-								System Configuration
+								{t('settings.sysconf')}
 							</div>
-							<p class="text-slate-500 mb-6">Manage global preferences and operational settings for your Postman Amogus instance.</p>
 							
-							<div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm space-y-4">
+							<div class="space-y-4">
 								<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 									<div class="flex items-center gap-4">
-										<div class="p-3 bg-blue-50 text-amogus-blue rounded-xl shrink-0">
-											<Translate size={24} weight="fill" />
-										</div>
 										<div>
-											<div class="font-sans font-bold text-slate-700">Language</div>
-											<p class="text-sm text-slate-500">Select the interface language.</p>
+											<div class="font-sans font-bold text-slate-700">{t('settings.lang')}</div>
+											<p class="text-sm text-slate-500">{t('settings.lang.desc')}</p>
 										</div>
 									</div>
 									<div class="inline-flex bg-slate-100 p-1.5 rounded-full border border-slate-200 shadow-inner w-full sm:w-auto overflow-x-auto custom-scrollbar">
 										<button 
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {activeLang === 'auto' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() => activeLang = 'auto'}
-										><span class="text-lg leading-none">🌐</span> Auto</button>
+											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language === 'auto' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
+											onclick={() => settings.language = 'auto'}
+										><span class="text-lg leading-none">🌐</span> {t('settings.auto')}</button>
 										<button 
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {activeLang === 'en' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() => activeLang = 'en'}
+											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language === 'en' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
+											onclick={() => settings.language = 'en'}
 										><span class="text-lg leading-none">🇬🇧</span> EN</button>
 										<button 
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {activeLang === 'ru' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() => activeLang = 'ru'}
+											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language === 'ru' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}"
+											onclick={() => settings.language = 'ru'}
 										><span class="text-lg leading-none">🇷🇺</span> RU</button>
 									</div>
+								</div>
+
+								<div class="h-px bg-slate-100 w-full my-2"></div>
+
+								<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+									<div class="flex items-center gap-4">
+										<div>
+											<div class="font-sans font-bold text-slate-700">{t('settings.font')}</div>
+											<p class="text-sm text-slate-500">{t('settings.font.desc')}</p>
+										</div>
+									</div>
+									<select 
+										bind:value={settings.fontFamily}
+										class="select select-bordered bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 font-bold rounded-2xl w-full sm:w-auto"
+									>
+										<option value="balsamiq">{t('font.balsamiq')}</option>
+										<option value="huninn">{t('font.huninn')}</option>
+										<option value="inter">{t('font.inter')}</option>
+										<option value="roboto">{t('font.roboto')}</option>
+										<option value="golos">{t('font.golos')}</option>
+										<option value="raleway">{t('font.raleway')}</option>
+										<option value="oswald">{t('font.oswald')}</option>
+										<option value="jura">{t('font.jura')}</option>
+									</select>
 								</div>
 							</div>
 						</div>
@@ -142,7 +165,7 @@
 							<img src="/postman_amogus_logo_small.png" alt="Logo" class="w-24 h-24 rounded-full shadow-sm border-2 border-white mb-3" />
 							<div class="font-sans text-3xl font-black text-amogus-dark tracking-wide">Postman Amogus</div>
 							<p class="text-slate-500 font-sans font-medium text-sm mt-1">Highly Sus Mail Administration Dashboard</p>
-							<p class="text-slate-400 font-mono text-xs mt-1">v1.0.0</p>
+							<p class="text-slate-400 font-mono text-xs mt-1">v1.1.0</p>
 						</div>
 
 						<p class="text-slate-600 leading-relaxed max-w-lg mt-2">
@@ -158,10 +181,10 @@
 
 						<div class="flex flex-wrap items-center justify-center gap-3 w-full mt-4">
 							<a href="https://github.com/byMaker" target="_blank" rel="noopener noreferrer" class="btn border-none bg-amogus-blue hover:bg-amogus-blue/90 text-white rounded-full px-6 font-bold shadow-sm flex items-center gap-2">
-								<GithubLogo size={20} weight="fill" /> GitHub Repository
+								<GithubLogo size={20} weight="fill" /> {t('btn.github')}
 							</a>
 							<button onclick={() => showLicense = true} class="btn btn-ghost hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full px-6 font-bold flex items-center gap-2 border border-slate-200">
-								<FileText size={20} weight="fill" /> View License
+								<FileText size={20} weight="fill" /> {t('btn.license')}
 							</button>
 						</div>
 					</div>

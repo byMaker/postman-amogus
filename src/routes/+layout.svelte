@@ -1,5 +1,44 @@
 <script lang="ts">
 	import "../app.css";
+	import '@fontsource/balsamiq-sans/400.css';
+	import '@fontsource/balsamiq-sans/700.css';
+	import '@fontsource/montserrat-alternates/400.css';
+	import '@fontsource/montserrat-alternates/500.css';
+	import '@fontsource/montserrat-alternates/600.css';
+	import '@fontsource/montserrat-alternates/700.css';
+	import '@fontsource/montserrat-alternates/800.css';
+	import '@fontsource/montserrat-alternates/900.css';
+	import '@fontsource/inter/400.css';
+	import '@fontsource/inter/500.css';
+	import '@fontsource/inter/600.css';
+	import '@fontsource/inter/700.css';
+	import '@fontsource/inter/800.css';
+	import '@fontsource/inter/900.css';
+	import '@fontsource/roboto/400.css';
+	import '@fontsource/roboto/500.css';
+	import '@fontsource/roboto/700.css';
+	import '@fontsource/roboto/900.css';
+	import '@fontsource/golos-text/400.css';
+	import '@fontsource/golos-text/500.css';
+	import '@fontsource/golos-text/600.css';
+	import '@fontsource/golos-text/700.css';
+	import '@fontsource/golos-text/800.css';
+	import '@fontsource/golos-text/900.css';
+	import '@fontsource/raleway/300.css';
+	import '@fontsource/raleway/400.css';
+	import '@fontsource/raleway/500.css';
+	import '@fontsource/raleway/600.css';
+	import '@fontsource/raleway/700.css';
+	import '@fontsource/oswald/300.css';
+	import '@fontsource/oswald/400.css';
+	import '@fontsource/oswald/500.css';
+	import '@fontsource/oswald/600.css';
+	import '@fontsource/oswald/700.css';
+	import '@fontsource/jura/300.css';
+	import '@fontsource/jura/400.css';
+	import '@fontsource/jura/500.css';
+	import '@fontsource/jura/600.css';
+	import '@fontsource/jura/700.css';
 	import Toast from "$lib/components/Toast.svelte";
 	import {
 		SquaresFour,
@@ -15,7 +54,27 @@
 	import ScrollToTop from "$lib/components/ScrollToTop.svelte";
 	import { page } from "$app/stores";
 	import { fade, fly } from 'svelte/transition';
+	import { t } from '$lib/i18n';
+	import { settings } from '$lib/stores/settings.svelte';
+
 	let { data, children } = $props();
+
+	const fontMap: Record<string, string> = {
+		'balsamiq': "'Balsamiq Sans'",
+		'inter': "'Inter'",
+		'roboto': "'Roboto'",
+		'golos': "'Golos Text'",
+		'raleway': "'Raleway'",
+		'oswald': "'Oswald'",
+		'jura': "'Jura'",
+		'huninn': "'Huninn'"
+	};
+
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			document.documentElement.style.setProperty('--font-primary', fontMap[settings.fontFamily] || "'Balsamiq Sans'");
+		}
+	});
 
 	let mobileMenuOpen = $state(false);
 
@@ -23,7 +82,7 @@
 	const baseSections = [
 		{
 			id: "dashboard",
-			name: "Dashboard",
+			name: () => t('nav.dashboard'),
 			path: "/",
 			icon: SquaresFour,
 			colorClass: "text-cyan-500",
@@ -32,7 +91,7 @@
 
 	const analyticsSection = {
 		id: "analytics",
-		name: "Analytics",
+		name: () => t('nav.analytics'),
 		path: "/analytics",
 		icon: ChartPieSlice,
 		colorClass: "text-indigo-500",
@@ -41,35 +100,35 @@
 	const otherSections = [
 		{
 			id: "domains",
-			name: "Domains",
+			name: () => t('card.domains'),
 			path: "/domains",
 			icon: At,
 			colorClass: "text-violet-500",
 		},
 		{
 			id: "mailboxes",
-			name: "Mailboxes",
+			name: () => t('card.mailboxes'),
 			path: "/mailboxes",
 			icon: Mailbox,
 			colorClass: "text-amber-500",
 		},
 		{
 			id: "aliases",
-			name: "Aliases",
+			name: () => t('card.aliases'),
 			path: "/aliases",
 			icon: Ghost,
 			colorClass: "text-teal-600",
 		},
 		{
 			id: "blacklists",
-			name: "Blacklists",
+			name: () => t('card.blacklists'),
 			path: "/blacklists",
 			icon: Skull,
 			colorClass: "text-rose-500",
 		},
 		{
 			id: "whitelists",
-			name: "Whitelists",
+			name: () => t('card.whitelists'),
 			path: "/whitelists",
 			icon: Star,
 			colorClass: "text-yellow-500",
@@ -110,10 +169,7 @@
 				{@const Icon = section.icon}
 				<a
 					href={section.path}
-					class="group flex w-24 py-2 rounded-2xl flex-col items-center justify-center gap-1 transition-all duration-200 active:![transform:translateY(2px)_scale(0.95)] active:!shadow-none {active
-						? 'bg-white/50 shadow-sm opacity-100'
-						: 'opacity-70 hover:opacity-100 hover:bg-white hover:shadow-md hover:[transform:translateY(-4px)_rotate(var(--hover-angle))]'}"
-					title={section.name}
+					class={`group flex w-24 py-2 rounded-2xl flex-col items-center justify-center gap-1 transition-all duration-200 active:![transform:translateY(2px)_scale(0.95)] active:!shadow-none ${active ? 'bg-white/50 shadow-sm opacity-100' : 'opacity-70 hover:opacity-100 hover:bg-white hover:shadow-md hover:[transform:translateY(-4px)_rotate(var(--hover-angle))]'}`}
 					onmouseenter={(e) => {
 						if (!active) {
 							const angle = Math.random() > 0.5 ? 1.5 : -1.5;
@@ -135,7 +191,7 @@
 						class="text-[11px] font-bold uppercase tracking-wider {active
 							? 'text-amogus-dark'
 							: 'text-slate-500 group-hover:text-amogus-dark'} transition-colors"
-						>{section.name}</span
+						>{section.name()}</span
 					>
 				</a>
 			{/each}
@@ -191,7 +247,7 @@
 							<span
 								class="text-sm font-black uppercase tracking-widest {active ? 'text-amogus-dark' : 'text-slate-500'}"
 							>
-								{section.name}
+								{section.name()}
 							</span>
 						</a>
 					{/each}

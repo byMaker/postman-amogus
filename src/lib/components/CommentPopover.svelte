@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ChatTeardropText, X } from 'phosphor-svelte';
+	import { t } from '$lib/i18n';
 
-	let { comment = $bindable(''), title = 'Comment', onsave } = $props<{
+	let { comment = $bindable(''), title = '', onsave } = $props<{
 		comment: string;
 		title?: string;
 		onsave?: (newComment: string) => void;
@@ -49,7 +50,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div 
 		class="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full transition-colors {comment ? 'text-amogus-blue bg-blue-50 hover:bg-amogus-blue hover:text-white' : 'text-slate-400 hover:text-amogus-dark hover:bg-slate-100'}"
-		title={comment || 'Add ' + title}
+		title={comment || t('comment.add')}
 		onclick={toggle}
 	>
 		<ChatTeardropText size={18} weight={comment ? "fill" : "regular"} />
@@ -67,19 +68,19 @@
 			<!-- Popover/Modal Content -->
 			<div class="relative w-full max-w-sm sm:max-w-none bg-white border border-slate-200 rounded-3xl shadow-xl p-5 sm:p-4 flex flex-col gap-3 mx-auto">
 				<div class="flex justify-between items-center mb-2">
-					<h3 class="text-2xl text-amogus-dark">{title}</h3>
+					<h3 class="text-2xl text-amogus-dark">{title || t('comment.title')}</h3>
 					<button aria-label="Close" onclick={() => isOpen = false} class="text-slate-400 hover:text-rose-500 transition-colors p-1 bg-slate-50 hover:bg-rose-50 rounded-full">
 						<X size={16} weight="bold" />
 					</button>
 				</div>
 				<textarea 
 					class="textarea textarea-bordered focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 text-sm resize-none h-24 sm:h-20 w-full rounded-2xl bg-slate-50 transition-all"
-					placeholder="Enter your note here..."
+					placeholder={t('popover.placeholder')}
 					bind:value={tempComment}
 				></textarea>
 				<div class="flex justify-end gap-3 mt-1 items-center">
-					<button class="hidden sm:block text-xs text-slate-500 hover:text-slate-700 transition-colors font-bold px-3 py-2 rounded-full hover:bg-slate-100" onclick={() => isOpen = false}>Cancel</button>
-					<button class="bg-amogus-blue hover:bg-amogus-brown text-white font-bold py-2 px-5 rounded-full text-xs shadow-md transition-all w-full sm:w-auto" onclick={save}>Save</button>
+					<button class="hidden sm:block text-xs text-slate-500 hover:text-slate-700 transition-colors font-bold px-3 py-2 rounded-full hover:bg-slate-100" onclick={() => isOpen = false}>{t('btn.cancel')}</button>
+					<button class="bg-amogus-blue hover:bg-amogus-brown text-white font-bold py-2 px-5 rounded-full text-xs shadow-md transition-all w-full sm:w-auto" onclick={save}>{t('btn.save')}</button>
 				</div>
 			</div>
 		</div>

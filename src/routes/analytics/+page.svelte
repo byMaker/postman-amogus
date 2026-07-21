@@ -49,6 +49,7 @@
 	import { Doughnut, Bar } from 'svelte-chartjs';
 	import { goto } from '$app/navigation';
 	import { ChartPieSlice } from 'phosphor-svelte';
+	import { t, formatDate } from '$lib/i18n';
 
 	let { data }: { data: PageData } = $props();
 
@@ -114,7 +115,7 @@
 </script>
 
 <svelte:head>
-	<title>Analytics - Postman Amogus</title>
+	<title>{t('analytics.title')} - Postman Amogus</title>
 </svelte:head>
 
 <div class="space-y-6">
@@ -123,14 +124,14 @@
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<ChartPieSlice size={36} weight="fill" class="text-indigo-500" />
-				Analytics
+				{t('analytics.title')}
 			</h2>
-			<p class="text-slate-500 mt-1">{data.currentEmail ? `Statistics for ${data.currentEmail}` : 'Aggregated statistics across all mailboxes'}</p>
+			<p class="text-slate-500 mt-1">{data.currentEmail ? t('analytics.desc.single') + data.currentEmail : t('analytics.desc.all')}</p>
 		</div>
 		<div class="w-full sm:w-auto">
 			<div class="dropdown dropdown-end w-full sm:w-auto">
 				<div tabindex="0" role="button" class="btn w-full sm:w-auto flex justify-between sm:justify-center bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-sans shadow-sm rounded-full px-6">
-					{data.currentEmail || 'All Mailboxes'}
+					{data.currentEmail || t('analytics.all_mailboxes')}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
 				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-3xl min-w-full w-max max-h-[60vh] overflow-y-auto mt-2 border border-slate-100 font-sans text-slate-600 flex-nowrap">
@@ -139,7 +140,7 @@
 							onclick={() => handleMailboxChange('all')} 
 							class="whitespace-nowrap {!data.currentEmail ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}"
 						>
-							<span class="w-4 inline-block">{!data.currentEmail ? '✓' : ''}</span> All Mailboxes
+							<span class="w-4 inline-block">{!data.currentEmail ? '✓' : ''}</span> {t('analytics.all_mailboxes')}
 						</button>
 					</li>
 					<div class="divider my-0"></div>
@@ -161,78 +162,78 @@
 	<!-- Top Stats Row -->
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Storage Used</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.storage')}</div>
 			<div class="stat-value text-amogus-blue text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{formatBytes(data.summary.totalSize)} 
 				{#if data.summary.totalQuotaMb > 0}
 					<span class="text-slate-300 text-2xl font-light px-1 font-sans">/</span> <span class="text-slate-400 text-2xl">{formatBytes(data.summary.totalQuotaMb)}</span>
 				{/if}
 			</div>
-			<div class="stat-desc text-slate-400 mt-2">Used {#if data.summary.totalQuotaMb > 0}/ Total Quota{/if}</div>
+			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.storage.desc')}</div>
 		</div>
 
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Messages</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.messages')}</div>
 			<div class="stat-value text-indigo-500 text-4xl mt-3">{data.summary.totalMessages.toLocaleString()}</div>
 			<div class="stat-desc text-slate-400 mt-2 truncate flex items-center gap-1">
-				<span class="text-emerald-500 font-medium">{data.summary.totalRead.toLocaleString()} read</span> / 
-				<span class="text-rose-400 font-medium">{data.summary.totalUnread.toLocaleString()} unread</span>
+				<span class="text-emerald-500 font-medium">{data.summary.totalRead.toLocaleString()} {t('analytics.stats.read')}</span> / 
+				<span class="text-rose-400 font-medium">{data.summary.totalUnread.toLocaleString()} {t('analytics.stats.unread')}</span>
 			</div>
 		</div>
 
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Total Attachments</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.attachments')}</div>
 			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
-				{formatBytes(data.attachmentSummary.totalSize)} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-500 text-2xl">{data.attachmentSummary.fileCount.toLocaleString()} <span class="text-lg font-sans font-normal text-slate-400">files</span></span>
+				{formatBytes(data.attachmentSummary.totalSize)} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-500 text-2xl">{data.attachmentSummary.fileCount.toLocaleString()} <span class="text-lg font-sans font-normal text-slate-400">{t('analytics.stats.files')}</span></span>
 			</div>
-			<div class="stat-desc text-slate-400 mt-2">Total size / File count</div>
+			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>
 
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Received Emails</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.received')}</div>
 			<div class="stat-value text-emerald-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{data.inboxStats.totalCount.toLocaleString()} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-600 text-2xl">{formatBytes(data.inboxStats.totalSize)}</span>
 			</div>
-			<div class="stat-desc text-slate-400 mt-2">Count / Total size</div>
+			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>
 
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Sent Emails</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.sent')}</div>
 			<div class="stat-value text-orange-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
 				{data.sentStats.totalCount.toLocaleString()} <span class="text-slate-300 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-600 text-2xl">{formatBytes(data.sentStats.totalSize)}</span>
 			</div>
-			<div class="stat-desc text-slate-400 mt-2">Count / Total size</div>
+			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>
 
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">Oldest Email</div>
+			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.oldest')}</div>
 			<div class="stat-value text-amber-500 text-4xl mt-3 truncate">
-				{data.summary.oldestDate ? new Date(data.summary.oldestDate).toLocaleDateString() : 'N/A'}
+				{data.summary.oldestDate ? formatDate(data.summary.oldestDate) : 'N/A'}
 			</div>
-			<div class="stat-desc text-slate-400 mt-2">Historical depth</div>
+			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.historical')}</div>
 		</div>
 	</div>
 
 	<!-- Charts Row -->
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 		<div class="bg-white p-6 shadow-sm rounded-[32px] border border-slate-100 h-[28rem] flex flex-col transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<h3 class="text-2xl text-amogus-dark mb-4">Top 10 Storage by Folder</h3>
+			<h3 class="text-2xl text-amogus-dark mb-4">{t('analytics.chart.folders')}</h3>
 			<div class="flex-1 relative py-4">
 				{#if folderData.reduce((a, b) => a + b, 0) > 0.001}
 					<Doughnut data={doughnutChartData} options={doughnutOptions} />
 				{:else}
-					<div class="flex h-full items-center justify-center text-slate-400">Not enough data (sizes near zero)</div>
+					<div class="flex h-full items-center justify-center text-slate-400">{t('analytics.chart.empty')}</div>
 				{/if}
 			</div>
 		</div>
 
 		<div class="bg-white p-6 shadow-sm rounded-[32px] border border-slate-100 h-[28rem] flex flex-col transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
-			<h3 class="text-2xl text-amogus-dark mb-4">Top 10 Attachment Types</h3>
+			<h3 class="text-2xl text-amogus-dark mb-4">{t('analytics.chart.attachments')}</h3>
 			<div class="flex-1 relative py-4">
 				{#if attachmentData.reduce((a, b) => a + b, 0) > 0.001}
 					<Bar data={barChartData} options={barOptions} />
 				{:else}
-					<div class="flex h-full items-center justify-center text-slate-400">Not enough data (sizes near zero)</div>
+					<div class="flex h-full items-center justify-center text-slate-400">{t('analytics.chart.empty')}</div>
 				{/if}
 			</div>
 		</div>
@@ -241,42 +242,42 @@
 	<!-- Bottom Table Row -->
 	<div class="bg-white shadow-sm rounded-[32px] border border-slate-100 overflow-hidden">
 		<div class="p-6 border-b border-slate-100 bg-slate-50/50">
-			<h3 class="text-2xl text-amogus-dark">Top 10 Senders</h3>
-			<p class="text-sm text-slate-500 mt-1">Most frequent senders across all mailboxes</p>
+			<h3 class="text-2xl text-amogus-dark">{t('analytics.table.senders')}</h3>
+			<p class="text-sm text-slate-500 mt-1">{t('analytics.table.senders.desc')}</p>
 		</div>
 		<div class="overflow-hidden p-0 md:p-4">
 			<table class="w-full text-sm border-separate md:border-collapse border-spacing-y-1 block md:table">
 				<thead class="hidden md:table-header-group">
 					<tr class="text-slate-500">
 						<th class="text-left font-bold uppercase text-xs tracking-wide py-2 px-5">#</th>
-						<th class="text-left font-bold uppercase text-xs tracking-wide py-2 px-5">Sender Email</th>
-						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">Messages</th>
-						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">Total Size</th>
+						<th class="text-left font-bold uppercase text-xs tracking-wide py-2 px-5">{t('analytics.table.sender')}</th>
+						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">{t('analytics.stats.messages')}</th>
+						<th class="text-right font-bold uppercase text-xs tracking-wide py-2 px-5">{t('analytics.stats.storage')}</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-slate-100 bg-white block md:table-row-group">
 					{#each data.topSenders as sender, i}
 						<tr class="even:bg-slate-50 hover:bg-slate-100/60 transition-colors block md:table-row p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none">
 							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 font-medium text-slate-400 border-b border-slate-50 md:border-none md:rounded-l-full">
-								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Rank</span>
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('analytics.table.rank')}</span>
 								<span>{i + 1}</span>
 							</td>
 							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 font-bold text-slate-700 border-b border-slate-50 md:border-none">
-								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sender Email</span>
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('analytics.table.sender')}</span>
 								<span class="text-right md:text-left truncate max-w-[200px] md:max-w-none">{sender.sender}</span>
 							</td>
 							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 md:text-right text-indigo-500 text-base font-bold border-b border-slate-50 md:border-none">
-								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Messages</span>
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('analytics.stats.messages')}</span>
 								<span>{sender.totalMessages.toLocaleString()}</span>
 							</td>
 							<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-5 md:text-right text-slate-600 text-base font-bold md:rounded-r-full">
-								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Size</span>
+								<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('analytics.stats.storage')}</span>
 								<span>{formatBytes(sender.totalSize)}</span>
 							</td>
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="4" class="text-center py-8 text-slate-400 block md:table-cell">No senders data available</td>
+							<td colspan="4" class="text-center py-8 text-slate-400 block md:table-cell">{t('analytics.table.empty')}</td>
 						</tr>
 					{/each}
 				</tbody>

@@ -1,8 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@font-face {
+  font-family: 'Huninn';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/huninn.ttf') format('truetype');
+}
+
 @theme {
-	--font-sans: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: var(--font-primary, 'Balsamiq Sans'), ui-sans-serif, system-ui, sans-serif;
+	--font-mono: var(--font-primary, 'Balsamiq Sans'), ui-monospace, SFMono-Regular, monospace;
 	
 	--color-amogus-dark: #1E3A8A;
 	--color-amogus-blue: #0284C7;
@@ -12,11 +21,11 @@
 }
 
 body, input, textarea, select, button {
-	font-family: 'Baloo 2', sans-serif;
+	font-family: var(--font-primary, 'Balsamiq Sans'), sans-serif !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Sniglet', sans-serif;
+	font-family: var(--font-primary, 'Balsamiq Sans'), sans-serif !important;
 }
 
 .toggle-amogus {
