@@ -145,7 +145,7 @@
 <div class="min-h-screen bg-amogus-bg p-6 font-sans text-slate-800">
 	<!-- Header / Navigation Bar -->
 	<header
-		class="mx-auto max-w-6xl mb-8 flex items-center justify-between rounded-[32px] bg-amogus-light p-4 shadow-sm border border-blue-100"
+		class="mx-auto max-w-6xl mb-8 flex flex-wrap items-center justify-between rounded-[32px] bg-amogus-light p-4 shadow-sm border border-blue-100"
 	>
 		<!-- Logo and Title -->
 		<div class="flex items-center gap-4 pl-2">
@@ -160,8 +160,8 @@
 		</div>
 
 		<!-- Desktop Navigation -->
-		<nav class="hidden md:flex gap-2 pr-6">
-			{#each sections as section}
+		<nav class="hidden md:flex flex-wrap gap-2 pr-6">
+			{#each sections as section (section.id)}
 				{@const active =
 					section.path === "/"
 						? $page.url.pathname === "/"
@@ -226,7 +226,7 @@
 			
 			<div class="flex-1 overflow-y-auto p-6">
 				<div class="grid grid-cols-2 gap-4">
-					{#each sections as section, i}
+					{#each sections as section, i (section.id)}
 						{@const active =
 							section.path === "/"
 								? $page.url.pathname === "/"

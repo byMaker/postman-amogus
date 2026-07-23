@@ -122,14 +122,6 @@ export const load: PageServerLoad = async ({ url }) => {
 			}
 		});
 
-		// Basic translation of common IMAP folders
-		decoded = decoded.replace(/^INBOX/i, 'Входящие');
-		decoded = decoded.replace(/^Sent/i, 'Отправленные');
-		decoded = decoded.replace(/^Trash/i, 'Корзина');
-		decoded = decoded.replace(/^Junk/i, 'Спам');
-		decoded = decoded.replace(/^Drafts/i, 'Черновики');
-		decoded = decoded.replace(/^Archive(s)?/i, 'Архив');
-		
 		return decoded;
 	};
 

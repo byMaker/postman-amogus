@@ -121,6 +121,7 @@
 					{selectedStatus === 'all' ? t('filter.all_statuses') : (selectedStatus === 'active' ? t('filter.active_only') : t('filter.disabled_only'))}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl w-52 mt-2 border border-slate-100 font-sans text-slate-600">
 					<li>
 						<button onclick={() => selectedStatus = 'all'} class="whitespace-nowrap {selectedStatus === 'all' ? 'bg-amogus-light text-amogus-dark font-bold' : 'hover:bg-slate-50'}">
@@ -146,6 +147,7 @@
 					{selectedDomain === 'all' ? t('filter.all_domains') : selectedDomain}
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
 				</div>
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-2xl min-w-full w-max max-h-[60vh] overflow-y-auto mt-2 border border-slate-100 font-sans text-slate-600 flex-nowrap">
 					<li>
 						<button 
@@ -156,7 +158,7 @@
 						</button>
 					</li>
 					<div class="divider my-0"></div>
-					{#each data.domains as domain}
+					{#each data.domains as domain (domain.domain)}
 						<li>
 							<button 
 								onclick={() => selectedDomain = domain.domain} 
@@ -177,9 +179,9 @@
 
 	<!-- Таблица алиасов -->
 	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white relative">
-		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden md:block"></div>
-		<table class="w-full text-left text-sm block md:table relative z-10">
-			<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden md:table-header-group">
+		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
+		<table class="w-full text-left text-sm block lg:table relative z-10">
+			<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden lg:table-header-group">
 				<tr>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('alias')}>
 						{t('alias.table.source')} <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
@@ -192,8 +194,8 @@
 					<th class="px-6 py-5 text-right">{t('table.actions')}</th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-slate-100 bg-white block md:table-row-group md:rounded-b-[32px]">
-				{#each filteredAliases as alias, index}
+			<tbody class="divide-y divide-slate-100 bg-white block lg:table-row-group rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
+				{#each filteredAliases as alias, index (alias.alias)}
 					{@const sourceParts = alias.alias.split('@')}
 					{@const sourceLocal = sourceParts[0]}
 					{@const sourceDomain = sourceParts[1] || ''}
@@ -203,33 +205,33 @@
 					{@const targetLocal = targetParts[0]}
 					{@const targetDomain = targetParts[1] || ''}
 					{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
-					<tr class="hover:bg-slate-50 transition-colors block md:table-row p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none group">
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none {index === filteredAliases.length - 1 ? 'md:rounded-bl-[32px]' : ''}">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Alias</span>
-							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-base transition-colors text-right md:text-left truncate max-w-[200px] md:max-w-none">
+					<tr class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50 {index === filteredAliases.length - 1 ? 'lg:rounded-bl-[32px]' : ''}">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.source')}</span>
+							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-sm transition-colors text-right lg:text-left truncate max-w-[200px] lg:max-w-none">
 								{sourceLocal}<span class="{isSourceDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{sourceDomain}</span>
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">Forward To</span>
-							<div class="flex items-center justify-end md:justify-start gap-2 font-medium bg-slate-50 border border-slate-100 w-fit px-3 py-1.5 rounded-full transition-colors ml-auto md:ml-0">
-								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0 hidden md:block" />
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.target')}</span>
+							<div class="flex items-center justify-end lg:justify-start gap-2 font-medium w-fit transition-colors ml-auto lg:ml-0">
+								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0 hidden lg:block" />
 								<div class="font-bold {alias.active ? 'text-amber-600' : 'text-slate-400'} transition-colors truncate">
 									{targetLocal}<span class="{isTargetDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{targetDomain}</span>
 								</div>
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.status')}</span>
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.status')}</span>
 							{#if alias.active}
 								<span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-bold text-xs tracking-wider">{t('status.active')}</span>
 							{:else}
 								<span class="px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold text-xs tracking-wider">{t('status.inactive')}</span>
 							{/if}
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.desc')}</span>
-							<div class="flex items-center justify-end md:justify-start gap-2">
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.description')}</span>
+							<div class="flex items-center justify-end lg:justify-start gap-2">
 								<CommentPopover 
 									comment={alias.description || ''} 
 									onsave={(newComment) => {
@@ -237,11 +239,11 @@
 										handleQuickComment(alias);
 									}} 
 								/>
-								<span class="text-slate-500 truncate max-w-[150px] block">{alias.description || ''}</span>
+								<span class="text-slate-500 truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] block desc-hide-lg">{alias.description || ''}</span>
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:text-right {index === filteredAliases.length - 1 ? 'md:rounded-br-[32px]' : ''}">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 lg:text-right {index === filteredAliases.length - 1 ? 'lg:rounded-br-[32px]' : ''}">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
 							<div class="flex justify-end gap-3 transition-opacity">
 								<Tooltip text="Edit" position="top">
 									<button onclick={() => openEditModal(alias)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
@@ -337,7 +339,7 @@
 				{#if currentAlias.target && !data.users.find(u => `${u.localPart}@${u.domain}` === currentAlias.target)}
 					<option value={currentAlias.target}>{currentAlias.target} {t('form.invalid_inactive')}</option>
 				{/if}
-				{#each data.users as user}
+				{#each data.users as user (user.id)}
 					{@const email = `${user.localPart}@${user.domain}`}
 					<option value={email}>{email}</option>
 				{/each}

@@ -26,7 +26,7 @@
 	
 	let originalDomainName = $state('');
 	let currentDomainData = $derived(data.domains.find(d => d.domain === originalDomainName) || { domainAliases: [], dkimActive: false, active: 1, backupmx: 0, description: '' });
-	let editForm: HTMLFormElement;
+	let editForm = $state<HTMLFormElement>();
 	let showUpdateConfirm = $state(false);
 
 	function openAddModal() {
@@ -94,10 +94,10 @@
 	<!-- Таблица доменов -->
 	<div class="bg-white rounded-[32px] border border-slate-200 shadow-sm relative">
 		<!-- Header background for rounded corners -->
-		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden md:block"></div>
+		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
 		
-		<table class="w-full text-left border-collapse block md:table relative z-10">
-			<thead class="hidden md:table-header-group">
+		<table class="w-full text-left border-collapse block lg:table relative z-10">
+			<thead class="hidden lg:table-header-group">
 				<tr class="text-xs font-black uppercase tracking-widest text-amogus-blue">
 					<th class="px-6 py-5">{t('domain.table.name')}</th>
 					<th class="px-6 py-5">{t('domain.table.status')}</th>
@@ -106,15 +106,15 @@
 					<th class="px-6 py-5 text-right last:rounded-tr-[32px]">{t('table.actions')}</th>
 				</tr>
 			</thead>
-			<tbody class="block md:table-row-group divide-y divide-slate-100 bg-white md:rounded-b-[32px]">
-				{#each data.domains as domain, index}
-					<tr class="block md:table-row hover:bg-slate-50 transition-colors group p-4 md:p-0 border-b border-slate-100 last:border-0 md:border-none">
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-base {index === data.domains.length - 1 ? 'md:rounded-bl-[32px]' : ''} transition-colors border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.domain')}</span>
+			<tbody class="block lg:table-row-group divide-y divide-slate-100 bg-white rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
+				{#each data.domains as domain, index (domain.domain)}
+					<tr class="block lg:table-row hover:bg-slate-50 transition-colors group p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-sm {index === data.domains.length - 1 ? 'lg:rounded-bl-[32px]' : ''} transition-colors max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.name')}</span>
 							<span>@{domain.domain}</span>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.status')}</span>
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.status')}</span>
 							<div class="flex gap-2 items-center">
 								{#if domain.active}
 									<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs tracking-wider">{t('status.active')}</span>
@@ -129,32 +129,32 @@
 								{/if}
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.usage')}</span>
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.usage')}</span>
 							<div class="flex items-center gap-4 text-slate-500 font-bold">
 								<Tooltip text={t('tooltip.mailboxes')} position="top">
 									<div class="flex items-center gap-1">
-										<Mailbox size={18} weight="fill" />
+										<span class="text-amber-500"><Mailbox size={18} weight="fill" /></span>
 										{domain.mailboxesCount}
 									</div>
 								</Tooltip>
 								<Tooltip text={t('tooltip.email_aliases')} position="top">
 									<div class="flex items-center gap-1">
-										<Ghost size={18} weight="fill" />
+										<span class="text-teal-600"><Ghost size={18} weight="fill" /></span>
 										{domain.aliasesCount}
 									</div>
 								</Tooltip>
 								<Tooltip text="Domain Aliases" position="top">
 									<div class="flex items-center gap-1">
-										<At size={18} weight="fill" />
+										<span class="text-violet-500"><At size={18} weight="fill" /></span>
 										{(domain.domainAliases || []).length}
 									</div>
 								</Tooltip>
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 border-b border-slate-50 md:border-none">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.desc')}</span>
-							<div class="flex items-center justify-end md:justify-start gap-2">
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.description')}</span>
+							<div class="flex items-center justify-end lg:justify-start gap-2">
 								<CommentPopover 
 									comment={domain.description || ''} 
 									onsave={(newComment) => {
@@ -162,11 +162,11 @@
 										handleQuickComment(domain);
 									}} 
 								/>
-								<span class="text-slate-500 truncate max-w-[150px] block">{domain.description || '—'}</span>
+								<span class="text-slate-500 truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] block desc-hide-lg">{domain.description || '—'}</span>
 							</div>
 						</td>
-						<td class="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-5 md:text-right {index === data.domains.length - 1 ? 'md:rounded-br-[32px]' : ''}">
-							<span class="md:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
+						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 lg:text-right {index === data.domains.length - 1 ? 'lg:rounded-br-[32px]' : ''}">
+							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
 							<div class="flex justify-end gap-3 transition-opacity">
 								<Tooltip text={t('btn.edit')} position="top">
 									<button onclick={() => openEditModal(domain)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors">
@@ -365,7 +365,7 @@
 			</div>
 			
 			<div class="space-y-3">
-				{#each currentDomainData.domainAliases || [] as alias}
+				{#each currentDomainData.domainAliases || [] as alias (alias)}
 					<div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-2xl">
 						<div class="font-bold text-slate-700">@{alias.aliasDomain}</div>
 						<form method="POST" action="?/deleteDomainAlias" use:enhance={() => {

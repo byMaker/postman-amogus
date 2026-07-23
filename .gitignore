@@ -29,5 +29,5 @@ vite.config.ts.timestamp-*
 # Docker / Database
 mysql_data/
 
-AI_RULES.md
-PROMPT*
+sus/
+

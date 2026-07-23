@@ -84,6 +84,14 @@ export const translations: Record<string, Record<string, string>> = {
 		'domain.delete.aliases': 'Email Aliases removed',
 		'domain.delete.domain_aliases': 'Domain Aliases orphaned',
 
+		'quota.of': 'of',
+		'quota.mb': 'MB',
+		'quota.gb': 'GB',
+		'quota.msgs': 'msgs',
+		'quota.unlimited': 'Unlimited',
+		'quota.mb_used': 'MB used',
+		'quota.gb_used': 'GB used',
+
 		'tab.general': 'General',
 		'tab.aliases': 'Aliases',
 		
@@ -125,7 +133,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.desc.single': 'Statistics for ',
 		'analytics.all_mailboxes': 'All Mailboxes',
 		'analytics.stats.storage': 'Total Storage Used',
-		'analytics.stats.storage.desc': 'Used / Total Quota',
+		'analytics.stats.storage.desc': 'Used | Total Quota',
 		'analytics.stats.messages': 'Total Messages',
 		'analytics.stats.read': 'read',
 		'analytics.stats.unread': 'unread',
@@ -133,7 +141,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.stats.files': 'files',
 		'analytics.stats.received': 'Received Emails',
 		'analytics.stats.sent': 'Sent Emails',
-		'analytics.stats.count_size': 'Count / Total size',
+		'analytics.stats.count_size': 'Count | Total size',
 		'analytics.stats.oldest': 'Oldest Email',
 		'analytics.stats.historical': 'Historical depth',
 		'analytics.chart.folders': 'Top 10 Storage by Folder',
@@ -349,7 +357,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.desc.single': 'Статистика для ',
 		'analytics.all_mailboxes': 'Все ящики',
 		'analytics.stats.storage': 'Занято места',
-		'analytics.stats.storage.desc': 'Использовано / Общая квота',
+		'analytics.stats.storage.desc': 'Использовано | Общая квота',
 		'analytics.stats.messages': 'Всего писем',
 		'analytics.stats.read': 'прочитано',
 		'analytics.stats.unread': 'непрочитано',
@@ -357,7 +365,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.stats.files': 'файлов',
 		'analytics.stats.received': 'Полученные письма',
 		'analytics.stats.sent': 'Отправленные письма',
-		'analytics.stats.count_size': 'Количество / Общий размер',
+		'analytics.stats.count_size': 'Количество | Общий размер',
 		'analytics.stats.oldest': 'Самое старое письмо',
 		'analytics.stats.historical': 'Глубина истории',
 		'analytics.chart.folders': 'Топ 10 папок по объему',
@@ -443,7 +451,15 @@ export const translations: Record<string, Record<string, string>> = {
 		'tab.emails': 'Адреса (Email)',
 		'tab.ips': 'IP-адреса',
 		'tab.dnsbl': 'Глобальный DNSBL',
-		'tab.dkim': 'Обязательный DKIM'
+		'tab.dkim': 'Обязательный DKIM',
+
+		'quota.of': 'из',
+		'quota.mb': 'МБ',
+		'quota.gb': 'ГБ',
+		'quota.msgs': 'писем',
+		'quota.unlimited': 'Безлимит',
+		'quota.mb_used': 'МБ занято',
+		'quota.gb_used': 'ГБ занято'
 	}
 };
 
@@ -459,4 +475,11 @@ export function formatDate(date: string | number | Date, options?: Intl.DateTime
 	} catch (e) {
 		return String(date);
 	}
+}
+
+export function formatMb(mb: number): string {
+	if (mb > 1023.99) {
+		return (mb / 1024).toFixed(2) + ' GB';
+	}
+	return Math.round(mb) + ' MB';
 }

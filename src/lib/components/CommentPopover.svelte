@@ -38,9 +38,11 @@
 		}
 	}
 
-	onMount(() => {
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
+	$effect(() => {
+		if (isOpen) {
+			document.addEventListener('mousedown', handleClickOutside);
+			return () => document.removeEventListener('mousedown', handleClickOutside);
+		}
 	});
 </script>
 

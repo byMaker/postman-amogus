@@ -37,8 +37,8 @@ services:
       - "${HOST_PMA_PORT:-8474}:80"
     environment:
       - PMA_HOST=postman_amogus_db
-      - PMA_USER=${DB_USER:-mail_user}
-      - PMA_PASSWORD=${DB_PASSWORD:-mail_pass}
+      - PMA_USER=root
+      - PMA_PASSWORD=${DB_ROOT_PASSWORD:-root}
     networks:
       - amogus-net
 
