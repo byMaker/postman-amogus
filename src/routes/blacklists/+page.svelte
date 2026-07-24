@@ -2,7 +2,8 @@
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidateAll, replaceState } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { toast } from '$lib/state/toast.svelte';
 	import { browser } from '$app/environment';
 	import { At, EnvelopeSimple, Numpad, ShieldWarning, ShieldCheck, Plus, Trash, ArrowRight, MagnifyingGlass, CheckCircle, WarningCircle, NotePencil, Skull } from 'phosphor-svelte';
@@ -17,6 +18,38 @@
 	$effect(() => {
 		if (browser) {
 			localStorage.setItem('blacklists_tab', activeSubTab);
+		}
+	});
+
+	$effect(() => {
+		const tab = $page.url.searchParams.get('tab');
+		if (tab && activeSubTab !== tab) {
+			activeSubTab = tab;
+		}
+
+		const highlight = $page.url.searchParams.get('highlight');
+		if (highlight) {
+			setTimeout(() => {
+				const el = document.getElementById(`row-${highlight}`);
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					el.style.transition = 'background-color 0.15s ease-in-out';
+					let count = 0;
+					const interval = setInterval(() => {
+						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
+						count++;
+						if (count >= 6) {
+							clearInterval(interval);
+							el.style.backgroundColor = '';
+							
+							const newUrl = new URL($page.url);
+							newUrl.searchParams.delete('highlight');
+							newUrl.searchParams.delete('tab');
+							replaceState(newUrl, {});
+						}
+					}, 150);
+				}
+			}, 300);
 		}
 	});
 
@@ -205,7 +238,7 @@
 					{@const target = item.domain || item.email || item.host || item.dnsDomain}
 					{@const desc = item.description || item.dnsDescription || '—'}
 					{@const act = item.active !== undefined ? item.active : item.dnsgKey}
-					<tr class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+					<tr id="row-{target}" class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
 						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 font-bold {act === 1 ? 'text-amogus-dark' : 'text-slate-400'} text-sm transition-colors max-lg:border-b max-lg:border-b-slate-50 {index === sortedData.length - 1 ? 'lg:rounded-bl-[32px]' : ''}">
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{getTargetLabel()}</span>
 							<span class="text-right lg:text-left truncate max-w-[200px] lg:max-w-none">
@@ -257,12 +290,13 @@
 							</div>
 						</td>
 					</tr>
-				{/each}
-				{#if sortedData.length === 0}
+				{:else}
 					<tr>
-						<td colspan="4" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">{t('blacklist.table.empty')}</td>
+						<td colspan="4" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
+							{(data[activeTableKey as keyof typeof data] || []).length === 0 ? t('blacklist.table.empty') : t('table.filtered_empty')}
+						</td>
 					</tr>
-				{/if}
+				{/each}
 			</tbody>
 		</table>
 	</div>

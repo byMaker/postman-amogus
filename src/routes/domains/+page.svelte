@@ -23,6 +23,10 @@
 	let activeTab = $state('general');
 	let domainToDelete: any = $state(null);
 	let showDeleteModal = $state(false);
+	let showDeleteConfirm = $state(false);
+	let deleteCascade = $state(false);
+	let deleteConfirmText = $state('');
+	let deleteForm = $state<HTMLFormElement>();
 	
 	let originalDomainName = $state('');
 	let currentDomainData = $derived(data.domains.find(d => d.domain === originalDomainName) || { domainAliases: [], dkimActive: false, active: 1, backupmx: 0, description: '' });
@@ -51,10 +55,42 @@
 		showModal = true;
 	}
 
-	import { invalidateAll } from '$app/navigation';
+	import { invalidateAll, replaceState } from '$app/navigation';
+	import { page } from '$app/stores';
+
+	$effect(() => {
+		const highlight = $page.url.searchParams.get('highlight');
+		if (highlight) {
+			setTimeout(() => {
+				const el = document.getElementById(`row-${highlight}`);
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					el.style.transition = 'background-color 0.15s ease-in-out';
+					let count = 0;
+					const interval = setInterval(() => {
+						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
+						count++;
+						if (count >= 6) {
+							clearInterval(interval);
+							el.style.backgroundColor = '';
+							
+							const newUrl = new URL($page.url);
+							newUrl.searchParams.delete('highlight');
+							newUrl.searchParams.delete('tab');
+							replaceState(newUrl, {});
+						}
+					}, 150);
+				}
+			}, 300);
+		}
+	});
+
 	function requestDelete(d: any) {
 		domainToDelete = d;
+		deleteCascade = false;
+		deleteConfirmText = '';
 		showDeleteModal = true;
+		showDeleteConfirm = false;
 	}
 
 	async function handleQuickComment(domain: any) {
@@ -108,7 +144,7 @@
 			</thead>
 			<tbody class="block lg:table-row-group divide-y divide-slate-100 bg-white rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
 				{#each data.domains as domain, index (domain.domain)}
-					<tr class="block lg:table-row hover:bg-slate-50 transition-colors group p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+					<tr id="row-{domain.domain}" class="block lg:table-row hover:bg-slate-50 transition-colors group p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
 						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-sm {index === data.domains.length - 1 ? 'lg:rounded-bl-[32px]' : ''} transition-colors max-lg:border-b max-lg:border-b-slate-50">
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.name')}</span>
 							<span>@{domain.domain}</span>
@@ -181,23 +217,23 @@
 							</div>
 						</td>
 					</tr>
-				{/each}
-				{#if data.domains.length === 0}
+				{:else}
 					<tr>
-						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">No domains found. Add your first domain!</td>
+						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
+							{data.domains.length === 0 ? "No domains found. Add your first domain!" : t('table.filtered_empty')}
+						</td>
 					</tr>
-				{/if}
+				{/each}
 			</tbody>
 		</table>
 	</div>
 </div>
 
 <Modal bind:show={showDeleteModal} title={t('modal.delete')}>
-	<div class="bg-rose-50 border border-rose-200 text-rose-800 p-6 rounded-2xl mb-8 shadow-sm">
-		<h3 class="font-bold text-xl mb-3 text-rose-900">{t('modal.are_you_sure')}</h3>
-		<p class="mb-5 text-sm">{t('modal.about_to_delete')} <span class="font-bold px-1.5 py-0.5 bg-rose-200 rounded text-rose-900">@{domainToDelete?.domain}</span>.</p>
+	<div class="text-slate-800 mb-6">
+		<p class="mb-5 text-sm">{t('modal.about_to_delete')} <span class="font-bold px-1.5 py-0.5 bg-rose-100 text-rose-700 rounded">{domainToDelete?.domain}</span>.</p>
 		
-		<div class="bg-white rounded-xl p-4 space-y-3 font-medium text-sm">
+		<div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 font-medium text-sm mb-4">
 			<div class="flex justify-between items-center text-slate-600">
 				<div class="flex items-center gap-2"><Mailbox size={18} weight="fill" /> {t('domain.delete.mailboxes')}</div>
 				<span class="font-bold text-rose-600 text-base">{domainToDelete?.mailboxesCount || 0}</span>
@@ -211,12 +247,25 @@
 				<span class="font-bold text-rose-600 text-base">{(domainToDelete?.domainAliases || []).length}</span>
 			</div>
 		</div>
+
+		<p class="text-xs text-rose-700/80 mb-4">{t('modal.delete_domain_warning')}</p>
+
+		<label class="cursor-pointer flex items-start gap-3 w-full bg-rose-100 p-3 rounded-xl border border-rose-200 hover:bg-rose-200 transition-colors">
+			<input type="checkbox" bind:checked={deleteCascade} class="checkbox checkbox-error mt-0.5" />
+			<span class="font-bold text-rose-900 text-sm leading-tight">{t('modal.cascade_delete')}</span>
+		</label>
 	</div>
-	<form method="POST" action="?/delete" use:enhance={() => {
+	<form bind:this={deleteForm} method="POST" action="?/delete" use:enhance={({ cancel }) => {
+		if (deleteCascade && !showDeleteConfirm) {
+			cancel();
+			showDeleteConfirm = true;
+			return;
+		}
 		return async ({ result, update }) => {
 			if (result.type === 'success' && result.data?.success) {
 				toast.success(t('toast.deleted'));
 				showDeleteModal = false;
+				showDeleteConfirm = false;
 			} else {
 				toast.error(result.data?.error || t('toast.failed_delete'));
 			}
@@ -224,13 +273,35 @@
 		};
 	}}>
 		<input type="hidden" name="domain" value={domainToDelete?.domain} />
-		<div class="flex justify-between mt-4">
-			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6">{t('btn.cancel')}</button>
-			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md">
+		<input type="hidden" name="cascade" value={deleteCascade ? 'true' : 'false'} />
+		<div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-4">
+			<button type="button" onclick={() => showDeleteModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">{t('btn.cancel')}</button>
+			<button type="submit" class="btn bg-rose-600 text-white hover:bg-rose-700 rounded-full px-8 font-bold border-none shadow-md w-full sm:w-auto transition-all">
 				{t('modal.yes_delete')}
 			</button>
 		</div>
 	</form>
+</Modal>
+
+<Modal bind:show={showDeleteConfirm} title={t('modal.delete')}>
+	<div class="text-slate-800 mb-6">
+		<h3 class="font-bold text-xl mb-3 text-rose-600">{t('modal.are_you_sure')}</h3>
+		<p class="mb-5 text-sm">{t('modal.cascade_delete')}</p>
+		
+		<div class="mt-4 animate-in fade-in slide-in-from-top-2">
+			<div class="label pt-0 pb-1.5">
+				<span class="label-text font-bold text-rose-900 whitespace-normal">{t('modal.type_domain_to_confirm')}</span>
+			</div>
+			<input type="text" bind:value={deleteConfirmText} placeholder="example.com" class="input input-bordered w-full rounded-xl bg-white border-rose-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
+		</div>
+	</div>
+	
+	<div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-4">
+		<button type="button" onclick={() => { showDeleteConfirm = false; }} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">{t('btn.cancel')}</button>
+		<button type="button" onclick={() => { deleteForm?.requestSubmit(); }} disabled={deleteConfirmText.trim() !== `${domainToDelete?.domain}`} class="btn bg-rose-600 text-white hover:bg-rose-700 disabled:bg-rose-200 disabled:text-rose-400 rounded-full px-8 font-bold border-none shadow-md w-full sm:w-auto transition-all">
+			{t('modal.yes_delete')}
+		</button>
+	</div>
 </Modal>
 
 <Modal bind:show={showModal} title={isEditMode ? t('modal.edit') : t('modal.add')}>
@@ -250,7 +321,20 @@
 	{/if}
 
 	{#if activeTab === 'general' || !isEditMode}
-		<form bind:this={editForm} method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
+		<form bind:this={editForm} method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={({ cancel }) => {
+			if (isEditMode && !showUpdateConfirm) {
+				const isDangerousChange = 
+					currentDomain.domain !== originalDomainName ||
+					currentDomain.active !== (currentDomainData.active === 1) ||
+					currentDomain.backupmx !== (currentDomainData.backupmx === 1) ||
+					currentDomain.dkimActive !== currentDomainData.dkimActive;
+				
+				if (isDangerousChange) {
+					cancel();
+					showUpdateConfirm = true;
+					return;
+				}
+			}
 			return async ({ result, update }) => {
 				if (result.type === 'success' && result.data?.success) {
 					toast.success(isEditMode ? t('toast.saved') : t('toast.created'));
@@ -332,27 +416,9 @@
 
 			<div class="modal-action mt-8 pt-4 flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0">
 				<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">{t('btn.cancel')}</button>
-				{#if isEditMode}
-					<button type="button" onclick={() => {
-						const isDangerousChange = 
-							currentDomain.domain !== originalDomainName ||
-							currentDomain.active !== (currentDomainData.active === 1) ||
-							currentDomain.backupmx !== (currentDomainData.backupmx === 1) ||
-							currentDomain.dkimActive !== currentDomainData.dkimActive;
-						
-						if (isDangerousChange) {
-							showUpdateConfirm = true;
-						} else {
-							editForm.requestSubmit();
-						}
-					}} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
-						{t('btn.save')}
-					</button>
-				{:else}
-					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
-						{t('btn.save')}
-					</button>
-				{/if}
+				<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto transition-all">
+					{t('btn.save')}
+				</button>
 			</div>
 		</form>
 	{/if}
@@ -435,7 +501,7 @@
 		</div>
 	</div>
 	<div class="modal-action flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-6">
-		<button type="button" onclick={() => { showUpdateConfirm = false; showModal = true; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6 w-full sm:w-auto">{t('btn.back_edit')}</button>
-		<button type="button" onclick={() => { showUpdateConfirm = false; editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">{t('btn.confirm_save')}</button>
+		<button type="button" onclick={() => { showUpdateConfirm = false; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6 w-full sm:w-auto">{t('btn.back_edit')}</button>
+		<button type="button" onclick={() => { editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">{t('btn.confirm_save')}</button>
 	</div>
 </Modal>

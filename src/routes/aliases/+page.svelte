@@ -7,9 +7,37 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidateAll, replaceState } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let { data, form } = $props();
+
+	$effect(() => {
+		const highlight = $page.url.searchParams.get('highlight');
+		if (highlight) {
+			setTimeout(() => {
+				const el = document.getElementById(`row-${highlight}`);
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					el.style.transition = 'background-color 0.15s ease-in-out';
+					let count = 0;
+					const interval = setInterval(() => {
+						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
+						count++;
+						if (count >= 6) {
+							clearInterval(interval);
+							el.style.backgroundColor = '';
+							
+							const newUrl = new URL($page.url);
+							newUrl.searchParams.delete('highlight');
+							newUrl.searchParams.delete('tab');
+							replaceState(newUrl, {});
+						}
+					}, 150);
+				}
+			}, 300);
+		}
+	});
 
 	let showModal = $state(false);
 	let isEditMode = $state(false);
@@ -205,7 +233,7 @@
 					{@const targetLocal = targetParts[0]}
 					{@const targetDomain = targetParts[1] || ''}
 					{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
-					<tr class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+					<tr id="row-{alias.alias}" class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
 						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50 {index === filteredAliases.length - 1 ? 'lg:rounded-bl-[32px]' : ''}">
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.source')}</span>
 							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-sm transition-colors text-right lg:text-left truncate max-w-[200px] lg:max-w-none">
@@ -258,12 +286,13 @@
 							</div>
 						</td>
 					</tr>
-				{/each}
-				{#if data.aliases.length === 0}
+				{:else}
 					<tr>
-						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">No forwarding rules found.</td>
+						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
+							{data.aliases.length === 0 ? "No forwarding rules found." : t('table.filtered_empty')}
+						</td>
 					</tr>
-				{/if}
+				{/each}
 			</tbody>
 		</table>
 	</div>

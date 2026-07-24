@@ -17,8 +17,6 @@ This project is an alternative to classic mail panels like PostfixAdmin.
 
 Built entirely using the **vibe coding** approach, powered by the **Gemini 3.1 Pro** AI model.
 
----
-
 ## Key Features
 
 - **Modern & Responsive UI**: A beautiful dashboard built with SvelteKit and Tailwind CSS, fully supporting a mobile-first administration experience.
@@ -28,13 +26,9 @@ Built entirely using the **vibe coding** approach, powered by the **Gemini 3.1 P
 - **Security & Routing**: Native support for Global Blacklists and Whitelists (compatible with Rspamd), DKIM enforcement, and Global DNSBL configuration.
 - **Lightning-Fast Global Search**: Case-insensitive, fuzzy search across all your entities and their descriptions.
 
----
-
 ## Authentication
 
 By design, Postman Amogus has no built-in login system. For production, deploy it behind a reverse proxy (NGINX, Traefik, Caddy) and enforce access control at the web server level using **HTTP Basic Authentication** or an identity provider like **Authelia**. This keeps the application lightweight and delegates security to purpose-built tools.
-
----
 
 ## Development
 
@@ -71,8 +65,6 @@ The repository includes two ready-to-use SQL files for database initialization:
 
 **To use the mock data**, simply edit `docker-compose.dev.yaml` and change `./mail_nodata.sql` to `./mail_mocked.sql` in the `mariadb` volumes section before starting the container.
 
----
-
 ## Production Build & Deployment
 
 For production environments, the application is deployed as a Docker container. The production `docker-compose.yaml` securely builds the application image and runs the Node.js server.
@@ -87,8 +79,6 @@ For production environments, the application is deployed as a Docker container. 
    docker compose -f docker-compose.yaml up --build -d
    ```
 4. The application will be available on the port specified by `HOST_APP_PORT` (default 8473).
-
----
 
 ## Environment Variables Configuration
 
@@ -105,8 +95,6 @@ The application uses an `.env` file for configuration. Below is a detailed descr
 * `HOST_APP_PORT`: The port exposed on the host for the SvelteKit app (default `8473`).
 * `HOST_PMA_PORT`: The port exposed on the host for phpMyAdmin (default `8474`).
 * `DB_ROOT_PASSWORD`: The root password for the MariaDB container initialization.
-
----
 
 ## License
 

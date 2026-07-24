@@ -5,7 +5,7 @@
 	import { t } from '$lib/i18n';
 
 	let { data } = $props();
-	let stats = data.stats;
+	let stats = $derived(data.stats);
 	let showSettings = $state(false);
 	let settingsTab = $state('general');
 
@@ -32,7 +32,7 @@
 
 	<div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 		<!-- Domains Card -->
-		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
+		<div role="presentation" class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<At size={48} weight="regular" class="text-violet-500 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">{t('card.domains')}</p>
 			<p class="mt-2 text-5xl font-black text-violet-500">{stats.totalDomains}</p>
@@ -44,7 +44,7 @@
 		</div>
 
 		<!-- Mailboxes Card -->
-		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
+		<div role="presentation" class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<Mailbox size={48} weight="regular" class="text-amber-500 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">{t('card.mailboxes')}</p>
 			<p class="mt-2 text-5xl font-black text-amber-500">{stats.totalMailboxes}</p>
@@ -56,7 +56,7 @@
 		</div>
 
 		<!-- Aliases Card -->
-		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
+		<div role="presentation" class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<Ghost size={48} weight="regular" class="text-teal-600 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">{t('card.aliases')}</p>
 			<p class="mt-2 text-5xl font-black text-teal-600">{stats.totalAliases}</p>
@@ -68,7 +68,7 @@
 		</div>
 
 		<!-- Blacklists Card -->
-		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
+		<div role="presentation" class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<Skull size={48} weight="regular" class="text-rose-500 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">{t('card.blacklists')}</p>
 			<p class="mt-4 text-2xl font-black text-rose-500 flex gap-2 w-full justify-center">
@@ -88,7 +88,7 @@
 		</div>
 
 		<!-- Whitelists Card -->
-		<div class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
+		<div role="presentation" class="rounded-[32px] bg-amogus-light p-6 shadow-sm border border-amogus-blue/20 flex flex-col items-center text-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<Star size={48} weight="regular" class="text-yellow-500 mb-4" />
 			<p class="text-sm font-bold uppercase tracking-wider text-amogus-dark">{t('card.whitelists')}</p>
 			<p class="mt-4 text-2xl font-black text-yellow-500 flex gap-2 w-full justify-center">

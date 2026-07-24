@@ -87,10 +87,17 @@ export const actions = {
 	delete: async ({ request }) => {
 		const data = await request.formData();
 		const domain = data.get('domain') as string;
+		const cascade = data.get('cascade') === 'true';
 
 		try {
+			if (cascade) {
+				const { like } = await import('drizzle-orm');
+				await db.delete(users).where(eq(users.domain, domain));
+				await db.delete(aliases).where(like(aliases.alias, `%@${domain}`));
+				await db.delete(aliasesDomains).where(eq(aliasesDomains.aliasDomain, domain));
+				await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, domain));
+			}
 			await db.delete(domains).where(eq(domains.domain, domain));
-			// Cleanup aliases and dkim? (Database foreign keys usually handle this or should be done manually)
 			return { success: true, message: 'Domain deleted' };
 		} catch (error) {
 			return { success: false, error: 'Could not delete domain. Are there mailboxes attached?' };

@@ -6,6 +6,7 @@ import type { Actions } from './$types';
 export async function load() {
 	const allAliases = await db.select().from(aliases);
 	const allUsers = await db.select({
+		id: users.id,
 		localPart: users.localPart,
 		domain: users.domain
 	}).from(users).where(eq(users.active, 1));

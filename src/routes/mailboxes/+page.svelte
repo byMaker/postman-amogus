@@ -14,7 +14,7 @@
 	import { t } from "$lib/i18n";
 	import ValidatedInput from "$lib/components/ValidatedInput.svelte";
 	import Tooltip from "$lib/components/Tooltip.svelte";
-	import { invalidateAll } from "$app/navigation";
+	import { invalidateAll, replaceState } from "$app/navigation";
 
 	let { data, form } = $props();
 
@@ -36,10 +36,10 @@
 							clearInterval(interval);
 														el.style.backgroundColor = '';
 							
-							const newUrl = new URL(window.location.href);
+							const newUrl = new URL($page.url);
 							newUrl.searchParams.delete('highlight');
 							newUrl.searchParams.delete('tab');
-							window.history.replaceState({}, '', newUrl.toString());
+							replaceState(newUrl, {});
 						}
 					}, 150);
 				}
@@ -60,7 +60,7 @@
 		quotaMessages: 0,
 		description: "",
 		active: true,
-		useForAliasesDomains: true,
+		useForAliasesDomains: false,
 	});
 
 	function openAddModal() {
@@ -75,7 +75,7 @@
 			quotaMessages: 0,
 			description: "",
 			active: true,
-			useForAliasesDomains: true,
+			useForAliasesDomains: false,
 		};
 		showModal = true;
 	}
@@ -665,16 +665,13 @@
 							</div>
 						</td>
 					</tr>
-				{/each}
-				{#if filteredUsers.length === 0}
+				{:else}
 					<tr>
-						<td
-							colspan="5"
-							class="px-6 py-12 text-center text-slate-500"
-							>No mailboxes found.</td
-						>
+						<td colspan="5" class="px-6 py-12 text-center text-slate-500">
+							{data.users.length === 0 ? "No mailboxes found." : t('table.filtered_empty')}
+						</td>
 					</tr>
-				{/if}
+				{/each}
 			</tbody>
 		</table>
 	</div>
@@ -839,7 +836,7 @@
 					{t("form.password")}
 					{#if isEditMode}
 						<span class="text-slate-400 font-normal text-xs ml-2"
-							>{t("form.optional")}</span
+							>{t("form.change_password")}</span
 						>
 					{/if}
 				</span>
