@@ -18,6 +18,35 @@
 
 	let { data, form } = $props();
 
+	import { page } from '$app/stores';
+
+	$effect(() => {
+		const highlight = $page.url.searchParams.get('highlight');
+		if (highlight) {
+			setTimeout(() => {
+				const el = document.getElementById(`row-${highlight}`);
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					el.style.transition = 'background-color 0.15s ease-in-out';
+					let count = 0;
+					const interval = setInterval(() => {
+						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
+						count++;
+						if (count >= 6) {
+							clearInterval(interval);
+														el.style.backgroundColor = '';
+							
+							const newUrl = new URL(window.location.href);
+							newUrl.searchParams.delete('highlight');
+							newUrl.searchParams.delete('tab');
+							window.history.replaceState({}, '', newUrl.toString());
+						}
+					}, 150);
+				}
+			}, 300);
+		}
+	});
+
 	let showModal = $state(false);
 	let isEditMode = $state(false);
 
@@ -58,7 +87,7 @@
 			localPart: u.localPart,
 			domain: u.domain,
 			fullName: u.fullName || "",
-			password: "", // Пароль не показываем
+			password: "", // Do not show password
 			quotaMb: u.quotaMb || 0,
 			quotaMessages: u.quotaMessages || 0,
 			description: u.description || "",
@@ -90,7 +119,7 @@
 			(d) => d.domain.toLowerCase() === targetDomain,
 		);
 
-		// 1. Прямая доставка
+		// 1. Direct delivery
 		sources.push({
 			id: `direct-${email}`,
 			type: "direct",
@@ -98,7 +127,7 @@
 			active: !!graphUser.active && isDomainActive,
 		});
 
-		// 2. Личные алиасы
+		// 2. Personal aliases
 		if (data.aliases) {
 			const myAliases = data.aliases.filter(
 				(a) => (a.target || "").toLowerCase() === email,
@@ -113,7 +142,7 @@
 			}
 		}
 
-		// 3. Алиасы доменов
+		// 3. Domain aliases
 		if (data.aliasesDomains) {
 			const myDomainAliases = data.aliasesDomains.filter(
 				(ad) => (ad.targetDomain || "").toLowerCase() === targetDomain,
@@ -204,7 +233,7 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Заголовок и кнопка -->
+	<!-- Header and button -->
 	<div
 		class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4"
 	>
@@ -364,7 +393,7 @@
 		</div>
 	</div>
 
-	<!-- Таблица ящиков -->
+	<!-- Mailboxes table -->
 	<div
 		class="bg-white rounded-[32px] border border-slate-200 shadow-sm relative"
 	>
@@ -443,6 +472,7 @@
 						(d) => d.domain === user.domain,
 					)}
 					<tr
+						id="row-{user.localPart}@{user.domain}"
 						class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]"
 					>
 						<td
@@ -724,7 +754,7 @@
 			<input type="hidden" name="id" value={currentUser.id} />
 		{/if}
 
-		<!-- Email Address (Только при создании) -->
+		<!-- Email Address (Only on creation) -->
 		{#if !isEditMode}
 			<div class="form-control">
 				<div class="label">
@@ -774,7 +804,7 @@
 				</div>
 			</div>
 		{:else}
-			<!-- В режиме редактирования показываем email как текст -->
+			<!-- Show email as text in edit mode -->
 			<div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 mb-6">
 				<p class="text-sm font-medium text-slate-500 mb-1">
 					{t("form.editing_account")}

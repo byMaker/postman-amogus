@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `black_domains`;
 CREATE TABLE `black_domains` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS `black_emails`;
 CREATE TABLE `black_emails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -51,7 +51,7 @@ DROP TABLE IF EXISTS `dkim_required_domains`;
 CREATE TABLE `dkim_required_domains` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -70,7 +70,7 @@ CREATE TABLE `domains` (
   `backupmx` tinyint(1) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `description` varchar(255) DEFAULT NULL,
-  UNIQUE KEY `domain` (`domain`)
+  PRIMARY KEY (`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 
 DROP TABLE IF EXISTS `quota`;
@@ -91,7 +91,7 @@ CREATE TABLE `users` (
   `quota_mb` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Mb',
   `quota_messages` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Messages',
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `use_for_aliases_domains` tinyint(4) DEFAULT 1 COMMENT 'If "1" then alias used for domani aliases in table aliases_domains',
+  `use_for_aliases_domains` tinyint(1) DEFAULT 1,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -100,7 +100,7 @@ DROP TABLE IF EXISTS `white_domains`;
 CREATE TABLE `white_domains` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -109,7 +109,7 @@ DROP TABLE IF EXISTS `white_emails`;
 CREATE TABLE `white_emails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -118,7 +118,7 @@ DROP TABLE IF EXISTS `white_ips`;
 CREATE TABLE `white_ips` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `host` varchar(18) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `descripton` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;

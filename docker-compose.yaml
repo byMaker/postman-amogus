@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: postman_amogus_prod
+    container_name: postman_amogus
     restart: always
     ports:
       - "${HOST_APP_PORT:-8473}:3000"
@@ -18,6 +18,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - amogus-net
 

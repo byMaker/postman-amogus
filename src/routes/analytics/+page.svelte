@@ -3,42 +3,6 @@
 
 	// Helpers
 	const formatBytes = (mb: number) => formatMb(mb);
-
-	export const doughnutOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		plugins: {
-			legend: { 
-				position: 'right' as const,
-				labels: {
-					usePointStyle: true,
-					pointStyle: 'circle'
-				}
-			},
-			tooltip: {
-				callbacks: {
-					label: (context: any) => ` ${context.label}: ${formatBytes(context.raw)}`
-				}
-			}
-		}
-	};
-
-	export const barOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		plugins: {
-			legend: { display: false },
-			tooltip: {
-				callbacks: {
-					label: (context: any) => ` Size: ${formatBytes(context.raw)}`
-				}
-			}
-		},
-		scales: {
-			y: { beginAtZero: true, grid: { display: false }, border: { display: false } },
-			x: { grid: { display: false }, border: { display: false } }
-		}
-	};
 </script>
 
 <script lang="ts">
@@ -51,8 +15,45 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const doughnutOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: {
+			legend: { 
+				position: 'right' as const,
+				labels: {
+					usePointStyle: true,
+					pointStyle: 'circle'
+				}
+			}
+		}
+	};
+
+	const barOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: {
+			legend: { display: false }
+		},
+		scales: {
+			y: { beginAtZero: true, grid: { display: false }, border: { display: false } },
+			x: { grid: { display: false }, border: { display: false } }
+		}
+	};
+
 	// Register Chart.js elements
 	ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement);
+	
+	ChartJS.defaults.plugins.tooltip.callbacks.label = function(context: any) {
+		let label = context.dataset.label || context.label || '';
+		if (label) {
+			label += ': ';
+		}
+		if (context.raw !== null) {
+			label += formatBytes(context.raw as number);
+		}
+		return ' ' + label;
+	};
 
 	const generateColors = (count: number) => {
 		const colors = ['#0ea5e9', '#8b5cf6', '#f43f5e', '#10b981', '#f59e0b', '#6366f1', '#14b8a6', '#ec4899', '#84cc16', '#64748b'];
@@ -163,30 +164,36 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.storage')}</div>
-			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
-				{formatBytes(data.summary.totalSize)} 
-				{#if data.summary.totalQuotaMb > 0}
-					<span class="text-slate-400 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-400 text-2xl">{formatBytes(data.summary.totalQuotaMb)}</span>
-				{/if}
+			<div class="stat-value text-indigo-500 text-4xl mt-3 truncate">
+				{formatBytes(data.summary.totalSize)}
 			</div>
+			{#if data.summary.totalQuotaMb > 0}
+				<div class="text-slate-500 text-xl font-bold mt-1 truncate">
+					{formatBytes(data.summary.totalQuotaMb)}
+				</div>
+			{/if}
 			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.storage.desc')}</div>
 		</div>
 
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.messages')}</div>
-			<div class="stat-value text-indigo-500 text-4xl mt-3">{data.summary.totalMessages.toLocaleString()}</div>
-			<div class="stat-desc text-slate-400 mt-2 truncate flex items-center gap-1">
-				<span class="text-slate-400 font-medium">{data.summary.totalRead.toLocaleString()} {t('analytics.stats.read')}</span> <span class="text-slate-400 mx-1">|</span> 
-				<span class="text-slate-400 font-medium">{data.summary.totalUnread.toLocaleString()} {t('analytics.stats.unread')}</span>
+			<div class="stat-value text-indigo-500 text-4xl mt-3 truncate">{data.summary.totalMessages.toLocaleString()}</div>
+			<div class="text-slate-500 text-sm font-bold mt-2 truncate flex items-center gap-2">
+				<span>{data.summary.totalRead.toLocaleString()} <span class="text-slate-400 font-normal">{t('analytics.stats.read')}</span></span>
+				<span class="text-slate-300">•</span> 
+				<span>{data.summary.totalUnread.toLocaleString()} <span class="text-slate-400 font-normal">{t('analytics.stats.unread')}</span></span>
 			</div>
 		</div>
 
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.attachments')}</div>
-			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
-				{formatBytes(data.attachmentSummary.totalSize)} <span class="text-slate-400 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-400 text-2xl">{data.attachmentSummary.fileCount.toLocaleString()} <span class="text-lg font-sans font-normal text-slate-400">{t('analytics.stats.files')}</span></span>
+			<div class="stat-value text-indigo-500 text-4xl mt-3 truncate">
+				{formatBytes(data.attachmentSummary.totalSize)}
+			</div>
+			<div class="text-slate-500 text-xl font-bold mt-1 truncate">
+				{data.attachmentSummary.fileCount.toLocaleString()} <span class="text-sm font-normal text-slate-400">{t('analytics.stats.files')}</span>
 			</div>
 			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>
@@ -194,8 +201,11 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.received')}</div>
-			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
-				{data.inboxStats.totalCount.toLocaleString()} <span class="text-slate-400 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-400 text-2xl">{formatBytes(data.inboxStats.totalSize)}</span>
+			<div class="stat-value text-indigo-500 text-4xl mt-3 truncate">
+				{data.inboxStats.totalCount.toLocaleString()}
+			</div>
+			<div class="text-slate-500 text-xl font-bold mt-1 truncate">
+				{formatBytes(data.inboxStats.totalSize)}
 			</div>
 			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>
@@ -203,8 +213,11 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="stat bg-white shadow-sm rounded-[32px] border border-slate-100 p-6 flex flex-col justify-center transition-all hover:shadow-md" onmouseenter={(e) => { const t = e.currentTarget; t.style.transform = `translateY(-4px) rotate(${Math.random() > 0.5 ? '-' : ''}1deg)`; }} onmouseleave={(e) => { const t = e.currentTarget; t.style.transform = ''; }}>
 			<div class="stat-title text-slate-400 font-medium text-sm tracking-wide">{t('analytics.stats.sent')}</div>
-			<div class="stat-value text-indigo-500 text-4xl mt-3 flex items-baseline gap-2 truncate">
-				{data.sentStats.totalCount.toLocaleString()} <span class="text-slate-400 text-2xl font-light px-1 font-sans">|</span> <span class="text-slate-400 text-2xl">{formatBytes(data.sentStats.totalSize)}</span>
+			<div class="stat-value text-indigo-500 text-4xl mt-3 truncate">
+				{data.sentStats.totalCount.toLocaleString()}
+			</div>
+			<div class="text-slate-500 text-xl font-bold mt-1 truncate">
+				{formatBytes(data.sentStats.totalSize)}
 			</div>
 			<div class="stat-desc text-slate-400 mt-2">{t('analytics.stats.count_size')}</div>
 		</div>

@@ -36,6 +36,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'status.backup_mx': 'Backup MX',
 		'tooltip.mailboxes': 'Mailboxes',
 		'tooltip.email_aliases': 'Email Aliases',
+		'tooltip.domain_aliases': 'Domain Aliases',
 		'status.dkim': 'DKIM Enforced',
 		'status.domain_alias': 'Domain Alias',
 		'table.actions': 'Actions',
@@ -231,7 +232,17 @@ export const translations: Record<string, Record<string, string>> = {
 		'tab.emails': 'Emails',
 		'tab.ips': 'IP Addresses',
 		'tab.dnsbl': 'Global DNSBL',
-		'tab.dkim': 'DKIM Required'
+		'tab.dkim': 'DKIM Required',
+		
+		'search.placeholder': 'Search anywhere...',
+		'search.min_chars': 'Type at least 2 characters...',
+		'search.no_results': 'No results found for "{query}"',
+		'search.empty_state': 'Start typing to search across the entire system.',
+		'search.type.domain': 'Domain',
+		'search.type.mailbox': 'Mailbox',
+		'search.type.alias': 'Alias',
+		'search.type.blacklist': 'Blacklist',
+		'search.type.whitelist': 'Whitelist'
 	},
 	ru: {
 		// Dashboard & Nav
@@ -243,7 +254,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'card.mailboxes': 'Ящики',
 		'card.mailboxes.desc': 'Управление ящиками и пользователями',
 		'card.aliases': 'Алиасы',
-		'card.aliases.desc': 'Переадресация и catch-all правила',
+		'card.aliases.desc': 'Настройка пересылки писем на другие адреса',
 		'card.blacklists': 'Блокировки',
 		'card.blacklists.desc': 'Блокировка спама и отправителей',
 		'card.whitelists': 'Доверенные',
@@ -268,6 +279,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'status.backup_mx': 'Резервный MX',
 		'tooltip.mailboxes': 'Почтовые ящики',
 		'tooltip.email_aliases': 'Алиасы почты',
+		'tooltip.domain_aliases': 'Алиасы домена',
 		'status.dkim': 'Проверка DKIM',
 		'status.domain_alias': 'Алиас домена',
 		'table.actions': 'Действия',
@@ -459,7 +471,17 @@ export const translations: Record<string, Record<string, string>> = {
 		'quota.msgs': 'писем',
 		'quota.unlimited': 'Безлимит',
 		'quota.mb_used': 'МБ занято',
-		'quota.gb_used': 'ГБ занято'
+		'quota.gb_used': 'ГБ занято',
+		
+		'search.placeholder': 'Глобальный поиск...',
+		'search.min_chars': 'Введите минимум 2 символа...',
+		'search.no_results': 'Ничего не найдено по запросу "{query}"',
+		'search.empty_state': 'Начните вводить текст для глобального поиска.',
+		'search.type.domain': 'Домен',
+		'search.type.mailbox': 'Ящик',
+		'search.type.alias': 'Алиас',
+		'search.type.blacklist': 'Блокировка',
+		'search.type.whitelist': 'Доверенный'
 	}
 };
 

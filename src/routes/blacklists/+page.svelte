@@ -260,7 +260,7 @@
 				{/each}
 				{#if sortedData.length === 0}
 					<tr>
-						<td colspan="4" class="px-6 py-12 text-center text-slate-500">{t('blacklist.table.empty')}</td>
+						<td colspan="4" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">{t('blacklist.table.empty')}</td>
 					</tr>
 				{/if}
 			</tbody>

@@ -261,7 +261,7 @@
 				{/each}
 				{#if data.aliases.length === 0}
 					<tr>
-						<td colspan="5" class="px-6 py-12 text-center text-slate-500">No forwarding rules found.</td>
+						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">No forwarding rules found.</td>
 					</tr>
 				{/if}
 			</tbody>

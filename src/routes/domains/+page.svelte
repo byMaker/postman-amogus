@@ -144,7 +144,7 @@
 										{domain.aliasesCount}
 									</div>
 								</Tooltip>
-								<Tooltip text="Domain Aliases" position="top">
+								<Tooltip text={t('tooltip.domain_aliases')} position="top">
 									<div class="flex items-center gap-1">
 										<span class="text-violet-500"><At size={18} weight="fill" /></span>
 										{(domain.domainAliases || []).length}

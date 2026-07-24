@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Envelope, GlobeHemisphereWest, Ghost, Skull, Star, SquaresFour, At, EnvelopeSimple, Numpad, ThumbsUp, Gear, Mailbox, Info } from 'phosphor-svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
+	import GlobalSearch from '$lib/components/GlobalSearch.svelte';
 	import { t } from '$lib/i18n';
 
 	let { data } = $props();
@@ -15,14 +16,17 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Заголовок -->
-	<div class="flex items-center justify-between px-0 md:px-6 pb-2">
+	<!-- Header -->
+	<div class="flex flex-col sm:flex-row sm:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
 				<SquaresFour size={36} weight="fill" class="text-cyan-500" />
 				{t('nav.dashboard')}
 			</h2>
 			<p class="text-slate-500 mt-1">{t('nav.dashboard.desc')}</p>
+		</div>
+		<div>
+			<GlobalSearch />
 		</div>
 	</div>
 

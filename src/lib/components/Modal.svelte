@@ -49,46 +49,50 @@
 </script>
 
 {#if show}
-	<div class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
-		<!-- Затемненный фон -->
+	<!-- Overlay and Scroll Container -->
+	<div class="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden">
+		<!-- Dimmed background -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div 
-			class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
+			class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" 
 			in:fade={{ duration: 300, easing: cubicOut }} 
 			out:fade={{ duration: 200 }}
 			onclick={close}
 		></div>
 
-		<!-- Само окно -->
-		<div 
-			class="relative z-10 w-full {maxWidth} rounded-t-[40px] md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-auto max-h-[95dvh] md:max-h-[90vh]"
-			in:flyModal={{ y: 60, duration: 500, rotate: -3, easing: backOut }}
-			out:flyModal={{ y: 40, duration: 300, rotate: 3, easing: cubicOut }}
-		>
-			<!-- Airmail stripes border -->
-			<div class="absolute inset-0 airmail-stripes opacity-90 pointer-events-none"></div>
-			
-			<!-- Inner white envelope background -->
-			<div class="absolute inset-x-[6px] top-[6px] bottom-0 md:inset-[8px] bg-white rounded-t-[34px] md:rounded-[32px] shadow-sm pointer-events-none"></div>
-
-			<!-- Контент окна -->
-			<div class="relative z-10 flex flex-col w-full max-h-full overflow-hidden">
-				<!-- Фиксированная шапка -->
-				<div class="shrink-0 px-6 pt-6 md:px-10 md:pt-10 pb-4 md:pb-6 flex justify-between items-start">
-					<h3 class="text-3xl md:text-4xl text-amogus-dark m-0 pr-4">{title}</h3>
-					<button 
-						type="button" 
-						class="p-2 -mr-2 -mt-2 rounded-full text-slate-400 hover:text-amogus-brown hover:bg-orange-50 transition-colors shrink-0"
-						onclick={close}
-					>
-						<X size={24} weight="bold" />
-					</button>
-				</div>
+		<!-- Modal wrapper to center it -->
+		<div class="min-h-full flex items-end md:items-center justify-center p-0 md:py-12 pointer-events-none">
+			<!-- Modal window -->
+			<div 
+				class="relative z-10 w-full {maxWidth} rounded-t-[40px] md:rounded-[40px] shadow-2xl flex flex-col h-auto pointer-events-auto"
+				in:flyModal={{ y: 60, duration: 500, rotate: -3, easing: backOut }}
+				out:flyModal={{ y: 40, duration: 300, rotate: 3, easing: cubicOut }}
+			>
+				<!-- Airmail stripes border -->
+				<div class="absolute inset-0 airmail-stripes opacity-90 rounded-t-[40px] md:rounded-[40px] pointer-events-none"></div>
 				
-				<!-- Скроллируемое тело -->
-				<div class="flex-1 overflow-y-auto px-6 pb-6 md:px-10 md:pb-10">
-					{@render children()}
+				<!-- Inner white envelope background -->
+				<div class="absolute inset-x-[6px] top-[6px] bottom-0 md:inset-[8px] bg-white rounded-t-[34px] md:rounded-[32px] shadow-sm pointer-events-none"></div>
+
+				<!-- Modal content -->
+				<div class="relative z-10 flex flex-col w-full h-full">
+					<!-- Fixed header -->
+					<div class="px-6 pt-6 md:px-10 md:pt-10 pb-4 md:pb-6 flex justify-between items-start">
+						<h3 class="text-3xl md:text-4xl text-amogus-dark m-0 pr-4">{title}</h3>
+						<button 
+							type="button" 
+							class="p-2 -mr-2 -mt-2 rounded-full text-slate-400 hover:text-amogus-brown hover:bg-orange-50 transition-colors shrink-0"
+							onclick={close}
+						>
+							<X size={24} weight="bold" />
+						</button>
+					</div>
+					
+					<!-- Body -->
+					<div class="px-6 pb-6 md:px-10 md:pb-10">
+						{@render children()}
+					</div>
 				</div>
 			</div>
 		</div>

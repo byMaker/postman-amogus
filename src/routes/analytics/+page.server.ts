@@ -1,8 +1,14 @@
 import { db } from '$lib/server/db';
 import { sql } from 'drizzle-orm';
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, parent }) => {
+	const parentData = await parent();
+	if (!parentData.hasAnalytics) {
+		throw redirect(302, '/');
+	}
+
 	const emailFilter = url.searchParams.get('email');
 	const condition = emailFilter ? sql`WHERE email = ${emailFilter}` : sql``;
 
@@ -20,11 +26,11 @@ export const load: PageServerLoad = async ({ url }) => {
 		FROM analytics_mailbox_stats
 		${condition}
 	`);
-	
+
 	const [folderSummary] = await db.execute(sql`
 		SELECT 
 			SUM(size_mb) as totalSize, 
-			SUM(message_count) as totalMessages 
+			SUM(message_count) as totalMessages
 		FROM analytics_folder_stats
 		${condition}
 	`);
@@ -34,10 +40,10 @@ export const load: PageServerLoad = async ({ url }) => {
 		SELECT 
 			folder_name as folderName, 
 			SUM(size_mb) as totalSize, 
-			SUM(message_count) as totalCount 
-		FROM analytics_folder_stats 
+			SUM(message_count) as totalCount
+		FROM analytics_folder_stats
 		${condition}
-		GROUP BY folder_name 
+		GROUP BY folder_name
 		ORDER BY totalSize DESC
 		LIMIT 10
 	`);
@@ -47,11 +53,11 @@ export const load: PageServerLoad = async ({ url }) => {
 		SELECT 
 			extension, 
 			SUM(size_mb) as totalSize, 
-			SUM(file_count) as fileCount 
-		FROM analytics_attachment_stats 
+			SUM(file_count) as fileCount
+		FROM analytics_attachment_stats
 		${condition}
-		GROUP BY extension 
-		ORDER BY totalSize DESC 
+		GROUP BY extension
+		ORDER BY totalSize DESC
 		LIMIT 10
 	`);
 
@@ -59,21 +65,21 @@ export const load: PageServerLoad = async ({ url }) => {
 	const [topSenders] = await db.execute(sql`
 		SELECT 
 			sender, 
-			SUM(message_count) as totalMessages, 
-			SUM(size_mb) as totalSize 
-		FROM analytics_top_senders 
+			SUM(message_count) as totalMessages,
+			SUM(size_mb) as totalSize
+		FROM analytics_top_senders
 		${condition}
-		GROUP BY sender 
-		ORDER BY totalMessages DESC 
+		GROUP BY sender
+		ORDER BY totalMessages DESC
 		LIMIT 10
 	`);
 
 	// Query 5: Sent folder stats (ИСХОДЯЩИЕ: Мои отправленные)
 	const [sentStats] = await db.execute(sql`
 		SELECT 
-			SUM(message_count) as totalCount, 
-			SUM(size_mb) as totalSize 
-		FROM analytics_folder_stats 
+			SUM(message_count) as totalCount,
+			SUM(size_mb) as totalSize
+		FROM analytics_folder_stats
 		WHERE folder_name = 'Sent'
 		${emailFilter ? sql`AND email = ${emailFilter}` : sql``}
 	`);
@@ -81,16 +87,16 @@ export const load: PageServerLoad = async ({ url }) => {
 	// Query 5.5: Received folder stats (ВХОДЯЩИЕ: INBOX)
 	const [inboxStats] = await db.execute(sql`
 		SELECT 
-			SUM(message_count) as totalCount, 
-			SUM(size_mb) as totalSize 
-		FROM analytics_folder_stats 
+			SUM(message_count) as totalCount,
+			SUM(size_mb) as totalSize
+		FROM analytics_folder_stats
 		WHERE folder_name = 'INBOX'
 		${emailFilter ? sql`AND email = ${emailFilter}` : sql``}
 	`);
 
 	// Query 6: Users Quota
 	const [quotaStats] = await db.execute(sql`
-		SELECT SUM(quota_mb) as totalQuotaMb 
+		SELECT SUM(quota_mb) as totalQuotaMb
 		FROM users
 		${emailFilter ? sql`WHERE CONCAT(local_part, '@', domain) = ${emailFilter}` : sql``}
 	`);
@@ -100,7 +106,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		SELECT 
 			SUM(size_mb) as totalSize, 
 			SUM(file_count) as fileCount 
-		FROM analytics_attachment_stats
+		FROM analytics_attachment_stats 
 		${condition}
 	`);
 

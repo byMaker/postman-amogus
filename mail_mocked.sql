@@ -8,9 +8,9 @@ CREATE TABLE `aliases` (
   `alias` varchar(32) NOT NULL,
   `target` varchar(32) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL
+  `description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
-INSERT INTO `aliases` (`alias`, `target`, `active`, `comment`) VALUES
+INSERT INTO `aliases` (`alias`, `target`, `active`, `description`) VALUES
 ('contact@example.com', 'admin@example.com', 1, 'Main contact alias'),
 ('help@test.net', 'support@test.net', 1, NULL),
 ('inquiries@demo.org', 'info@demo.org', 1, 'Sales inquiries'),
@@ -19,7 +19,7 @@ CREATE TABLE `aliases_domains` (
   `alias_domain` varchar(255) NOT NULL,
   `target_domain` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL
+  `description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 -- No aliases_domains data
 CREATE TABLE `analytics_attachment_stats` (
@@ -921,9 +921,9 @@ CREATE TABLE `domains` (
   `domain` char(32) NOT NULL,
   `backupmx` tinyint(1) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `comment` varchar(255) DEFAULT NULL
+  `description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
-INSERT INTO `domains` (`domain`, `backupmx`, `active`, `comment`) VALUES
+INSERT INTO `domains` (`domain`, `backupmx`, `active`, `description`) VALUES
 ('example.com', 0, 1, 'Primary corporate domain'),
 ('test.net', 0, 1, 'Testing environment'),
 ('demo.org', 0, 1, 'Public demonstrations');
@@ -948,9 +948,9 @@ CREATE TABLE `users` (
   `quota_messages` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Messages',
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `use_for_aliases_domains` tinyint(4) DEFAULT 1 COMMENT 'If "1" then alias used for domani aliases in table aliases_domains',
-  `comment` varchar(255) DEFAULT NULL
+  `description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
-INSERT INTO `users` (`id`, `full_name`, `local_part`, `domain`, `password`, `quota_mb`, `quota_messages`, `active`, `use_for_aliases_domains`, `comment`) VALUES
+INSERT INTO `users` (`id`, `full_name`, `local_part`, `domain`, `password`, `quota_mb`, `quota_messages`, `active`, `use_for_aliases_domains`, `description`) VALUES
 (1, 'John Doe', 'admin', 'example.com', '{SHA512-CRYPT}$6$dummyhash...', 256000, 0, 1, 1, 'System Administrator'),
 (2, 'Alice Smith', 'sales', 'example.com', '{SHA512-CRYPT}$6$dummyhash...', 102400, 10000, 1, 0, 'Sales Department Head'),
 (3, 'Bob Johnson', 'support', 'test.net', '{SHA512-CRYPT}$6$dummyhash...', 51200, 0, 1, 1, 'Technical Support Lead'),

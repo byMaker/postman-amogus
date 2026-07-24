@@ -14,7 +14,7 @@ class ToastState {
 		this.toasts.push({ id, message, type });
 		setTimeout(() => {
 			this.remove(id);
-		}, 3000); // Закрываем через 3 секунды
+		}, 3000); // Close after 3 seconds
 	}
 
 	success(message: string) {

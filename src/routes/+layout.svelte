@@ -78,7 +78,7 @@
 
 	let mobileMenuOpen = $state(false);
 
-	// Определение разделов навигации
+	// Navigation sections definition
 	const baseSections = [
 		{
 			id: "dashboard",
