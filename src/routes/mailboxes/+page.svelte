@@ -785,7 +785,6 @@
 				name="fullName"
 				bind:value={currentUser.fullName}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder={t('placeholder.fullname')}
 			/>
 		</div>
 
@@ -805,7 +804,6 @@
 				name="password"
 				bind:value={currentUser.password}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder={t('placeholder.password')}
 				required={!isEditMode}
 			/>
 		</div>
@@ -865,7 +863,6 @@
 				name="description"
 				bind:value={currentUser.description}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder={t('placeholder.optional_note')}
 			/>
 		</div>
 

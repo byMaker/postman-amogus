@@ -19,6 +19,18 @@ This project is an alternative to classic mail panels like PostfixAdmin.
 
 Built entirely using the **vibe coding** approach, powered by the **Gemini 3.1 Pro** AI model.
 
+## Table of Contents
+- [Key Features](#key-features)
+- [Architecture Overview](#architecture-overview)
+- [Authentication](#authentication)
+- [Development](#development)
+  - [Running Locally](#running-locally)
+  - [Database Options (Mock Data)](#database-options-mock-data)
+  - [Running Tests](#running-tests)
+- [Production Build & Deployment](#production-build--deployment)
+- [Environment Variables Configuration](#environment-variables-configuration)
+- [License](#license)
+
 ## Key Features
 
 - **Modern & Responsive UI**: A beautiful dashboard built with SvelteKit and Tailwind CSS, fully supporting a mobile-first administration experience.
@@ -27,6 +39,18 @@ Built entirely using the **vibe coding** approach, powered by the **Gemini 3.1 P
 - **Rich Analytics Dashboard**: Deep dive into your server data with real-time statistical overviews, storage usage charts, and visual mail routing graphs.
 - **Security & Routing**: Native support for Global Blacklists and Whitelists (compatible with Rspamd), DKIM enforcement, and Global DNSBL configuration.
 - **Lightning-Fast Global Search**: Case-insensitive, fuzzy search across all your entities and their descriptions.
+
+## Architecture Overview
+
+Postman Amogus is built with a modern tech stack focused on speed, maintainability, and developer experience:
+
+- **Frontend Framework**: [SvelteKit 5](https://svelte.dev/) (using the new `runes` reactivity model).
+- **Styling**: Tailwind CSS v4 for utility-first responsive design.
+- **State Management**: Reactive Svelte stores (e.g., `persistedStore.svelte.ts`) synced with `localStorage`.
+- **Testing**: Comprehensive unit testing powered by [Vitest](https://vitest.dev/) and `jsdom`.
+- **Database**: MariaDB with a custom schema specifically optimized for Postfix/Exim lookups.
+
+The application strictly separates presentation components (in `src/lib/components/ui/`) from business logic and utilities (`src/lib/utils/`), ensuring a scalable codebase.
 
 ## Authentication
 
@@ -66,6 +90,15 @@ The repository includes two ready-to-use SQL files for database initialization:
 *Note: The mock database includes tables with the `analytics_` prefix. These tables are completely optional and are only utilized if you have an external statistics collector running alongside your mail server. If they are absent, the Analytics tab will simply hide itself.*
 
 **To use the mock data**, simply edit `docker-compose.dev.yaml` and change `./mail_nodata.sql` to `./mail_mocked.sql` in the `mariadb` volumes section before starting the container.
+
+### Running Tests
+
+We use Vitest for unit testing. To run tests and generate a coverage report:
+
+```bash
+docker compose -f docker-compose.dev.yaml exec app npm run test:coverage
+```
+This automatically updates the coverage badge in this README!
 
 ## Production Build & Deployment
 

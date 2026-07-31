@@ -23,7 +23,11 @@ export function highlightRow(node: HTMLElement) {
 				if (currentUrl.searchParams.has('highlight')) {
 					currentUrl.searchParams.delete('highlight');
 					currentUrl.searchParams.delete('tab');
-					window.history.replaceState({}, '', currentUrl);
+					try {
+						window.history.replaceState({}, '', currentUrl);
+					} catch (e) {
+						// Ignore SecurityError in test environments
+					}
 				}
 			}
 		}, 150);

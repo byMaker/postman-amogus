@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
 
-# Generate coverage inside docker container to avoid permission issues
-# and ensure a consistent environment
-docker compose -f docker-compose.dev.yaml exec app npm run test:coverage
+# The tests are run automatically before this script via npm hook
+# Reading coverage summary...
 
 # Read the percentage of covered lines
 COVERAGE_JSON="coverage/coverage-summary.json"

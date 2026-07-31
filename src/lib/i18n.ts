@@ -464,7 +464,9 @@ export const translations: Record<string, Record<string, string>> = {
 	}
 };
 
-export function t(key: string): string {
+export type TranslationKey = keyof typeof translations.en;
+
+export function t(key: TranslationKey | (string & {})): string {
 	const lang = settings.computedLanguage;
 	return translations[lang]?.[key] || key;
 }
