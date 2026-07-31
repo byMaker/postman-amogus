@@ -22,7 +22,6 @@ export const translations: Record<string, Record<string, string>> = {
 		// Common UI
 		'btn.settings': 'Settings',
 		'btn.about': 'About',
-		'btn.close': 'Close',
 		'btn.save': 'Save',
 		'btn.add_rule': '+ Add Rule',
 		'btn.cancel': 'Cancel',
@@ -42,8 +41,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'table.actions': 'Actions',
 		'table.description': 'Description',
 		'table.status': 'Status',
-		'table.added': 'Added',
-		'table.value': 'Value (Domain, Email, or IP)',
 		'table.filtered_empty': 'No records found matching your filters.',
 		
 		'comment.title': 'Description',
@@ -60,11 +57,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'form.optional': '(Optional)',
 		'form.change_password': '(Change Password)',
 		'form.active': 'Active',
-		'form.active.desc': 'Enable or disable this entry',
 		'form.backupmx': 'Backup MX',
-		'form.backupmx.desc': 'Act as a backup mail server',
-		'form.target': 'Target (Destination)',
-		'form.value': 'Value',
 		'form.forward_to': 'Forward To Mailbox',
 		'form.select_destination': 'Select destination...',
 		'form.invalid_inactive': '(Current, Invalid/Inactive)',
@@ -87,7 +80,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'domain.delete.aliases': 'Email Aliases will be orphaned',
 		'domain.delete.domain_aliases': 'Domain Aliases will be orphaned',
 
-		'quota.of': 'of',
 		'quota.mb': 'MB',
 		'quota.gb': 'GB',
 		'quota.msgs': 'msgs',
@@ -121,11 +113,9 @@ export const translations: Record<string, Record<string, string>> = {
 		'popover.placeholder': 'Enter your note here...',
 		
 		'graph.title': 'Mail Routing Graph',
-		'graph.empty': 'No mapped routing paths.',
 		'graph.direct': 'Direct Delivery',
 		'graph.alias': 'Personal Alias',
 		'graph.domain_alias': 'Domain Alias',
-		'graph.catch_all': 'Catch-All Rule',
 		'graph.subtitle': 'All incoming email routes delivering to this mailbox.',
 		'graph.domain_disabled': 'Domain is Disabled',
 		'graph.domain_disabled.desc': 'The domain {domain} is currently disabled. All incoming mail routing is suspended, regardless of individual alias or mailbox settings.',
@@ -174,7 +164,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'settings.title': 'Settings',
 		'settings.subtitle': 'Application Preferences',
 		'settings.sysconf': 'System Configuration',
-		'settings.sysconf.desc': 'Manage global preferences and operational settings for your Postman Amogus instance.',
 		'settings.lang': 'Language',
 		'settings.lang.desc': 'Choose your preferred language',
 		'settings.auto': 'Auto',
@@ -189,7 +178,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'font.jura': 'Jura (Thin Tech)',
 		'font.huninn': 'Huninn (Playful)',
 		'about.title': 'About',
-		'about.subtitle': 'System Information',
 		'btn.github': 'GitHub Repository',
 		'btn.license': 'View License',
 
@@ -211,16 +199,9 @@ export const translations: Record<string, Record<string, string>> = {
 		'alias.table.target': 'Target (Destination)',
 
 		// Whitelists
-		'whitelist.add': 'Add Rule',
-		'whitelist.table.type': 'Rule Type',
-		'whitelist.table.value': 'Value (Domain, Email or IP)',
-		'whitelist.table.added': 'Added On',
 
 		// Blacklists
 		'blacklist.add': 'Add Rule',
-		'blacklist.table.type': 'Rule Type',
-		'blacklist.table.value': 'Value (Domain, Email or IP)',
-		'blacklist.table.added': 'Added On',
 		'label.dkim_domain': 'DKIM Domain',
 		'label.target': 'Target',
 		'label.domain_name': 'Domain Name',
@@ -231,7 +212,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'blacklist.table.empty': 'No entries found in this blacklist.',
 		'whitelist.table.empty': 'No entries found in this whitelist.',
 		
-		'nav.home': 'Home',
 		'tab.domains': 'Domains',
 		'tab.emails': 'Emails',
 		'tab.ips': 'IP Addresses',
@@ -269,7 +249,6 @@ export const translations: Record<string, Record<string, string>> = {
 		// Common UI
 		'btn.settings': 'Настройки',
 		'btn.about': 'О программе',
-		'btn.close': 'Закрыть',
 		'btn.save': 'Сохранить',
 		'btn.add_rule': '+ Добавить правило',
 		'btn.cancel': 'Отмена',
@@ -289,8 +268,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'table.actions': 'Действия',
 		'table.description': 'Описание',
 		'table.status': 'Статус',
-		'table.added': 'Добавлено',
-		'table.value': 'Значение (домен, email или IP)',
 		'table.filtered_empty': 'По вашему запросу ничего не найдено.',
 
 		'comment.title': 'Описание',
@@ -307,11 +284,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'form.optional': '(Необязательно)',
 		'form.change_password': '(Смена пароля)',
 		'form.active': 'Активен',
-		'form.active.desc': 'Включить или отключить запись',
 		'form.backupmx': 'Backup MX',
-		'form.backupmx.desc': 'Работать как резервный сервер',
-		'form.target': 'Цель (куда пересылать)',
-		'form.value': 'Значение',
 		'form.forward_to': 'Пересылать на почтовый ящик',
 		'form.select_destination': 'Выберите ящик...',
 		'form.invalid_inactive': '(Текущий, неактивен/удален)',
@@ -360,11 +333,9 @@ export const translations: Record<string, Record<string, string>> = {
 		'popover.placeholder': 'Введите заметку...',
 		
 		'graph.title': 'Граф маршрутов',
-		'graph.empty': 'Нет заданных путей доставки.',
 		'graph.direct': 'Прямая доставка',
 		'graph.alias': 'Личный алиас',
 		'graph.domain_alias': 'Алиас домена',
-		'graph.catch_all': 'Catch-All правило',
 		'graph.subtitle': 'Все входящие пути доставки, направленные в этот ящик.',
 		'graph.domain_disabled': 'Домен отключен',
 		'graph.domain_disabled.desc': 'Домен {domain} в данный момент отключен. Вся входящая почта приостановлена, независимо от настроек алиасов или ящиков.',
@@ -413,7 +384,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'settings.title': 'Настройки',
 		'settings.subtitle': 'Параметры приложения',
 		'settings.sysconf': 'Системная конфигурация',
-		'settings.sysconf.desc': 'Глобальные настройки и параметры интерфейса вашего Postman Amogus.',
 		'settings.lang': 'Язык',
 		'settings.lang.desc': 'Выберите предпочитаемый язык',
 		'settings.auto': 'Авто',
@@ -428,7 +398,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'font.jura': 'Jura (Тонкий техно)',
 		'font.huninn': 'Huninn (Игривый)',
 		'about.title': 'О программе',
-		'about.subtitle': 'Системная информация',
 		'btn.github': 'Репозиторий GitHub',
 		'btn.license': 'Смотреть лицензию',
 
@@ -450,10 +419,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'alias.table.target': 'Цель (Куда пересылать)',
 
 		// Whitelists
-		'whitelist.add': 'Добавить правило',
-		'whitelist.table.type': 'Тип',
-		'whitelist.table.value': 'Значение (Домен, Email или IP)',
-		'whitelist.table.added': 'Дата добавления',
 		
 		'label.dkim_domain': 'DKIM домен',
 		'label.target': 'Значение',
@@ -464,9 +429,6 @@ export const translations: Record<string, Record<string, string>> = {
 
 		// Blacklists
 		'blacklist.add': 'Добавить правило',
-		'blacklist.table.type': 'Тип',
-		'blacklist.table.value': 'Значение (Домен, Email или IP)',
-		'blacklist.table.added': 'Дата добавления',
 		'tab.domains': 'Домены',
 		'tab.emails': 'Адреса (Email)',
 		'tab.ips': 'IP-адреса',
@@ -475,7 +437,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'blacklist.table.empty': 'Записей не найдено.',
 		'whitelist.table.empty': 'Записей не найдено.',
 
-		'quota.of': 'из',
 		'quota.mb': 'МБ',
 		'quota.gb': 'ГБ',
 		'quota.msgs': 'писем',

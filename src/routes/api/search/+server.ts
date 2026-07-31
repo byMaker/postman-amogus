@@ -24,7 +24,7 @@ export async function GET({ url }) {
 
 	// Blacklists
 	const bd = await db.select().from(blackDomains).where(or(like(blackDomains.domain, pattern), like(blackDomains.description, pattern))).limit(15);
-	bd.forEach(d => results.push({ type: 'blacklist', subType: 'domains', title: `*.${d.domain}`, details: d.description }));
+	bd.forEach(d => results.push({ type: 'blacklist', subType: 'domains', title: `*${d.domain}`, details: d.description }));
 
 	const be = await db.select().from(blackEmails).where(or(like(blackEmails.email, pattern), like(blackEmails.description, pattern))).limit(15);
 	be.forEach(e => results.push({ type: 'blacklist', subType: 'emails', title: e.email, details: e.description }));
@@ -40,7 +40,7 @@ export async function GET({ url }) {
 
 	// Whitelists
 	const wd = await db.select().from(whiteDomains).where(or(like(whiteDomains.domain, pattern), like(whiteDomains.description, pattern))).limit(15);
-	wd.forEach(d => results.push({ type: 'whitelist', subType: 'domains', title: `*.${d.domain}`, details: d.description }));
+	wd.forEach(d => results.push({ type: 'whitelist', subType: 'domains', title: `*${d.domain}`, details: d.description }));
 
 	const we = await db.select().from(whiteEmails).where(or(like(whiteEmails.email, pattern), like(whiteEmails.description, pattern))).limit(15);
 	we.forEach(e => results.push({ type: 'whitelist', subType: 'emails', title: e.email, details: e.description }));

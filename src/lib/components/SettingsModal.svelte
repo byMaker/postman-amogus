@@ -316,7 +316,7 @@
 							class="flex flex-wrap items-center justify-center gap-3 w-full mt-4"
 						>
 							<a
-								href="https://github.com/byMaker"
+								href="https://github.com/byMaker/postman-amogus"
 								target="_blank"
 								rel="noopener noreferrer"
 								class="btn border-none bg-amogus-blue hover:bg-amogus-blue/90 text-white rounded-full px-6 font-bold shadow-sm flex items-center gap-2"
