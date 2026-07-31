@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import EntryModal from '$lib/components/lists/EntryModal.svelte';
+	import { PLACEHOLDERS } from '$lib/constants/placeholders';
 	import Modal from "$lib/components/Modal.svelte";
 	import CommentPopover from "$lib/components/CommentPopover.svelte";
+	import { updateMailbox } from "$lib/api/actions";
 	import MailRoutingGraph from "$lib/components/MailRoutingGraph.svelte";
 	import { toast } from "$lib/state/toast.svelte";
 	import {
@@ -164,7 +167,7 @@
 		if (user.useForAliasesDomains) fd.append("useForAliasesDomains", "on");
 
 		try {
-			await fetch("?/update", { method: "POST", body: fd });
+			await updateMailbox(fd);
 			toast.success(t("toast.saved"));
 			await invalidateAll();
 		} catch (e) {
@@ -726,7 +729,7 @@
 							name="localPart"
 							bind:value={currentUser.localPart}
 							className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-left sm:text-right font-medium min-w-0"
-							placeholder={t('placeholder.username')}
+							placeholder={PLACEHOLDERS.username}
 							required
 							pattern={"^[a-zA-Z0-9._%+-]+$"}
 							title="Please enter a valid username (no spaces or @ symbol)"

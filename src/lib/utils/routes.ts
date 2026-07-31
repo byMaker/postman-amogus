@@ -27,3 +27,14 @@ export function getMailboxUrl(email: string): string {
 export function getDeleteUrl(type: 'domains' | 'mailboxes' | 'aliases' | 'blacklists' | 'whitelists', id: string): string {
 	return `${ROUTES[type.toUpperCase() as keyof typeof ROUTES]}?delete=${encodeURIComponent(id)}`;
 }
+
+export function getHighlightUrl(type: string, title: string, subType: string = ''): string {
+	switch (type) {
+		case 'domain': return `${ROUTES.DOMAINS}?highlight=${encodeURIComponent(title)}`;
+		case 'mailbox': return `${ROUTES.MAILBOXES}?highlight=${encodeURIComponent(title)}`;
+		case 'alias': return `${ROUTES.ALIASES}?highlight=${encodeURIComponent(title)}`;
+		case 'blacklist': return `${ROUTES.BLACKLISTS}?highlight=${encodeURIComponent(title)}&tab=${subType}`;
+		case 'whitelist': return `${ROUTES.WHITELISTS}?highlight=${encodeURIComponent(title)}&tab=${subType}`;
+		default: return '#';
+	}
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { MagnifyingGlass, X, EnvelopeSimple, At, Skull, Star, GlobeHemisphereWest, Ghost } from 'phosphor-svelte';
 	import { t } from '$lib/i18n';
+	import { PLACEHOLDERS } from '$lib/constants/placeholders';
 
 	let isOpen = $state(false);
 	let query = $state('');
@@ -55,15 +56,10 @@
 		}
 	}
 
-	function getLink(type: string, title: string, subType: string) {
-		switch (type) {
-			case 'domain': return `/domains?highlight=${encodeURIComponent(title)}`;
-			case 'mailbox': return `/mailboxes?highlight=${encodeURIComponent(title)}`;
-			case 'alias': return `/aliases?highlight=${encodeURIComponent(title)}`;
-			case 'blacklist': return `/blacklists?highlight=${encodeURIComponent(title)}&tab=${subType}`;
-			case 'whitelist': return `/whitelists?highlight=${encodeURIComponent(title)}&tab=${subType}`;
-			default: return '#';
-		}
+	import { getHighlightUrl } from '$lib/utils/routes';
+
+	function getLink(type: string, title: string, subType: string = '') {
+		return getHighlightUrl(type, title, subType);
 	}
 	
 	function getColor(type: string) {
@@ -105,7 +101,7 @@
 					id="global-search-input"
 					type="text" 
 					class="w-full bg-transparent border-none outline-none text-xl text-slate-700 placeholder-slate-400"
-					placeholder={t('search.placeholder')}
+					placeholder={PLACEHOLDERS.search}
 					bind:value={query}
 					oninput={handleInput}
 				/>

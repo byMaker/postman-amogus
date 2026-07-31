@@ -21,9 +21,7 @@ export const translations: Record<string, Record<string, string>> = {
 		
 		// Common UI
 		
-		'placeholder.username': 'username',
-		'placeholder.email': 'sales@example.com',
-		'placeholder.domain': 'example.com',
+		// Common UI
 
 		'btn.settings': 'Settings',
 		'btn.about': 'About',
@@ -97,7 +95,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'domain.alias.desc1': 'All emails sent to the domains listed below will be seamlessly forwarded to',
 		'domain.alias.desc2': 'Note: You do not need to create these aliases as primary domains first. If an alias also exists as a primary domain, this forwarding rule will override its local mailboxes. Additionally, each mailbox can individually enable or disable receiving mail from these domain aliases in its own settings.',
 		'domain.alias.empty': 'No domain aliases configured.',
-		'domain.alias.placeholder': 'e.g. example.net',
 		'domain.alias.add': 'Add Alias',
 		'domain.alias.limit': 'Maximum limit of 5 aliases reached for this domain.',
 
@@ -113,8 +110,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'confirm.changed': '(changed)',
 		'btn.back_edit': 'Back to Edit',
 		'btn.confirm_save': 'Confirm & Save',
-
-		'popover.placeholder': 'Enter your note here...',
 		
 		'graph.title': 'Mail Routing Graph',
 		'graph.direct': 'Direct Delivery',
@@ -221,8 +216,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'tab.ips': 'IP Addresses',
 		'tab.dnsbl': 'Global DNSBL',
 		'tab.dkim': 'DKIM Required',
-		
-		'search.placeholder': 'Search anywhere...',
 		'search.min_chars': 'Type at least 2 characters...',
 		'search.no_results': 'No results found for "{query}"',
 		'search.empty_state': 'Start typing to search across the entire system.',
@@ -252,9 +245,7 @@ export const translations: Record<string, Record<string, string>> = {
 		
 		// Common UI
 		
-		'placeholder.username': 'username',
-		'placeholder.email': 'sales@example.com',
-		'placeholder.domain': 'example.com',
+		// Common UI
 
 		'btn.settings': 'Настройки',
 		'btn.about': 'О программе',
@@ -321,7 +312,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'domain.alias.desc1': 'Все письма, отправленные на указанные ниже домены, будут автоматически пересылаться на',
 		'domain.alias.desc2': 'Примечание: Вам не нужно сначала создавать эти алиасы как основные домены. Если алиас также существует как основной домен, это правило пересылки переопределит его локальные ящики. Кроме того, каждый ящик может индивидуально включать или отключать получение почты с этих доменных алиасов в своих настройках.',
 		'domain.alias.empty': 'Доменные алиасы не настроены.',
-		'domain.alias.placeholder': 'например, example.net',
 		'domain.alias.add': 'Добавить алиас',
 		'domain.alias.limit': 'Достигнут максимальный лимит в 5 алиасов для этого домена.',
 
@@ -337,8 +327,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'confirm.changed': '(изменено)',
 		'btn.back_edit': 'Назад к редактированию',
 		'btn.confirm_save': 'Подтвердить и сохранить',
-
-		'popover.placeholder': 'Введите заметку...',
 		
 		'graph.title': 'Граф маршрутов',
 		'graph.direct': 'Прямая доставка',
@@ -451,8 +439,6 @@ export const translations: Record<string, Record<string, string>> = {
 		'quota.unlimited': 'Безлимит',
 		'quota.mb_used': 'МБ занято',
 		'quota.gb_used': 'ГБ занято',
-		
-		'search.placeholder': 'Глобальный поиск...',
 		'search.min_chars': 'Введите минимум 2 символа...',
 		'search.no_results': 'Ничего не найдено по запросу "{query}"',
 		'search.empty_state': 'Начните вводить текст для глобального поиска.',

@@ -6,9 +6,11 @@
 	import { t } from '$lib/i18n';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
+	import { updateAlias } from '$lib/api/actions';
 	import { invalidateAll } from '$app/navigation';
 	import Table from '$lib/components/ui/Table.svelte';
 	import Tr from '$lib/components/ui/Tr.svelte';
+	import { PLACEHOLDERS } from '$lib/constants/placeholders';
 	import Th from '$lib/components/ui/Th.svelte';
 	import Td from '$lib/components/ui/Td.svelte';
 	import ActionButtons from '$lib/components/ui/ActionButtons.svelte';
@@ -98,7 +100,7 @@
 		fd.append('active', alias.active ? '1' : '');
 
 		try {
-			await fetch('?/update', { method: 'POST', body: fd });
+			await updateAlias(fd);
 			toast.success(t('toast.saved'));
 			await invalidateAll();
 		} catch (e) {
@@ -312,7 +314,7 @@
 				name="alias" 
 				bind:value={currentAlias.alias} 
 				className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
-				placeholder={t('placeholder.email')} 
+				placeholder={PLACEHOLDERS.email} 
 				required 
 				pattern={"^[^@\\s]+@[^@\\s]+\\.[^@\\s0-9]{2,}$"}
 				title="Please enter a valid email address"

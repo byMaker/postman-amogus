@@ -21,9 +21,21 @@ export default defineConfig({
 	ssr: {
 		noExternal: ['svelte-chartjs', 'chart.js']
 	},
+	resolve: {
+		conditions: ['browser', 'development']
+	},
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}'],
+		server: {
+			deps: {
+				inline: [/svelte/]
+			}
+		},
+		include: ['src/**/*.{test,spec}.{js,ts,svelte}'],
 		environment: 'jsdom',
+		env: {
+			SSR: ''
+		},
+		resolveSnapshotPath: (testPath, snapExtension) => testPath + snapExtension,
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'json-summary', 'json'],

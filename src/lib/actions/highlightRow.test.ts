@@ -51,4 +51,15 @@ describe('highlightRow action', () => {
 		
 		action?.destroy?.();
 	});
+	it('should return undefined if window is undefined (SSR)', () => {
+		// Temporarily delete window to simulate SSR
+		const originalWindow = global.window;
+		delete (global as any).window;
+
+		const action = highlightRow(node);
+		expect(action).toBeUndefined();
+
+		// Restore window
+		global.window = originalWindow;
+	});
 });

@@ -1,6 +1,6 @@
 # Postman Amogus
 
-![Coverage](https://img.shields.io/badge/Coverage-89%25-yellow.svg)
+![Coverage](https://img.shields.io/badge/Coverage-85%25-yellow.svg)
 
 ![Dashboard Screenshot](./screenshot.png) 
 
@@ -90,6 +90,15 @@ The repository includes two ready-to-use SQL files for database initialization:
 *Note: The mock database includes tables with the `analytics_` prefix. These tables are completely optional and are only utilized if you have an external statistics collector running alongside your mail server. If they are absent, the Analytics tab will simply hide itself.*
 
 **To use the mock data**, simply edit `docker-compose.dev.yaml` and change `./mail_nodata.sql` to `./mail_mocked.sql` in the `mariadb` volumes section before starting the container.
+
+
+### Code Quality & Linting
+
+You can run the Svelte linter (type checking and template validation) via:
+
+```bash
+docker compose -f docker-compose.dev.yaml exec app npm run lint
+```
 
 ### Running Tests
 

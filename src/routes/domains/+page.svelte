@@ -2,6 +2,8 @@
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
+	import { updateDomain } from '$lib/api/actions';
+	import { PLACEHOLDERS } from "$lib/constants/placeholders";
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import Table from '$lib/components/ui/Table.svelte';
 	import Tr from '$lib/components/ui/Tr.svelte';
@@ -84,7 +86,7 @@
 		if (domain.dkimActive) fd.append('dkimActive', 'on');
 
 		try {
-			await fetch('?/update', { method: 'POST', body: fd });
+			await updateDomain(fd);
 			toast.success(t('toast.saved'));
 			await invalidateAll();
 		} catch (e) {
@@ -254,7 +256,7 @@
 			<div class="label pt-0 pb-1.5">
 				<span class="label-text font-bold text-rose-900 whitespace-normal">{t('modal.type_domain_to_confirm')}</span>
 			</div>
-			<input type="text" bind:value={deleteConfirmText} placeholder={t('placeholder.domain')} class="input input-bordered w-full rounded-xl bg-white border-rose-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
+			<input type="text" bind:value={deleteConfirmText} placeholder={PLACEHOLDERS.domain} class="input input-bordered w-full rounded-xl bg-white border-rose-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
 		</div>
 	</div>
 	
@@ -319,7 +321,7 @@
 					name="domain" 
 					bind:value={currentDomain.domain} 
 					className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
-					placeholder={t('placeholder.domain')} 
+					placeholder={PLACEHOLDERS.domain} 
 					required 
 					pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"}
 					title="Please enter a valid domain name (e.g. example.com)"
@@ -420,7 +422,7 @@
 					};
 				}} class="flex flex-col sm:flex-row gap-3">
 					<input type="hidden" name="targetDomain" value={currentDomain.domain} />
-					<ValidatedInput name="aliasDomain" placeholder={t('domain.alias.placeholder')} required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" className="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
+					<ValidatedInput name="aliasDomain" placeholder={PLACEHOLDERS.domainAlias} required pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"} title="Please enter a valid domain name (e.g. example.com)" className="input input-bordered flex-1 rounded-2xl bg-white border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all font-medium" />
 					<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-2xl px-6 font-bold shadow-sm w-full sm:w-auto">{t('domain.alias.add')}</button>
 				</form>
 			{:else}
