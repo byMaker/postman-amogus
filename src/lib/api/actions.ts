@@ -1,27 +1,42 @@
 /**
- * Wrappers for programmatic SvelteKit form actions.
- * These are used when we need to trigger an action via JavaScript
- * rather than relying on standard HTML form submissions.
+ * Wrappers for programmatic SvelteKit form actions and API requests.
  */
 
-export async function submitAction(route: string, data: FormData): Promise<Response> {
-	return await fetch(`${route}?/update`, {
+import { apiRequest } from './fetch';
+import type { SearchResult } from './types';
+import type { ActionResult } from '@sveltejs/kit';
+
+export async function submitAction(route: string, data: FormData): Promise<ActionResult> {
+	const result = await apiRequest<ActionResult>(`${route}?/update`, {
 		method: 'POST',
-		body: data
+		body: data,
+		headers: {
+			'Accept': 'application/json'
+		}
 	});
+
+	if (result.type === 'failure' || result.type === 'error') {
+		throw {
+			status: result.status || 500,
+			message: result.type === 'failure' && result.data?.message ? String(result.data.message) : 'Action failed'
+		};
+	}
+
+	return result;
 }
 
-export async function updateDomain(formData: FormData): Promise<Response> {
+export async function updateDomain(formData: FormData): Promise<ActionResult> {
 	return await submitAction('/domains', formData);
 }
 
-export async function updateMailbox(formData: FormData): Promise<Response> {
+export async function updateMailbox(formData: FormData): Promise<ActionResult> {
 	return await submitAction('/mailboxes', formData);
 }
 
-export async function updateAlias(formData: FormData): Promise<Response> {
+export async function updateAlias(formData: FormData): Promise<ActionResult> {
 	return await submitAction('/aliases', formData);
 }
 
-// Additional specific typed wrappers could be added here if needed,
-// for example building the FormData object manually.
+export async function searchGlobal(query: string): Promise<SearchResult[]> {
+	return await apiRequest<SearchResult[]>(`/api/search?q=${encodeURIComponent(query)}`);
+}

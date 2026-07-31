@@ -1,6 +1,6 @@
 # Postman Amogus
 
-![Coverage](https://img.shields.io/badge/Coverage-85%25-yellow.svg)
+![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg)
 
 ![Dashboard Screenshot](./screenshot.png) 
 

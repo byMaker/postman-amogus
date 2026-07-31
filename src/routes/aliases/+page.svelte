@@ -110,7 +110,7 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Заголовок и кнопка -->
+	<!-- Header and Add button -->
 	<div class="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 pb-2 gap-4">
 		<div>
 			<h2 class="text-4xl text-amogus-dark flex items-center gap-3">
@@ -183,7 +183,7 @@
 		</div>
 	</div>
 
-	<!-- Таблица алиасов -->
+	<!-- Aliases table -->
 	<Table>
 		<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden lg:table-header-group">
 			<tr>

@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 		LIMIT 10
 	`);
 
-	// Query 5: Sent folder stats (ИСХОДЯЩИЕ: Мои отправленные)
+	// Query 5: Sent folder stats
 	const [sentStats] = await db.execute(sql`
 		SELECT 
 			SUM(message_count) as totalCount,
@@ -84,7 +84,7 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 		${emailFilter ? sql`AND email = ${emailFilter}` : sql``}
 	`);
 
-	// Query 5.5: Received folder stats (ВХОДЯЩИЕ: INBOX)
+	// Query 5.5: Received folder stats (INBOX)
 	const [inboxStats] = await db.execute(sql`
 		SELECT 
 			SUM(message_count) as totalCount,

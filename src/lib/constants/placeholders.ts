@@ -3,6 +3,6 @@ export const PLACEHOLDERS = {
 	email: 'sales@example.com',
 	domain: 'example.com',
 	domainAlias: 'e.g. example.net',
-	search: 'Search anywhere...',
+	search: 'search.placeholder',
 	note: 'Enter your note here...'
-};
+} as const;

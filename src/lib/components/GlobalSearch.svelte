@@ -3,9 +3,11 @@
 	import { t } from '$lib/i18n';
 	import { PLACEHOLDERS } from '$lib/constants/placeholders';
 
+	import type { SearchResult } from '$lib/api/types';
+
 	let isOpen = $state(false);
 	let query = $state('');
-	let results = $state<any[]>([]);
+	let results = $state<SearchResult[]>([]);
 	let isLoading = $state(false);
 	let searchTimeout: any;
 
@@ -23,6 +25,8 @@
 		results = [];
 	}
 
+	import { searchGlobal } from '$lib/api/actions';
+
 	function handleInput() {
 		if (searchTimeout) clearTimeout(searchTimeout);
 		if (query.length < 2) {
@@ -33,10 +37,7 @@
 		isLoading = true;
 		searchTimeout = setTimeout(async () => {
 			try {
-				const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-				if (res.ok) {
-					results = await res.json();
-				}
+				results = await searchGlobal(query);
 			} catch (err) {
 				console.error(err);
 			} finally {

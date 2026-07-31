@@ -454,7 +454,7 @@ export type TranslationKey = keyof typeof translations.en;
 
 export function t(key: TranslationKey | (string & {})): string {
 	const lang = settings.computedLanguage;
-	return translations[lang]?.[key] || key;
+	return translations[lang]?.[key] ?? key;
 }
 
 export function formatDate(date: string | number | Date, options?: Intl.DateTimeFormatOptions): string {

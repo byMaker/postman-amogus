@@ -14,7 +14,7 @@ export default defineConfig({
 			},
 			adapter: adapter(),
 			csrf: {
-				checkOrigin: false
+				trustedOrigins: ['*']
 			}
 		} as any)
 	],
@@ -39,7 +39,7 @@ export default defineConfig({
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'json-summary', 'json'],
-			include: ['src/lib/utils/**/*.{js,ts}', 'src/lib/actions/**/*.{js,ts}']
+			include: ['src/lib/utils/**/*.{js,ts}', 'src/lib/actions/**/*.{js,ts}', 'src/lib/i18n.ts']
 		}
 	}
 });
