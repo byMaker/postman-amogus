@@ -21,13 +21,23 @@
 	}
 
 	$effect(() => {
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === 'Escape' && show) {
+				close();
+			}
+		};
+
 		if (show) {
 			document.body.style.overflow = 'hidden';
+			window.addEventListener('keydown', handleEscape);
 		} else {
 			document.body.style.overflow = '';
+			window.removeEventListener('keydown', handleEscape);
 		}
+		
 		return () => {
 			document.body.style.overflow = '';
+			window.removeEventListener('keydown', handleEscape);
 		};
 	});
 

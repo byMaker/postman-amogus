@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MagnifyingGlass, X, EnvelopeSimple, At, Skull, Star, GlobeHemisphereWest, Ghost } from 'phosphor-svelte';
+	import { MagnifyingGlass, X, At, Mailbox, Ghost, Skull, Star } from 'phosphor-svelte';
 	import { t } from '$lib/i18n';
 	import { PLACEHOLDERS } from '$lib/constants/placeholders';
 
@@ -49,9 +49,9 @@
 
 	function getIcon(type: string) {
 		switch (type) {
-			case 'domain': return GlobeHemisphereWest;
-			case 'mailbox': return EnvelopeSimple;
-			case 'alias': return At;
+			case 'domain': return At;
+			case 'mailbox': return Mailbox;
+			case 'alias': return Ghost;
 			case 'blacklist': return Skull;
 			case 'whitelist': return Star;
 			default: return MagnifyingGlass;
@@ -68,9 +68,9 @@
 		switch (type) {
 			case 'domain': return 'text-violet-500 bg-violet-50';
 			case 'mailbox': return 'text-amber-500 bg-amber-50';
-			case 'alias': return 'text-emerald-500 bg-emerald-50';
+			case 'alias': return 'text-teal-600 bg-teal-50';
 			case 'blacklist': return 'text-rose-500 bg-rose-50';
-			case 'whitelist': return 'text-cyan-500 bg-cyan-50';
+			case 'whitelist': return 'text-yellow-500 bg-yellow-50';
 			default: return 'text-slate-500 bg-slate-50';
 		}
 	}
@@ -116,7 +116,7 @@
 			</div>
 
 			<!-- Results Area -->
-			<div class="overflow-y-auto p-4 flex-1">
+			<div class="global-search-results overflow-y-auto p-4 flex-1">
 				{#if query.length > 0 && query.length < 2}
 					<div class="text-center py-8 text-slate-400">
 						{t('search.min_chars')}

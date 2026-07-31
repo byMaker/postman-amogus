@@ -1,6 +1,6 @@
 # Postman Amogus
 
-![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg)
+![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg) ![E2E Tests](https://img.shields.io/badge/E2E%20Tests-passing-brightgreen.svg)
 
 ![Dashboard Screenshot](./screenshot.png) 
 
@@ -97,10 +97,18 @@ The repository includes two ready-to-use SQL files for database initialization:
 You can run the Svelte linter (type checking and template validation) via:
 
 ```bash
-docker compose -f docker-compose.dev.yaml exec app npm run lint
+docker compose -f docker compose exec app npm run test:unit
 ```
 
-### Running Tests
+### UI E2E Tests (Playwright)
+
+To run the full browser-based E2E tests, use the dedicated Playwright container. This will run tests in headless Chromium against your local development environment:
+
+```bash
+docker compose -f docker-compose.dev.yaml run --rm e2e npm run test:ui
+```
+
+## Contributing Tests
 
 We use Vitest for unit testing. To run tests and generate a coverage report:
 

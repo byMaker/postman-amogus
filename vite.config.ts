@@ -24,6 +24,9 @@ export default defineConfig({
 	resolve: {
 		conditions: ['browser', 'development']
 	},
+	server: {
+		allowedHosts: true
+	},
 	test: {
 		server: {
 			deps: {

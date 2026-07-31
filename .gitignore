@@ -25,9 +25,16 @@ vite.config.ts.timestamp-*
 # Docker / Database
 mysql_data/
 
-sus/
-TODO.md
-coverage/
-
 # Agents
 .agents/
+
+# Tests and Playwright
+coverage/
+tests-reports/
+playwright-report/
+test-results/
+test.trace.json
+
+# Other
+sus/
+TODO.md

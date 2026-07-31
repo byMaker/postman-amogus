@@ -43,6 +43,19 @@ services:
     networks:
       - amogus-net
 
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.62.1-jammy
+    container_name: postman_amogus_e2e
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+    networks:
+      - amogus-net
+    profiles:
+      - testing
+
 volumes:
   mysql_data:
 
