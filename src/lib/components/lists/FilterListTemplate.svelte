@@ -11,6 +11,19 @@
 	import { t } from '$lib/i18n';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
+	import { crossfade, fade, fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+
+	const [send, receive] = crossfade({
+		duration: d => Math.sqrt(d * 300),
+		fallback(node, params) {
+			return {
+				duration: 300,
+				easing: quintOut,
+				css: t => `opacity: ${t}`
+			};
+		}
+	});
 
 	let { 
 		title, 
@@ -201,17 +214,26 @@
 		<div class="inline-flex bg-slate-100 p-1.5 rounded-full border border-slate-200 shadow-inner min-w-max mx-auto">
 			{#each tabs as tab}
 				{@const TabIcon = tab.icon}
-				<button class="flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-all duration-300 {activeSubTab === tab.id ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeSubTab = tab.id}>
-					<TabIcon size={20} weight={activeSubTab === tab.id ? 'fill' : 'regular'} /> {tab.label}
+				<button class="relative flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-colors duration-300 {activeSubTab === tab.id ? 'text-amogus-dark' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeSubTab = tab.id}>
+					{#if activeSubTab === tab.id}
+						<div class="absolute inset-0 bg-white rounded-full shadow-sm z-0" in:receive={{key: 'active-tab'}} out:send={{key: 'active-tab'}}></div>
+					{/if}
+					<span class="relative z-10 flex items-center gap-2">
+						<TabIcon size={20} weight={activeSubTab === tab.id ? 'fill' : 'regular'} /> {tab.label}
+					</span>
 				</button>
 			{/each}
 		</div>
 	</div>
 
 	<!-- List Data Table -->
-	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white animate-in fade-in duration-300 relative">
-		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
-		<table class="w-full text-left text-sm block lg:table relative z-10">
+	<div class="grid relative">
+		{#key activeSubTab}
+			<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white col-start-1 row-start-1" 
+				in:fly={{ y: 20, duration: 150, delay: 150 }} 
+				out:fly={{ y: -20, duration: 150 }}>
+				<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
+				<table class="w-full text-left text-sm block lg:table relative z-10">
 			<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden lg:table-header-group">
 				<tr>
 					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('target')}>
@@ -288,6 +310,8 @@
 				{/each}
 			</tbody>
 		</table>
+			</div>
+		{/key}
 	</div>
 </div>
 

@@ -10,6 +10,8 @@
 	} from "phosphor-svelte";
 	import licenseText from "../../../LICENSE?raw";
 	import pkg from "../../../package.json";
+	import Modal from "$lib/components/Modal.svelte";
+	import SegmentedControl from "$lib/components/SegmentedControl.svelte";
 	import { t } from "$lib/i18n";
 	import { settings } from "$lib/stores/settings.svelte";
 
@@ -161,44 +163,15 @@
 											</p>
 										</div>
 									</div>
-									<div
-										class="inline-flex bg-slate-100 p-1.5 rounded-full border border-slate-200 shadow-inner w-full sm:w-auto overflow-x-auto custom-scrollbar"
-									>
-										<button
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language ===
-											'auto'
-												? 'bg-white text-amogus-dark shadow-sm'
-												: 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() =>
-												(settings.language = "auto")}
-											><span class="text-lg leading-none"
-												>🌐</span
-											>
-											{t("settings.auto")}</button
-										>
-										<button
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language ===
-											'en'
-												? 'bg-white text-amogus-dark shadow-sm'
-												: 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() =>
-												(settings.language = "en")}
-											><span class="text-lg leading-none"
-												>🇬🇧</span
-											> EN</button
-										>
-										<button
-											class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 {settings.language ===
-											'ru'
-												? 'bg-white text-amogus-dark shadow-sm'
-												: 'text-slate-500 hover:text-amogus-dark'}"
-											onclick={() =>
-												(settings.language = "ru")}
-											><span class="text-lg leading-none"
-												>🇷🇺</span
-											> RU</button
-										>
-									</div>
+									<SegmentedControl
+										name="lang"
+										bind:activeId={settings.language}
+										options={[
+											{ id: 'auto', label: t('settings.auto'), emoji: '🌐' },
+											{ id: 'en', label: 'EN', emoji: '🇬🇧' },
+											{ id: 'ru', label: 'RU', emoji: '🇷🇺' }
+										]}
+									/>
 								</div>
 
 								<div

@@ -24,6 +24,10 @@ body, input, textarea, select, button {
 	font-family: var(--font-primary, 'Balsamiq Sans'), sans-serif !important;
 }
 
+html, body {
+	scrollbar-gutter: stable;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	font-family: var(--font-primary, 'Balsamiq Sans'), sans-serif !important;
 }
@@ -49,3 +53,32 @@ h1, h2, h3, h4, h5, h6 {
 		display: none !important;
 	}
 }
+
+/* Page Transitions */
+html.is-navigating .site-header {
+	view-transition-name: site-header;
+}
+html.is-navigating .mascot-bg {
+	view-transition-name: mascot;
+}
+html.is-navigating .main-content {
+	view-transition-name: main-content;
+}
+
+::view-transition-old(main-content),
+::view-transition-new(main-content) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(main-content) {
+  animation: 150ms ease-out both fade-out, 150ms ease-out both slide-to-top;
+}
+::view-transition-new(main-content) {
+  animation: 150ms ease-in 150ms both fade-in, 150ms ease-in 150ms both slide-from-bottom;
+}
+
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes slide-to-top { to { transform: translateY(-20px); } }
+@keyframes slide-from-bottom { from { transform: translateY(20px); } }
+

@@ -54,8 +54,25 @@
 	import ScrollToTop from "$lib/components/ScrollToTop.svelte";
 	import { page } from "$app/stores";
 	import { fade, fly } from 'svelte/transition';
+	import { onNavigate } from '$app/navigation';
 	import { t } from '$lib/i18n';
 	import { settings } from '$lib/stores/settings.svelte';
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		document.documentElement.classList.add('is-navigating');
+
+		return new Promise((resolve) => {
+			const transition = document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+			transition.finished.finally(() => {
+				document.documentElement.classList.remove('is-navigating');
+			});
+		});
+	});
 
 	let { data, children } = $props();
 
@@ -145,7 +162,7 @@
 <div class="min-h-screen bg-amogus-bg p-6 font-sans text-slate-800">
 	<!-- Header / Navigation Bar -->
 	<header
-		class="mx-auto max-w-6xl mb-8 flex flex-wrap items-center justify-between rounded-[32px] bg-amogus-light p-4 shadow-sm border border-blue-100"
+		class="site-header mx-auto max-w-6xl mb-8 flex flex-wrap items-center justify-between rounded-[32px] bg-amogus-light p-4 shadow-sm border border-blue-100"
 	>
 		<!-- Logo and Title -->
 		<div class="flex items-center gap-4 pl-2">
@@ -257,14 +274,14 @@
 	{/if}
 
 	<!-- Main Content Area -->
-	<main class="mx-auto max-w-6xl relative z-10">
+	<main class="main-content mx-auto max-w-6xl relative z-10">
 		{@render children()}
 	</main>
 
 	<!-- Page Mascot Container -->
 	{#if $page.url.pathname !== "/" && $page.url.pathname !== "/analytics"}
 		<div
-			class="w-full h-[250px] bg-no-repeat bg-right-bottom bg-contain mt-0 md:mt-8 relative z-0"
+			class="mascot-bg w-full h-[250px] bg-no-repeat bg-right-bottom bg-contain mt-0 md:mt-8 relative z-0"
 			style={$page.url.pathname.startsWith("/mailboxes")
 				? "background-image: url(/scene02.png);"
 				: $page.url.pathname.startsWith("/aliases")
