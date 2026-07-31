@@ -103,7 +103,7 @@
 					id="global-search-input"
 					type="text" 
 					class="w-full bg-transparent border-none outline-none text-xl text-slate-700 placeholder-slate-400"
-					placeholder={PLACEHOLDERS.search}
+					placeholder={t('search.placeholder')}
 					bind:value={query}
 					oninput={handleInput}
 				/>

@@ -13,6 +13,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'card.aliases': 'Aliases',
 		'card.aliases.desc': 'Email forwarding & catch-all rules',
 		'card.blacklists': 'Blacklists',
+		
+		'search.placeholder': 'Search mailboxes, aliases, domains...',
 		'card.blacklists.desc': 'Block spam and unwanted senders',
 		'card.whitelists': 'Whitelists',
 		'card.whitelists.desc': 'Allow trusted mail sources',
@@ -72,7 +74,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'form.dkim': 'Enforce DKIM Required',
 		'form.dkim.desc': 'Reject emails without a valid DKIM signature to prevent spoofing.',
 
-		'toast.saved': 'Settings saved successfully!',
+		'toast.saved': 'Successfully updated!',
 		'toast.created': 'Created successfully!',
 		'toast.failed_save': 'An error occurred while saving',
 		'toast.deleted': 'Deleted successfully!',
@@ -108,6 +110,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'confirm.yes': 'Yes',
 		'confirm.no': 'No',
 		'confirm.changed': '(changed)',
+		'confirm.domain_change_warning.title': 'Attention:',
+		'confirm.domain_change_warning.desc': 'When changing the domain name, it will be automatically updated in the following linked sections: Mailboxes, Aliases, and Domain Aliases.',
 		'btn.back_edit': 'Back to Edit',
 		'btn.confirm_save': 'Confirm & Save',
 		
@@ -144,8 +148,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.table.sender': 'Sender Email',
 		'analytics.table.empty': 'No senders data available',
 		
-		'modal.add': 'Add New Entry',
-		'modal.edit': 'Manage Entry',
+		'modal.add': 'Add',
+		'modal.edit': 'Edit',
 		'modal.delete': 'Delete',
 		'modal.are_you_sure': 'Are you absolutely sure?',
 		'modal.about_to_delete': 'You are about to permanently delete',
@@ -237,6 +241,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'card.aliases': 'Алиасы',
 		'card.aliases.desc': 'Настройка пересылки писем на другие адреса',
 		'card.blacklists': 'Блокировки',
+		
+		'search.placeholder': 'Поиск ящиков, алиасов, доменов...',
 		'card.blacklists.desc': 'Блокировка спама и отправителей',
 		'card.whitelists': 'Доверенные',
 		'card.whitelists.desc': 'Доверенные источники почты',
@@ -253,8 +259,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'btn.add_rule': '+ Добавить правило',
 		'btn.cancel': 'Отмена',
 		'btn.delete': 'Удалить',
-		'btn.edit': 'Изменить',
-		'btn.add': 'Добавить',
+		'btn.edit': 'Редактирование',
+		'btn.add': 'Создание',
 		'status.active': 'Активен',
 		'status.inactive': 'Неактивен',
 		'status.inactive_count': '{count} неакт.',
@@ -296,7 +302,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'form.dkim': 'Строгая проверка DKIM',
 		'form.dkim.desc': 'Отклонять письма без валидной подписи DKIM.',
 
-		'toast.saved': 'Настройки сохранены!',
+		'toast.saved': 'Успешно изменено!',
 		'toast.created': 'Успешно создано!',
 		'toast.failed_save': 'Произошла ошибка при сохранении',
 		'toast.deleted': 'Успешно удалено!',
@@ -325,6 +331,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'confirm.yes': 'Да',
 		'confirm.no': 'Нет',
 		'confirm.changed': '(изменено)',
+		'confirm.domain_change_warning.title': 'Внимание:',
+		'confirm.domain_change_warning.desc': 'При изменении имени домена, оно будет автоматически обновлено в следующих связанных разделах: Почтовые ящики, Алиасы и Доменные алиасы.',
 		'btn.back_edit': 'Назад к редактированию',
 		'btn.confirm_save': 'Подтвердить и сохранить',
 		
@@ -361,8 +369,8 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.table.sender': 'Отправитель',
 		'analytics.table.empty': 'Нет данных об отправителях',
 		
-		'modal.add': 'Добавить',
-		'modal.edit': 'Редактировать',
+		'modal.add': 'Создание',
+		'modal.edit': 'Редактирование',
 		'modal.delete': 'Удаление',
 		'modal.are_you_sure': 'Вы абсолютно уверены?',
 		'modal.about_to_delete': 'Вы собираетесь безвозвратно удалить',

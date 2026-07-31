@@ -39,13 +39,15 @@
 	
 	$effect(() => {
 		if (activeSubTab === undefined) {
-			activeSubTab = browser && localStorage.getItem('list_tab') ? localStorage.getItem('list_tab')! : tabs[0]?.id;
+			const storageKey = `list_tab_${$page.url.pathname}`;
+			activeSubTab = browser && localStorage.getItem(storageKey) ? localStorage.getItem(storageKey)! : tabs[0]?.id;
 		}
 	});
 
 	$effect(() => {
 		if (browser && activeSubTab) {
-			localStorage.setItem('list_tab', activeSubTab);
+			const storageKey = `list_tab_${$page.url.pathname}`;
+			localStorage.setItem(storageKey, activeSubTab);
 		}
 	});
 

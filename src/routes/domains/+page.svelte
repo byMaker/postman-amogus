@@ -13,6 +13,7 @@
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import { toast } from '$lib/state/toast.svelte';
 	import { NotePencil, Trash, WarningCircle, At, Mailbox, Ghost } from 'phosphor-svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { t } from '$lib/i18n';
 
 	let { data, form } = $props();
@@ -214,8 +215,8 @@
 
 		<p class="text-xs text-rose-700/80 mb-4">{t('modal.delete_domain_warning')}</p>
 
-		<label class="cursor-pointer flex items-start gap-3 w-full bg-rose-100 p-3 rounded-xl border border-rose-200 hover:bg-rose-200 transition-colors">
-			<input type="checkbox" bind:checked={deleteCascade} class="checkbox checkbox-error mt-0.5" />
+		<label class="cursor-pointer flex items-center gap-3 w-full bg-rose-100 p-3 rounded-xl border border-rose-200 hover:bg-rose-200 transition-colors">
+			<input type="checkbox" bind:checked={deleteCascade} class="checkbox checkbox-error" />
 			<span class="font-bold text-rose-900 text-sm leading-tight">{t('modal.cascade_delete')}</span>
 		</label>
 	</div>
@@ -272,15 +273,14 @@
 	
 	{#if isEditMode}
 		<div class="flex justify-center mb-8">
-			<div class="inline-flex bg-slate-100 p-1.5 rounded-full border border-slate-200 shadow-inner">
-				<button type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all duration-300 {activeTab === 'general' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeTab = 'general'}>
-					{t('tab.general')}
-				</button>
-				<button type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all duration-300 {activeTab === 'aliases' ? 'bg-white text-amogus-dark shadow-sm' : 'text-slate-500 hover:text-amogus-dark'}" onclick={() => activeTab = 'aliases'}>
-					<At size={16} weight="fill" />
-					{t('tab.aliases')}
-				</button>
-			</div>
+			<SegmentedControl 
+				name="domain-tabs"
+				bind:activeId={activeTab}
+				options={[
+					{ id: 'general', label: t('tab.general') },
+					{ id: 'aliases', label: t('tab.aliases'), icon: At }
+				]} 
+			/>
 		</div>
 	{/if}
 
@@ -463,6 +463,15 @@
 				{currentDomain.domain} {currentDomain.domain !== originalDomainName ? t('confirm.changed') : ''}
 			</span>
 		</div>
+		
+		{#if currentDomain.domain !== originalDomainName}
+			<div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 text-amber-800 text-sm">
+				<div class="mt-0.5 text-lg">⚠️</div>
+				<div>
+					<strong>{t('confirm.domain_change_warning.title')}</strong> {t('confirm.domain_change_warning.desc')}
+				</div>
+			</div>
+		{/if}
 	</div>
 	<div class="modal-action flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-6">
 		<button type="button" onclick={() => { showUpdateConfirm = false; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6 w-full sm:w-auto">{t('btn.back_edit')}</button>

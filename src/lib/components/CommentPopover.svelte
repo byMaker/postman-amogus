@@ -78,7 +78,6 @@
 				</div>
 				<textarea 
 					class="textarea textarea-bordered focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 text-sm resize-none h-24 sm:h-20 w-full rounded-2xl bg-slate-50 transition-all"
-					placeholder={PLACEHOLDERS.note}
 					bind:value={tempComment}
 				></textarea>
 				<div class="flex justify-end gap-3 mt-1 items-center">

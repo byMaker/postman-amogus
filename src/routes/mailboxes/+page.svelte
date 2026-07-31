@@ -168,7 +168,7 @@
 
 		try {
 			await updateMailbox(fd);
-			toast.success(t("toast.saved"));
+			toast.success(t('toast.saved'));
 			await invalidateAll();
 		} catch (e) {
 			toast.error(t("toast.failed_save"));

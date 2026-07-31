@@ -49,7 +49,10 @@ export const actions = {
 				backupmx
 			});
 			if (dkimActive) {
-				await db.insert(dkimRequiredDomains).values({ domain: newDomain, description: '', active: 1 }).onDuplicateKeyUpdate({ set: { active: 1 }});
+				const existingDkim = await db.select().from(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, newDomain));
+				if (existingDkim.length === 0) {
+					await db.insert(dkimRequiredDomains).values({ domain: newDomain, description: '', active: 1 });
+				}
 			}
 			return { success: true, message: 'Domain created' };
 		} catch (error) {
@@ -79,8 +82,6 @@ export const actions = {
 
 				await db.update(aliasesDomains).set({ aliasDomain: updatedDomain }).where(eq(aliasesDomains.aliasDomain, originalDomain));
 				await db.update(aliasesDomains).set({ targetDomain: updatedDomain }).where(eq(aliasesDomains.targetDomain, originalDomain));
-				
-				await db.update(dkimRequiredDomains).set({ domain: updatedDomain }).where(eq(dkimRequiredDomains.domain, originalDomain));
 			}
 
 			await db.update(domains)
@@ -88,7 +89,10 @@ export const actions = {
 				.where(eq(domains.domain, originalDomain));
 			
 			if (dkimActive) {
-				await db.insert(dkimRequiredDomains).values({ domain: updatedDomain, description: '', active: 1 }).onDuplicateKeyUpdate({ set: { active: 1 }});
+				const existingDkim = await db.select().from(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, updatedDomain));
+				if (existingDkim.length === 0) {
+					await db.insert(dkimRequiredDomains).values({ domain: updatedDomain, description: '', active: 1 });
+				}
 			} else {
 				await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, updatedDomain));
 			}
@@ -120,7 +124,6 @@ export const actions = {
 						eq(aliasesDomains.targetDomain, domain)
 					)
 				);
-				await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, domain));
 			}
 			await db.delete(domains).where(eq(domains.domain, domain));
 			return { success: true, message: 'Domain deleted' };
@@ -136,7 +139,10 @@ export const actions = {
 
 		try {
 			if (dkimActive) {
-				await db.insert(dkimRequiredDomains).values({ domain, description: '', active: 1 }).onDuplicateKeyUpdate({ set: { active: 1 }});
+				const existingDkim = await db.select().from(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, domain));
+				if (existingDkim.length === 0) {
+					await db.insert(dkimRequiredDomains).values({ domain, description: '', active: 1 });
+				}
 			} else {
 				await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, domain));
 			}

@@ -6,7 +6,7 @@ describe('GlobalSearch Component', () => {
 	it('should render the search input', () => {
 		render(GlobalSearch);
 		// Check that a search related element exists (button or icon)
-		const container = screen.getByText('search.placeholder');
+		const container = screen.getByText('Search mailboxes, aliases, domains...');
 		expect(container).toBeTruthy();
 	});
 
