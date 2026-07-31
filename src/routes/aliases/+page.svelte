@@ -2,42 +2,18 @@
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
 	import { toast } from '$lib/state/toast.svelte';
-	import { NotePencil, Trash, ArrowRight, XCircle, Ghost } from 'phosphor-svelte';
+	import { ArrowRight, Ghost } from 'phosphor-svelte';
 	import { t } from '$lib/i18n';
-	import Tooltip from '$lib/components/Tooltip.svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
-	import { invalidateAll, replaceState } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { invalidateAll } from '$app/navigation';
+	import Table from '$lib/components/ui/Table.svelte';
+	import Tr from '$lib/components/ui/Tr.svelte';
+	import Th from '$lib/components/ui/Th.svelte';
+	import Td from '$lib/components/ui/Td.svelte';
+	import ActionButtons from '$lib/components/ui/ActionButtons.svelte';
 
 	let { data, form } = $props();
-
-	$effect(() => {
-		const highlight = $page.url.searchParams.get('highlight');
-		if (highlight) {
-			setTimeout(() => {
-				const el = document.getElementById(`row-${highlight}`);
-				if (el) {
-					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					el.style.transition = 'background-color 0.15s ease-in-out';
-					let count = 0;
-					const interval = setInterval(() => {
-						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
-						count++;
-						if (count >= 6) {
-							clearInterval(interval);
-							el.style.backgroundColor = '';
-							
-							const newUrl = new URL($page.url);
-							newUrl.searchParams.delete('highlight');
-							newUrl.searchParams.delete('tab');
-							replaceState(newUrl, {});
-						}
-					}, 150);
-				}
-			}, 300);
-		}
-	});
 
 	let showModal = $state(false);
 	let isEditMode = $state(false);
@@ -206,96 +182,85 @@
 	</div>
 
 	<!-- Таблица алиасов -->
-	<div class="rounded-[32px] border border-slate-200 shadow-sm bg-white relative">
-		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
-		<table class="w-full text-left text-sm block lg:table relative z-10">
-			<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden lg:table-header-group">
+	<Table>
+		<thead class="text-xs font-black uppercase tracking-widest text-amogus-blue hidden lg:table-header-group">
+			<tr>
+				<Th sortable onclick={() => toggleSort('alias')}>
+					{t('alias.table.source')} <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+				</Th>
+				<Th sortable onclick={() => toggleSort('target')}>
+					{t('alias.table.target')} <span class="text-amogus-blue ml-1 font-bold">{sortField === 'target' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
+				</Th>
+				<Th>{t('table.status')}</Th>
+				<Th>{t('table.description')}</Th>
+				<Th align="right">{t('table.actions')}</Th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-slate-100 bg-white block lg:table-row-group rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
+			{#each filteredAliases as alias, index (alias.alias)}
+				{@const sourceParts = alias.alias.split('@')}
+				{@const sourceLocal = sourceParts[0]}
+				{@const sourceDomain = sourceParts[1] || ''}
+				{@const isSourceDomainActive = !!data.domains?.find(d => d.domain === sourceDomain)}
+				
+				{@const targetParts = alias.target.split('@')}
+				{@const targetLocal = targetParts[0]}
+				{@const targetDomain = targetParts[1] || ''}
+				{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
+				{@const isLast = index === filteredAliases.length - 1}
+				
+				<Tr id="row-{alias.alias}">
+					<Td {isLast}>
+						<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.source')}</span>
+						<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-sm transition-colors text-right lg:text-left truncate max-w-[200px] lg:max-w-none">
+							{sourceLocal}<span class="{isSourceDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{sourceDomain}</span>
+						</div>
+					</Td>
+					<Td>
+						<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.target')}</span>
+						<div class="flex items-center justify-end lg:justify-start gap-2 font-medium w-fit transition-colors ml-auto lg:ml-0">
+							<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0 hidden lg:block" />
+							<div class="font-bold {alias.active ? 'text-amber-600' : 'text-slate-400'} transition-colors truncate">
+								{targetLocal}<span class="{isTargetDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{targetDomain}</span>
+							</div>
+						</div>
+					</Td>
+					<Td>
+						<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.status')}</span>
+						{#if alias.active}
+							<span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-bold text-xs tracking-wider">{t('status.active')}</span>
+						{:else}
+							<span class="px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold text-xs tracking-wider">{t('status.inactive')}</span>
+						{/if}
+					</Td>
+					<Td>
+						<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.description')}</span>
+						<div class="flex items-center justify-end lg:justify-start gap-2">
+							<CommentPopover 
+								comment={alias.description || ''} 
+								onsave={(newComment) => {
+									alias.description = newComment;
+									handleQuickComment(alias);
+								}} 
+							/>
+							<span class="text-slate-500 truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] block desc-hide-lg">{alias.description || ''}</span>
+						</div>
+					</Td>
+					<ActionButtons 
+						{isLast}
+						onEdit={() => openEditModal(alias)}
+						onDelete={() => requestDelete(alias)}
+					/>
+				</Tr>
+			{:else}
 				<tr>
-					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('alias')}>
-						{t('alias.table.source')} <span class="text-amogus-blue ml-1 font-bold">{sortField === 'alias' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
-					</th>
-					<th class="px-6 py-5 cursor-pointer hover:text-amogus-blue select-none transition-colors" onclick={() => toggleSort('target')}>
-						{t('alias.table.target')} <span class="text-amogus-blue ml-1 font-bold">{sortField === 'target' ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
-					</th>
-					<th class="px-6 py-5">{t('table.status')}</th>
-					<th class="px-6 py-5">{t('table.description')}</th>
-					<th class="px-6 py-5 text-right">{t('table.actions')}</th>
+					<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
+						{data.aliases.length === 0 ? "No forwarding rules found." : t('table.filtered_empty')}
+					</td>
 				</tr>
-			</thead>
-			<tbody class="divide-y divide-slate-100 bg-white block lg:table-row-group rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
-				{#each filteredAliases as alias, index (alias.alias)}
-					{@const sourceParts = alias.alias.split('@')}
-					{@const sourceLocal = sourceParts[0]}
-					{@const sourceDomain = sourceParts[1] || ''}
-					{@const isSourceDomainActive = !!data.domains?.find(d => d.domain === sourceDomain)}
-					
-					{@const targetParts = alias.target.split('@')}
-					{@const targetLocal = targetParts[0]}
-					{@const targetDomain = targetParts[1] || ''}
-					{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
-					<tr id="row-{alias.alias}" class="hover:bg-slate-50 transition-colors block lg:table-row p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 group first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50 {index === filteredAliases.length - 1 ? 'lg:rounded-bl-[32px]' : ''}">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.source')}</span>
-							<div class="font-bold {alias.active ? 'text-teal-600' : 'text-slate-400'} text-sm transition-colors text-right lg:text-left truncate max-w-[200px] lg:max-w-none">
-								{sourceLocal}<span class="{isSourceDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{sourceDomain}</span>
-							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('alias.table.target')}</span>
-							<div class="flex items-center justify-end lg:justify-start gap-2 font-medium w-fit transition-colors ml-auto lg:ml-0">
-								<ArrowRight size={16} weight="bold" class="text-slate-400 shrink-0 hidden lg:block" />
-								<div class="font-bold {alias.active ? 'text-amber-600' : 'text-slate-400'} transition-colors truncate">
-									{targetLocal}<span class="{isTargetDomainActive ? 'text-violet-500' : 'text-slate-400'} transition-colors">@{targetDomain}</span>
-								</div>
-							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.status')}</span>
-							{#if alias.active}
-								<span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-bold text-xs tracking-wider">{t('status.active')}</span>
-							{:else}
-								<span class="px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold text-xs tracking-wider">{t('status.inactive')}</span>
-							{/if}
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.description')}</span>
-							<div class="flex items-center justify-end lg:justify-start gap-2">
-								<CommentPopover 
-									comment={alias.description || ''} 
-									onsave={(newComment) => {
-										alias.description = newComment;
-										handleQuickComment(alias);
-									}} 
-								/>
-								<span class="text-slate-500 truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] block desc-hide-lg">{alias.description || ''}</span>
-							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 lg:text-right {index === filteredAliases.length - 1 ? 'lg:rounded-br-[32px]' : ''}">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
-							<div class="flex justify-end gap-3 transition-opacity">
-								<Tooltip text="Edit" position="top">
-									<button onclick={() => openEditModal(alias)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors" title="Edit">
-										<NotePencil size={24} weight="fill" />
-									</button>
-								</Tooltip>
-								<Tooltip text="Delete" position="top">
-									<button onclick={() => requestDelete(alias)} class="text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-50 p-2 rounded-full transition-colors" title="Delete">
-										<Trash size={24} weight="fill" />
-									</button>
-								</Tooltip>
-							</div>
-						</td>
-					</tr>
-				{:else}
-					<tr>
-						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
-							{data.aliases.length === 0 ? "No forwarding rules found." : t('table.filtered_empty')}
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+			{/each}
+		</tbody>
+	</Table>
 </div>
 
 <Modal bind:show={showDeleteModal} title={t('modal.delete')}>

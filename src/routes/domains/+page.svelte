@@ -3,6 +3,11 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import Table from '$lib/components/ui/Table.svelte';
+	import Tr from '$lib/components/ui/Tr.svelte';
+	import Th from '$lib/components/ui/Th.svelte';
+	import Td from '$lib/components/ui/Td.svelte';
+	import ActionButtons from '$lib/components/ui/ActionButtons.svelte';
 	import ValidatedInput from '$lib/components/ValidatedInput.svelte';
 	import { toast } from '$lib/state/toast.svelte';
 	import { NotePencil, Trash, WarningCircle, At, Mailbox, Ghost } from 'phosphor-svelte';
@@ -17,7 +22,8 @@
 		domain: '',
 		description: '',
 		active: true,
-		backupmx: false
+		backupmx: false,
+		dkimActive: false
 	});
 
 	let activeTab = $state('general');
@@ -58,32 +64,7 @@
 	import { invalidateAll, replaceState } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	$effect(() => {
-		const highlight = $page.url.searchParams.get('highlight');
-		if (highlight) {
-			setTimeout(() => {
-				const el = document.getElementById(`row-${highlight}`);
-				if (el) {
-					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					el.style.transition = 'background-color 0.15s ease-in-out';
-					let count = 0;
-					const interval = setInterval(() => {
-						el.style.backgroundColor = count % 2 === 0 ? '#bae6fd' : '';
-						count++;
-						if (count >= 6) {
-							clearInterval(interval);
-							el.style.backgroundColor = '';
-							
-							const newUrl = new URL($page.url);
-							newUrl.searchParams.delete('highlight');
-							newUrl.searchParams.delete('tab');
-							replaceState(newUrl, {});
-						}
-					}, 150);
-				}
-			}, 300);
-		}
-	});
+
 
 	function requestDelete(d: any) {
 		domainToDelete = d;
@@ -128,11 +109,7 @@
 	</div>
 
 	<!-- Таблица доменов -->
-	<div class="bg-white rounded-[32px] border border-slate-200 shadow-sm relative">
-		<!-- Header background for rounded corners -->
-		<div class="absolute top-0 left-0 right-0 h-[57px] bg-slate-50 rounded-t-[32px] border-b border-slate-200 hidden lg:block"></div>
-		
-		<table class="w-full text-left border-collapse block lg:table relative z-10">
+	<Table>
 			<thead class="hidden lg:table-header-group">
 				<tr class="text-xs font-black uppercase tracking-widest text-amogus-blue">
 					<th class="px-6 py-5">{t('domain.table.name')}</th>
@@ -144,12 +121,12 @@
 			</thead>
 			<tbody class="block lg:table-row-group divide-y divide-slate-100 bg-white rounded-[32px] lg:rounded-none lg:rounded-b-[32px]">
 				{#each data.domains as domain, index (domain.domain)}
-					<tr id="row-{domain.domain}" class="block lg:table-row hover:bg-slate-50 transition-colors group p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-sm {index === data.domains.length - 1 ? 'lg:rounded-bl-[32px]' : ''} transition-colors max-lg:border-b max-lg:border-b-slate-50">
+					<Tr id="row-{domain.domain}" class="block lg:table-row hover:bg-slate-50 transition-colors group p-4 lg:p-0 max-lg:border-b max-lg:border-slate-100 max-lg:last:border-b-0 first:rounded-t-[32px] lg:first:rounded-none last:rounded-b-[32px]">
+						<Td class="font-bold {domain.active ? 'text-violet-500' : 'text-slate-400'} text-sm {index === data.domains.length - 1 ? 'lg:rounded-bl-[32px]' : ''} transition-colors max-lg:border-b max-lg:border-b-slate-50">
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.name')}</span>
 							<span>@{domain.domain}</span>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+						</Td>
+						<Td>
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.status')}</span>
 							<div class="flex gap-2 items-center">
 								{#if domain.active}
@@ -164,8 +141,8 @@
 									<span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs tracking-wider">{t('status.dkim')}</span>
 								{/if}
 							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+						</Td>
+						<Td>
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('domain.table.usage')}</span>
 							<div class="flex items-center gap-4 text-slate-500 font-bold">
 								<Tooltip text={t('tooltip.mailboxes')} position="top">
@@ -187,8 +164,8 @@
 									</div>
 								</Tooltip>
 							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 max-lg:border-b max-lg:border-b-slate-50">
+						</Td>
+						<Td>
 							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.description')}</span>
 							<div class="flex items-center justify-end lg:justify-start gap-2">
 								<CommentPopover 
@@ -200,23 +177,9 @@
 								/>
 								<span class="text-slate-500 truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] block desc-hide-lg">{domain.description || '—'}</span>
 							</div>
-						</td>
-						<td class="flex justify-between items-center lg:table-cell px-2 py-3 lg:px-6 lg:py-5 lg:text-right {index === data.domains.length - 1 ? 'lg:rounded-br-[32px]' : ''}">
-							<span class="lg:hidden text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('table.actions')}</span>
-							<div class="flex justify-end gap-3 transition-opacity">
-								<Tooltip text={t('btn.edit')} position="top">
-									<button onclick={() => openEditModal(domain)} class="text-amogus-blue hover:text-white hover:bg-amogus-blue bg-blue-50 p-2 rounded-full transition-colors">
-										<NotePencil size={24} weight="fill" />
-									</button>
-								</Tooltip>
-								<Tooltip text={t('btn.delete')} position="top">
-									<button onclick={() => requestDelete(domain)} class="text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-50 p-2 rounded-full transition-colors">
-										<Trash size={24} weight="fill" />
-									</button>
-								</Tooltip>
-							</div>
-						</td>
-					</tr>
+						</Td>
+						<ActionButtons isLast={index === data.domains.length - 1} onEdit={() => openEditModal(domain)} onDelete={() => requestDelete(domain)} />
+					</Tr>
 				{:else}
 					<tr>
 						<td colspan="5" class="px-6 py-12 text-center text-slate-500 rounded-b-[32px]">
@@ -225,9 +188,8 @@
 					</tr>
 				{/each}
 			</tbody>
-		</table>
+		</Table>
 	</div>
-</div>
 
 <Modal bind:show={showDeleteModal} title={t('modal.delete')}>
 	<div class="text-slate-800 mb-6">
@@ -505,3 +467,4 @@
 		<button type="button" onclick={() => { editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">{t('btn.confirm_save')}</button>
 	</div>
 </Modal>
+ 
