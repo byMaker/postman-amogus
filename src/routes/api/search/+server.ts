@@ -7,7 +7,8 @@ export async function GET({ url }) {
 	const query = url.searchParams.get('q') || '';
 	if (!query || query.length < 2) return json([]);
 
-	const pattern = `%${query.toLowerCase()}%`;
+	const escapedQuery = query.toLowerCase().replace(/[%_\\]/g, '\\$&');
+	const pattern = `%${escapedQuery}%`;
 	const results: any[] = [];
 
 	// Domains

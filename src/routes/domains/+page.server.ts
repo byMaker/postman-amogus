@@ -68,6 +68,21 @@ export const actions = {
 
 		try {
 			const updatedDomain = domain.trim().toLowerCase();
+			const { sql, like, eq } = await import('drizzle-orm');
+
+			if (originalDomain !== updatedDomain) {
+				// Update dependents before updating the domain itself
+				await db.update(users).set({ domain: updatedDomain }).where(eq(users.domain, originalDomain));
+				
+				await db.execute(sql`UPDATE aliases SET alias = REPLACE(alias, CONCAT('@', ${originalDomain}), CONCAT('@', ${updatedDomain})) WHERE alias LIKE CONCAT('%@', ${originalDomain})`);
+				await db.execute(sql`UPDATE aliases SET target = REPLACE(target, CONCAT('@', ${originalDomain}), CONCAT('@', ${updatedDomain})) WHERE target LIKE CONCAT('%@', ${originalDomain})`);
+
+				await db.update(aliasesDomains).set({ aliasDomain: updatedDomain }).where(eq(aliasesDomains.aliasDomain, originalDomain));
+				await db.update(aliasesDomains).set({ targetDomain: updatedDomain }).where(eq(aliasesDomains.targetDomain, originalDomain));
+				
+				await db.update(dkimRequiredDomains).set({ domain: updatedDomain }).where(eq(dkimRequiredDomains.domain, originalDomain));
+			}
+
 			await db.update(domains)
 				.set({ domain: updatedDomain, description: description.trim(), active, backupmx })
 				.where(eq(domains.domain, originalDomain));
@@ -91,10 +106,20 @@ export const actions = {
 
 		try {
 			if (cascade) {
-				const { like } = await import('drizzle-orm');
+				const { like, or } = await import('drizzle-orm');
 				await db.delete(users).where(eq(users.domain, domain));
-				await db.delete(aliases).where(like(aliases.alias, `%@${domain}`));
-				await db.delete(aliasesDomains).where(eq(aliasesDomains.aliasDomain, domain));
+				await db.delete(aliases).where(
+					or(
+						like(aliases.alias, `%@${domain}`),
+						like(aliases.target, `%@${domain}`)
+					)
+				);
+				await db.delete(aliasesDomains).where(
+					or(
+						eq(aliasesDomains.aliasDomain, domain),
+						eq(aliasesDomains.targetDomain, domain)
+					)
+				);
 				await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.domain, domain));
 			}
 			await db.delete(domains).where(eq(domains.domain, domain));

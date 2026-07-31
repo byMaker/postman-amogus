@@ -5,8 +5,8 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 CREATE TABLE `aliases` (
-  `alias` varchar(32) NOT NULL,
-  `target` varchar(32) DEFAULT NULL,
+  `alias` varchar(255) NOT NULL,
+  `target` varchar(255) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `description` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -23,7 +23,7 @@ CREATE TABLE `aliases_domains` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 -- No aliases_domains data
 CREATE TABLE `analytics_attachment_stats` (
-  `email` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `extension` varchar(50) NOT NULL,
   `size_mb` float DEFAULT 0,
   `file_count` int(11) DEFAULT 0
@@ -198,8 +198,8 @@ INSERT INTO `analytics_attachment_stats` (`email`, `extension`, `size_mb`, `file
 ('sales@example.com', '.zip', 1.43, 41),
 ('sales@example.com', '.gz', 1.76, 1);
 CREATE TABLE `analytics_folder_stats` (
-  `email` varchar(100) NOT NULL,
-  `folder_name` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `folder_name` varchar(255) NOT NULL,
   `size_mb` float DEFAULT 0,
   `message_count` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -455,7 +455,7 @@ INSERT INTO `analytics_folder_stats` (`email`, `folder_name`, `size_mb`, `messag
 ('sales@example.com', 'Sent', 0.24, 20),
 ('sales@example.com', 'Trash', 65.25, 3029);
 CREATE TABLE `analytics_mailbox_stats` (
-  `email` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `oldest_email_date` datetime DEFAULT NULL,
   `newest_email_date` datetime DEFAULT NULL,
   `unread_count` int(11) DEFAULT 0,
@@ -475,8 +475,8 @@ INSERT INTO `analytics_metadata` (`key_name`, `value_str`) VALUES
 ('execution_seconds', '92.89954048'),
 ('last_run', '2026-07-17 20:23:05');
 CREATE TABLE `analytics_top_senders` (
-  `email` varchar(100) NOT NULL,
-  `sender` varchar(150) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `sender` varchar(255) NOT NULL,
   `message_count` int(11) DEFAULT 0,
   `size_mb` float DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -834,8 +834,8 @@ INSERT INTO `analytics_top_senders` (`email`, `sender`, `message_count`, `size_m
 ('sales@example.com','newsletter@dropbox.com', 6, 0);
 CREATE TABLE `black_domains` (
   `id` int(11) NOT NULL,
-  `domain` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `domain` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `black_domains` (`id`, `domain`, `description`, `active`) VALUES
@@ -843,8 +843,8 @@ INSERT INTO `black_domains` (`id`, `domain`, `description`, `active`) VALUES
 (2, 'malicious.org', 'Phishing', 1);
 CREATE TABLE `black_emails` (
   `id` int(11) NOT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `black_emails` (`id`, `email`, `description`, `active`) VALUES
@@ -852,8 +852,8 @@ INSERT INTO `black_emails` (`id`, `email`, `description`, `active`) VALUES
 (2, 'fake@test.com', 'Fake user', 1);
 CREATE TABLE `black_ips` (
   `id` int(11) NOT NULL,
-  `host` varchar(18) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `host` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `black_ips` (`id`, `host`, `description`, `active`) VALUES
@@ -861,8 +861,8 @@ INSERT INTO `black_ips` (`id`, `host`, `description`, `active`) VALUES
 (2, '10.0.0.50', 'Botnet', 1);
 CREATE TABLE `dkim_required_domains` (
   `id` int(11) NOT NULL,
-  `domain` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `domain` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `dkim_required_domains` (`id`, `domain`, `description`, `active`) VALUES
@@ -918,7 +918,7 @@ INSERT INTO `dnsg_blacklist` (`dns_domain`, `dns_description`, `dnsg_key`) VALUE
 ('%.dialup-%', '', 1),
 ('%.broadband.corbina.ru', '', 1);
 CREATE TABLE `domains` (
-  `domain` char(32) NOT NULL,
+  `domain` varchar(255) NOT NULL,
   `backupmx` tinyint(1) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `description` varchar(255) DEFAULT NULL
@@ -928,7 +928,7 @@ INSERT INTO `domains` (`domain`, `backupmx`, `active`, `description`) VALUES
 ('test.net', 0, 1, 'Testing environment'),
 ('demo.org', 0, 1, 'Public demonstrations');
 CREATE TABLE `quota` (
-  `email` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `bytes` bigint(20) NOT NULL DEFAULT 0,
   `messages` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -940,9 +940,9 @@ INSERT INTO `quota` (`email`, `bytes`, `messages`) VALUES
 ('info@demo.org', 374834613, 14);
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `full_name` varchar(150) DEFAULT NULL,
-  `local_part` varchar(100) NOT NULL,
-  `domain` varchar(100) NOT NULL,
+  `full_name` varchar(255) DEFAULT NULL,
+  `local_part` varchar(255) NOT NULL,
+  `domain` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `quota_mb` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Mb',
   `quota_messages` bigint(20) NOT NULL DEFAULT 0 COMMENT 'in Messages',
@@ -958,8 +958,8 @@ INSERT INTO `users` (`id`, `full_name`, `local_part`, `domain`, `password`, `quo
 (5, 'Charlie Brown', 'info', 'demo.org', '{SHA512-CRYPT}$6$dummyhash...', 51200, 0, 1, 1, 'General Inquiries');
 CREATE TABLE `white_domains` (
   `id` int(11) NOT NULL,
-  `domain` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `domain` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `white_domains` (`id`, `domain`, `description`, `active`) VALUES
@@ -967,8 +967,8 @@ INSERT INTO `white_domains` (`id`, `domain`, `description`, `active`) VALUES
 (2, 'api-service.net', 'API Service', 1);
 CREATE TABLE `white_emails` (
   `id` int(11) NOT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `white_emails` (`id`, `email`, `description`, `active`) VALUES
@@ -976,8 +976,8 @@ INSERT INTO `white_emails` (`id`, `email`, `description`, `active`) VALUES
 (2, 'alerts@api-service.net', 'Alerts', 1);
 CREATE TABLE `white_ips` (
   `id` int(11) NOT NULL,
-  `host` varchar(18) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `description` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `host` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `active` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 INSERT INTO `white_ips` (`id`, `host`, `description`, `active`) VALUES

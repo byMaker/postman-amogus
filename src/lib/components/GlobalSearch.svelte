@@ -31,6 +31,7 @@
 		if (searchTimeout) clearTimeout(searchTimeout);
 		if (query.length < 2) {
 			results = [];
+			isLoading = false;
 			return;
 		}
 

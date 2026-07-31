@@ -40,17 +40,34 @@ export const actions = {
 		const data = await request.formData();
 		const table = data.get('table') as string;
 		const id = data.get('id') as string;
-		const target = data.get('target') as string;
+		let target = data.get('target') as string;
 		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
 
 		try {
 			switch(table) {
-				case 'blackDomains': await db.update(blackDomains).set({ domain: target, description, active }).where(eq(blackDomains.id, Number(id))); break;
-				case 'blackEmails': await db.update(blackEmails).set({ email: target, description, active }).where(eq(blackEmails.id, Number(id))); break;
-				case 'blackIps': await db.update(blackIps).set({ host: target, description, active }).where(eq(blackIps.id, Number(id))); break;
-				case 'dnsgBlacklist': await db.update(dnsgBlacklist).set({ dnsDomain: target, dnsDescription: description, dnsgKey: active }).where(eq(dnsgBlacklist.dnsDomain, id)); break;
-				case 'dkimRequiredDomains': await db.update(dkimRequiredDomains).set({ domain: target, description, active }).where(eq(dkimRequiredDomains.id, Number(id))); break;
+				case 'blackDomains': 
+					target = target.trim().toLowerCase();
+					await db.update(blackDomains).set({ domain: target, description, active }).where(eq(blackDomains.id, Number(id))); 
+					break;
+				case 'blackEmails': 
+					target = target.trim().toLowerCase();
+					await db.update(blackEmails).set({ email: target, description, active }).where(eq(blackEmails.id, Number(id))); 
+					break;
+				case 'blackIps': 
+					target = target.trim();
+					await db.update(blackIps).set({ host: target, description, active }).where(eq(blackIps.id, Number(id))); 
+					break;
+				case 'dnsgBlacklist': 
+					target = target.trim().toLowerCase();
+					await db.update(dnsgBlacklist).set({ dnsDomain: target, dnsDescription: description, dnsgKey: active }).where(eq(dnsgBlacklist.dnsDomain, id)); 
+					break;
+				case 'dkimRequiredDomains': 
+					target = target.trim().toLowerCase();
+					await db.update(dkimRequiredDomains).set({ domain: target, description, active }).where(eq(dkimRequiredDomains.id, Number(id))); 
+					break;
+				default:
+					return { success: false, error: 'Unknown table' };
 			}
 			return { success: true, message: 'Entry updated' };
 		} catch (error) {
@@ -70,6 +87,7 @@ export const actions = {
 				case 'blackIps': await db.delete(blackIps).where(eq(blackIps.id, Number(id))); break;
 				case 'dnsgBlacklist': await db.delete(dnsgBlacklist).where(eq(dnsgBlacklist.dnsDomain, id)); break;
 				case 'dkimRequiredDomains': await db.delete(dkimRequiredDomains).where(eq(dkimRequiredDomains.id, Number(id))); break;
+				default: return { success: false, error: 'Unknown table' };
 			}
 			return { success: true, message: 'Entry deleted' };
 		} catch (error) {

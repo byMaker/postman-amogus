@@ -36,15 +36,26 @@ export const actions = {
 		const data = await request.formData();
 		const table = data.get('table') as string;
 		const id = data.get('id') as string;
-		const target = data.get('target') as string;
+		let target = data.get('target') as string;
 		const description = data.get('description') as string || '';
 		const active = data.get('active') ? 1 : 0;
 
 		try {
 			switch(table) {
-				case 'whiteDomains': await db.update(whiteDomains).set({ domain: target, description, active }).where(eq(whiteDomains.id, Number(id))); break;
-				case 'whiteEmails': await db.update(whiteEmails).set({ email: target, description, active }).where(eq(whiteEmails.id, Number(id))); break;
-				case 'whiteIps': await db.update(whiteIps).set({ host: target, description, active }).where(eq(whiteIps.id, Number(id))); break;
+				case 'whiteDomains': 
+					target = target.trim().toLowerCase();
+					await db.update(whiteDomains).set({ domain: target, description, active }).where(eq(whiteDomains.id, Number(id))); 
+					break;
+				case 'whiteEmails': 
+					target = target.trim().toLowerCase();
+					await db.update(whiteEmails).set({ email: target, description, active }).where(eq(whiteEmails.id, Number(id))); 
+					break;
+				case 'whiteIps': 
+					target = target.trim();
+					await db.update(whiteIps).set({ host: target, description, active }).where(eq(whiteIps.id, Number(id))); 
+					break;
+				default:
+					return { success: false, error: 'Unknown table' };
 			}
 			return { success: true, message: 'Entry updated' };
 		} catch (error) {
@@ -62,6 +73,7 @@ export const actions = {
 				case 'whiteDomains': await db.delete(whiteDomains).where(eq(whiteDomains.id, Number(id))); break;
 				case 'whiteEmails': await db.delete(whiteEmails).where(eq(whiteEmails.id, Number(id))); break;
 				case 'whiteIps': await db.delete(whiteIps).where(eq(whiteIps.id, Number(id))); break;
+				default: return { success: false, error: 'Unknown table' };
 			}
 			return { success: true, message: 'Entry deleted' };
 		} catch (error) {
