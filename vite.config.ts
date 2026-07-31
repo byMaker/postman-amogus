@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -20,5 +20,14 @@ export default defineConfig({
 	],
 	ssr: {
 		noExternal: ['svelte-chartjs', 'chart.js']
+	},
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		environment: 'jsdom',
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json-summary', 'json'],
+			include: ['src/lib/utils/**/*.{js,ts}', 'src/lib/actions/**/*.{js,ts}']
+		}
 	}
 });

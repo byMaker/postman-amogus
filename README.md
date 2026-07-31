@@ -1,5 +1,7 @@
 # Postman Amogus
 
+![Coverage](https://img.shields.io/badge/Coverage-89%25-yellow.svg)
+
 ![Dashboard Screenshot](./screenshot.png) 
 
 Postman Amogus is an administration panel for orchestrating Exim and Dovecot environments. It leverages a custom MariaDB schema and a SvelteKit frontend for a seamless experience. 
