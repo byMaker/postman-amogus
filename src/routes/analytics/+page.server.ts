@@ -135,36 +135,36 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 		currentEmail: emailFilter,
 		availableMailboxes: Array.isArray(mailboxes) ? mailboxes.map((m: any) => m.email || m.EMAIL || Object.values(m)[0]) : [],
 		summary: {
-			totalUnread: Number((mailboxSummary as any[])[0]?.totalUnread || 0),
-			totalRead: Number((mailboxSummary as any[])[0]?.totalRead || 0),
-			oldestDate: (mailboxSummary as any[])[0]?.oldestDate || null,
-			totalSize: Number((folderSummary as any[])[0]?.totalSize || 0),
-			totalMessages: Number((folderSummary as any[])[0]?.totalMessages || 0),
-			totalQuotaMb: Number((quotaStats as any[])[0]?.totalQuotaMb || 0)
+			totalUnread: Number((mailboxSummary as unknown as any[])[0]?.totalUnread || 0),
+			totalRead: Number((mailboxSummary as unknown as any[])[0]?.totalRead || 0),
+			oldestDate: (mailboxSummary as unknown as any[])[0]?.oldestDate || null,
+			totalSize: Number((folderSummary as unknown as any[])[0]?.totalSize || 0),
+			totalMessages: Number((folderSummary as unknown as any[])[0]?.totalMessages || 0),
+			totalQuotaMb: Number((quotaStats as unknown as any[])[0]?.totalQuotaMb || 0)
 		},
 		sentStats: {
-			totalCount: Number((sentStats as any[])[0]?.totalCount || 0),
-			totalSize: Number((sentStats as any[])[0]?.totalSize || 0)
+			totalCount: Number((sentStats as unknown as any[])[0]?.totalCount || 0),
+			totalSize: Number((sentStats as unknown as any[])[0]?.totalSize || 0)
 		},
 		inboxStats: {
-			totalCount: Number((inboxStats as any[])[0]?.totalCount || 0),
-			totalSize: Number((inboxStats as any[])[0]?.totalSize || 0)
+			totalCount: Number((inboxStats as unknown as any[])[0]?.totalCount || 0),
+			totalSize: Number((inboxStats as unknown as any[])[0]?.totalSize || 0)
 		},
 		attachmentSummary: {
-			totalSize: Number((attachmentSummary as any[])[0]?.totalSize || 0),
-			fileCount: Number((attachmentSummary as any[])[0]?.fileCount || 0)
+			totalSize: Number((attachmentSummary as unknown as any[])[0]?.totalSize || 0),
+			fileCount: Number((attachmentSummary as unknown as any[])[0]?.fileCount || 0)
 		},
-		folders: (foldersDistribution as any[]).map(f => ({
+		folders: (foldersDistribution as unknown as any[]).map(f => ({
 			folderName: decodeImapFolder(f.folderName),
 			totalSize: Number(f.totalSize || 0),
 			totalCount: Number(f.totalCount || 0)
 		})),
-		attachments: (attachmentsStats as any[]).map(a => ({
+		attachments: (attachmentsStats as unknown as any[]).map(a => ({
 			extension: a.extension,
 			totalSize: Number(a.totalSize || 0),
 			fileCount: Number(a.fileCount || 0)
 		})),
-		topSenders: (topSenders as any[]).map(s => ({
+		topSenders: (topSenders as unknown as any[]).map(s => ({
 			sender: s.sender,
 			totalMessages: Number(s.totalMessages || 0),
 			totalSize: Number(s.totalSize || 0)

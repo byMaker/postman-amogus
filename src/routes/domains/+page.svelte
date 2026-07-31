@@ -224,12 +224,12 @@
 			return;
 		}
 		return async ({ result, update }) => {
-			if (result.type === 'success' && result.data?.success) {
+			if (result.type === 'success' && (result as any).data?.success) {
 				toast.success(t('toast.deleted'));
 				showDeleteModal = false;
 				showDeleteConfirm = false;
 			} else {
-				toast.error(result.data?.error || t('toast.failed_delete'));
+				toast.error((result as any).data?.error || t('toast.failed_delete'));
 			}
 			update();
 		};
@@ -254,7 +254,7 @@
 			<div class="label pt-0 pb-1.5">
 				<span class="label-text font-bold text-rose-900 whitespace-normal">{t('modal.type_domain_to_confirm')}</span>
 			</div>
-			<input type="text" bind:value={deleteConfirmText} placeholder="example.com" class="input input-bordered w-full rounded-xl bg-white border-rose-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
+			<input type="text" bind:value={deleteConfirmText} placeholder={t('placeholder.domain')} class="input input-bordered w-full rounded-xl bg-white border-rose-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
 		</div>
 	</div>
 	
@@ -298,12 +298,12 @@
 				}
 			}
 			return async ({ result, update }) => {
-				if (result.type === 'success' && result.data?.success) {
+				if (result.type === 'success' && (result as any).data?.success) {
 					toast.success(isEditMode ? t('toast.saved') : t('toast.created'));
 					showModal = false;
 					showUpdateConfirm = false;
 				} else {
-					toast.error(result.data?.error || t('toast.failed_save'));
+					toast.error((result as any).data?.error || t('toast.failed_save'));
 				}
 				update();
 			};
@@ -319,7 +319,7 @@
 					name="domain" 
 					bind:value={currentDomain.domain} 
 					className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
-					placeholder="example.com" 
+					placeholder={t('placeholder.domain')} 
 					required 
 					pattern={"^([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}$"}
 					title="Please enter a valid domain name (e.g. example.com)"
@@ -414,8 +414,8 @@
 			{#if (currentDomainData.domainAliases || []).length < 5}
 				<form method="POST" action="?/addDomainAlias" use:enhance={() => {
 					return async ({ result, update }) => {
-						if (result.type === 'success' && result.data?.success) { toast.success(t('toast.created')); }
-						else { toast.error(result.data?.error || t('toast.failed_save')); }
+						if (result.type === 'success' && (result as any).data?.success) { toast.success(t('toast.created')); }
+						else { toast.error((result as any).data?.error || t('toast.failed_save')); }
 						update();
 					};
 				}} class="flex flex-col sm:flex-row gap-3">
@@ -464,7 +464,7 @@
 	</div>
 	<div class="modal-action flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0 mt-6">
 		<button type="button" onclick={() => { showUpdateConfirm = false; }} class="btn btn-ghost rounded-full text-slate-500 font-bold hover:bg-slate-100 px-6 w-full sm:w-auto">{t('btn.back_edit')}</button>
-		<button type="button" onclick={() => { editForm.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">{t('btn.confirm_save')}</button>
+		<button type="button" onclick={() => { editForm?.requestSubmit(); }} class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">{t('btn.confirm_save')}</button>
 	</div>
 </Modal>
  

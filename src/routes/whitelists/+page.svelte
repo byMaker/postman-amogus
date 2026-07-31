@@ -1,15 +1,12 @@
 <script lang="ts">
 	import FilterListTemplate from '$lib/components/lists/FilterListTemplate.svelte';
 	import { t } from '$lib/i18n';
-	import { Star, At, EnvelopeSimple, Numpad } from 'phosphor-svelte';
+	import { Star } from 'phosphor-svelte';
+	import { getWhitelistTabs } from '$lib/utils/tabs';
 
 	let { data } = $props();
 
-	const tabs = [
-		{ id: 'domains', label: t('tab.domains'), icon: At },
-		{ id: 'emails', label: t('tab.emails'), icon: EnvelopeSimple },
-		{ id: 'ips', label: t('tab.ips'), icon: Numpad }
-	];
+	let tabs = $derived(getWhitelistTabs());
 
 	const config = {
 		getTableKey: (tab: string) => {

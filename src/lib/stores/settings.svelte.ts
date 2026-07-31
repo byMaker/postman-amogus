@@ -1,58 +1,43 @@
 import { browser } from '$app/environment';
+import { persistedState } from '$lib/utils/persistedStore.svelte';
 
 class SettingsState {
-	#language = $state('auto');
-	#lastActiveTab = $state('general');
-	#fontFamily = $state('balsamiq');
-
-	constructor() {
-		if (browser) {
-			const storedLang = localStorage.getItem('amogus_lang');
-			if (storedLang) this.#language = storedLang;
-
-			const storedTab = localStorage.getItem('amogus_tab');
-			if (storedTab) this.#lastActiveTab = storedTab;
-
-			const storedFont = localStorage.getItem('amogus_font');
-			if (storedFont) this.#fontFamily = storedFont;
-		}
-	}
+	#languageState = persistedState('amogus_lang', 'auto');
+	#lastActiveTabState = persistedState('amogus_tab', 'general');
+	#fontFamilyState = persistedState('amogus_font', 'balsamiq');
 
 	get language() {
-		return this.#language;
+		return this.#languageState.value;
 	}
 
 	set language(val: string) {
-		this.#language = val;
-		if (browser) localStorage.setItem('amogus_lang', val);
+		this.#languageState.value = val;
 	}
 
 	get lastActiveTab() {
-		return this.#lastActiveTab;
+		return this.#lastActiveTabState.value;
 	}
 
 	set lastActiveTab(val: string) {
-		this.#lastActiveTab = val;
-		if (browser) localStorage.setItem('amogus_tab', val);
+		this.#lastActiveTabState.value = val;
 	}
 
 	get fontFamily() {
-		return this.#fontFamily;
+		return this.#fontFamilyState.value;
 	}
 
 	set fontFamily(val: string) {
-		this.#fontFamily = val;
-		if (browser) localStorage.setItem('amogus_font', val);
+		this.#fontFamilyState.value = val;
 	}
 
 	get computedLanguage() {
-		if (this.#language === 'auto') {
+		if (this.language === 'auto') {
 			if (browser && navigator.language.startsWith('ru')) {
 				return 'ru';
 			}
 			return 'en';
 		}
-		return this.#language;
+		return this.language;
 	}
 }
 

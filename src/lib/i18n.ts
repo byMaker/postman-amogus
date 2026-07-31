@@ -20,6 +20,11 @@ export const translations: Record<string, Record<string, string>> = {
 		'dashboard.desc': 'Email accounts database management. Here you can easily manage <strong class="text-amogus-dark">Domains</strong> and <strong class="text-amogus-dark">Mailboxes</strong>, configure routing paths via <strong class="text-amogus-dark">Aliases</strong>, and protect your server using <strong class="text-amogus-dark">Blacklists</strong> and <strong class="text-amogus-dark">Whitelists</strong>.',
 		
 		// Common UI
+		
+		'placeholder.username': 'username',
+		'placeholder.email': 'sales@example.com',
+		'placeholder.domain': 'example.com',
+
 		'btn.settings': 'Settings',
 		'btn.about': 'About',
 		'btn.save': 'Save',
@@ -45,7 +50,6 @@ export const translations: Record<string, Record<string, string>> = {
 		
 		'comment.title': 'Description',
 		'comment.add': 'Add Description',
-		'popover.placeholder': 'Enter your note here...',
 		'form.email': 'Email Account',
 		'form.editing_account': 'Editing Account:',
 		'form.fullname': 'Full Name',
@@ -247,6 +251,11 @@ export const translations: Record<string, Record<string, string>> = {
 		'dashboard.desc': 'Управление базой данных почтовых аккаунтов. Здесь вы можете создавать <strong class="text-amogus-dark">Домены</strong> и <strong class="text-amogus-dark">Ящики</strong>, настраивать маршрутизацию писем через <strong class="text-amogus-dark">Алиасы</strong>, а также управлять <strong class="text-amogus-dark">Черными</strong> и <strong class="text-amogus-dark">Белыми списками</strong>.',
 		
 		// Common UI
+		
+		'placeholder.username': 'username',
+		'placeholder.email': 'sales@example.com',
+		'placeholder.domain': 'example.com',
+
 		'btn.settings': 'Настройки',
 		'btn.about': 'О программе',
 		'btn.save': 'Сохранить',
@@ -272,7 +281,6 @@ export const translations: Record<string, Record<string, string>> = {
 
 		'comment.title': 'Описание',
 		'comment.add': 'Добавить описание',
-		'popover.placeholder': 'Введите заметку...',
 		'form.email': 'Почтовый аккаунт',
 		'form.editing_account': 'Редактирование аккаунта:',
 		'form.fullname': 'Полное имя',

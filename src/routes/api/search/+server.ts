@@ -8,7 +8,7 @@ export async function GET({ url }) {
 	if (!query || query.length < 2) return json([]);
 
 	const pattern = `%${query.toLowerCase()}%`;
-	const results = [];
+	const results: any[] = [];
 
 	// Domains
 	const domainResults = await db.select().from(domains).where(or(like(domains.domain, pattern), like(domains.description, pattern))).limit(20);

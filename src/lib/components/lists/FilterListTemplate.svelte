@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/Modal.svelte';
+	import EntryModal from '$lib/components/lists/EntryModal.svelte';
 	import CommentPopover from '$lib/components/CommentPopover.svelte';
 	import { invalidateAll, replaceState } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -21,10 +22,16 @@
 		config
 	} = $props();
 
-	let activeSubTab = $state(browser && localStorage.getItem('list_tab') ? localStorage.getItem('list_tab') : tabs[0]?.id);
+	let activeSubTab = $state<string | undefined>(undefined);
+	
+	$effect(() => {
+		if (activeSubTab === undefined) {
+			activeSubTab = browser && localStorage.getItem('list_tab') ? localStorage.getItem('list_tab')! : tabs[0]?.id;
+		}
+	});
 
 	$effect(() => {
-		if (browser) {
+		if (browser && activeSubTab) {
 			localStorage.setItem('list_tab', activeSubTab);
 		}
 	});
@@ -291,11 +298,11 @@
 	</div>
 	<form method="POST" action="?/delete" use:enhance={() => {
 		return async ({ result, update }) => {
-			if (result.type === 'success' && result.data?.success) {
+			if (result.type === 'success' && (result as any).data?.success) {
 				toast.success(t('toast.deleted'));
 				showDeleteModal = false;
 			} else {
-				toast.error(result.data?.error || t('toast.failed_delete'));
+				toast.error((result as any).data?.error || t('toast.failed_delete'));
 			}
 			update();
 		};
@@ -309,47 +316,13 @@
 	</form>
 </Modal>
 
-<Modal bind:show={showModal} title={isEditMode ? t('modal.edit') : t('modal.add')}>
-	<form method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
-		return async ({ result, update }) => {
-			if (result.type === 'success' && result.data?.success) {
-				toast.success(isEditMode ? t('toast.saved') : t('toast.created'));
-				showModal = false;
-			} else {
-				toast.error(result.data?.error || t('toast.failed_save'));
-			}
-			update();
-		};
-	}} class="space-y-5">
-		
-		<input type="hidden" name="table" value={activeTableKey} />
-		{#if isEditMode}
-			<input type="hidden" name="id" value={currentEntry.id} />
-		{/if}
-
-		<div class="form-control">
-			<div class="label"><span class="label-text font-bold text-slate-700">{config.getTargetLabel(activeSubTab)}</span></div>
-			<ValidatedInput name="target" bind:value={currentEntry.target} required 
-				pattern={config.getValidationPattern(activeSubTab)}
-				title={config.getValidationTitle(activeSubTab)}
-				className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" />
-		</div>
-
-		<div class="form-control">
-			<div class="label"><span class="label-text font-bold text-slate-700">{t('form.description')}</span></div>
-			<input type="text" name="description" bind:value={currentEntry.description} class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" />
-		</div>
-
-		<label class="cursor-pointer flex items-center gap-3 pt-2">
-			<input type="checkbox" name="active" bind:checked={currentEntry.active} class="toggle toggle-amogus" />
-			<span class="font-bold text-slate-700">{t('form.active')}</span>
-		</label>
-
-		<div class="modal-action mt-8 pt-4 flex flex-col-reverse sm:flex-row sm:justify-between gap-3 sm:gap-0">
-			<button type="button" onclick={() => showModal = false} class="btn btn-ghost rounded-full text-amogus-blue font-bold hover:bg-transparent border border-transparent hover:border-amogus-brown hover:text-amogus-brown px-6 w-full sm:w-auto">{t('btn.cancel')}</button>
-			<button type="submit" class="btn border-none bg-amogus-blue text-white hover:bg-amogus-brown rounded-full px-8 font-bold shadow-md w-full sm:w-auto">
-				{t('btn.save')}
-			</button>
-		</div>
-	</form>
-</Modal>
+<EntryModal 
+	bind:show={showModal}
+	{isEditMode}
+	{activeTableKey}
+	bind:currentEntry
+	targetLabel={config.getTargetLabel(activeSubTab)}
+	validationPattern={config.getValidationPattern(activeSubTab)}
+	validationTitle={config.getValidationTitle(activeSubTab)}
+	onSuccess={() => invalidateAll()}
+/>

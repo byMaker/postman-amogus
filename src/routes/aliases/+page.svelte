@@ -203,7 +203,7 @@
 				{@const sourceDomain = sourceParts[1] || ''}
 				{@const isSourceDomainActive = !!data.domains?.find(d => d.domain === sourceDomain)}
 				
-				{@const targetParts = alias.target.split('@')}
+				{@const targetParts = alias.target?.split('@') ?? []}
 				{@const targetLocal = targetParts[0]}
 				{@const targetDomain = targetParts[1] || ''}
 				{@const isTargetDomainActive = !!data.domains?.find(d => d.domain === targetDomain)}
@@ -270,11 +270,11 @@
 	</div>
 	<form method="POST" action="?/delete" use:enhance={() => {
 		return async ({ result, update }) => {
-			if (result.type === 'success' && result.data?.success) {
+			if (result.type === 'success' && (result as any).data?.success) {
 				toast.success(t('toast.deleted'));
 				showDeleteModal = false;
 			} else {
-				toast.error(result.data?.error || t('toast.failed_delete'));
+				toast.error((result as any).data?.error || t('toast.failed_delete'));
 			}
 			update();
 		};
@@ -292,11 +292,11 @@
 <Modal bind:show={showModal} title={isEditMode ? t('modal.edit') : t('modal.add')}>
 	<form method="POST" action={isEditMode ? "?/update" : "?/create"} use:enhance={() => {
 		return async ({ result, update }) => {
-			if (result.type === 'success' && result.data?.success) {
+			if (result.type === 'success' && (result as any).data?.success) {
 				toast.success(isEditMode ? t('toast.saved') : t('toast.created'));
 				showModal = false;
 			} else {
-				toast.error(result.data?.error || t('toast.failed_save'));
+				toast.error((result as any).data?.error || t('toast.failed_save'));
 			}
 			update();
 		};
@@ -312,7 +312,7 @@
 				name="alias" 
 				bind:value={currentAlias.alias} 
 				className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all" 
-				placeholder="sales@example.com" 
+				placeholder={t('placeholder.email')} 
 				required 
 				pattern={"^[^@\\s]+@[^@\\s]+\\.[^@\\s0-9]{2,}$"}
 				title="Please enter a valid email address"

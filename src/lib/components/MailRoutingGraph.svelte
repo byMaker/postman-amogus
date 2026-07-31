@@ -11,9 +11,9 @@
 	let paths: { d: string, color: string }[] = $state([]);
 
 	let groupedSources = $derived([
-		{ title: t('graph.direct'), items: sources.filter(s => s.type === 'direct') },
-		{ title: t('graph.alias'), items: sources.filter(s => s.type === 'alias') },
-		{ title: t('graph.domain_alias'), items: sources.filter(s => s.type === 'domain_alias') }
+		{ title: t('graph.direct'), items: sources.filter((s: any) => s.type === 'direct') },
+		{ title: t('graph.alias'), items: sources.filter((s: any) => s.type === 'alias') },
+		{ title: t('graph.domain_alias'), items: sources.filter((s: any) => s.type === 'domain_alias') }
 	]);
 
 	async function updatePaths() {

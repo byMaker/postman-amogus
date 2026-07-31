@@ -2,16 +2,11 @@
 	import FilterListTemplate from '$lib/components/lists/FilterListTemplate.svelte';
 	import { t } from '$lib/i18n';
 	import { Skull, At, EnvelopeSimple, Numpad, ShieldWarning, ShieldCheck } from 'phosphor-svelte';
+	import { getBlacklistTabs } from '$lib/utils/tabs';
 
 	let { data } = $props();
 
-	const tabs = [
-		{ id: 'domains', label: t('tab.domains'), icon: At },
-		{ id: 'emails', label: t('tab.emails'), icon: EnvelopeSimple },
-		{ id: 'ips', label: t('tab.ips'), icon: Numpad },
-		{ id: 'dnsbl', label: t('tab.dnsbl'), icon: ShieldWarning },
-		{ id: 'dkim', label: t('tab.dkim'), icon: ShieldCheck }
-	];
+	let tabs = $derived(getBlacklistTabs());
 
 	const config = {
 		getTableKey: (tab: string) => {

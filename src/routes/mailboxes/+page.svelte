@@ -203,8 +203,8 @@
 					valB = b.quotaMb === 0 ? Infinity : b.quotaMb;
 				}
 
-				if (valA < valB) return sortDir === "asc" ? -1 : 1;
-				if (valA > valB) return sortDir === "asc" ? 1 : -1;
+				if (valA! < valB!) return sortDir === "asc" ? -1 : 1;
+				if (valA! > valB!) return sortDir === "asc" ? 1 : -1;
 				return 0;
 			}),
 	);
@@ -656,11 +656,11 @@
 		action="?/delete"
 		use:enhance={() => {
 			return async ({ result, update }) => {
-				if (result.type === "success" && result.data?.success) {
+				if (result.type === "success" && (result as any).data?.success) {
 					toast.success(t("toast.deleted"));
 					showDeleteModal = false;
 				} else {
-					toast.error(result.data?.error || t("toast.failed_delete"));
+					toast.error((result as any).data?.error || t("toast.failed_delete"));
 				}
 				update();
 			};
@@ -693,13 +693,13 @@
 		action={isEditMode ? "?/update" : "?/create"}
 		use:enhance={() => {
 			return async ({ result, update }) => {
-				if (result.type === "success" && result.data?.success) {
+				if (result.type === "success" && (result as any).data?.success) {
 					toast.success(
 						isEditMode ? t("toast.saved") : t("toast.created"),
 					);
 					showModal = false;
 				} else {
-					toast.error(result.data?.error || t("toast.failed_save"));
+					toast.error((result as any).data?.error || t("toast.failed_save"));
 				}
 				update();
 			};
@@ -726,7 +726,7 @@
 							name="localPart"
 							bind:value={currentUser.localPart}
 							className="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all text-left sm:text-right font-medium min-w-0"
-							placeholder="username"
+							placeholder={t('placeholder.username')}
 							required
 							pattern={"^[a-zA-Z0-9._%+-]+$"}
 							title="Please enter a valid username (no spaces or @ symbol)"
@@ -785,7 +785,7 @@
 				name="fullName"
 				bind:value={currentUser.fullName}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder="John Doe"
+				placeholder={t('placeholder.fullname')}
 			/>
 		</div>
 
@@ -805,7 +805,7 @@
 				name="password"
 				bind:value={currentUser.password}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder="••••••••"
+				placeholder={t('placeholder.password')}
 				required={!isEditMode}
 			/>
 		</div>
@@ -865,7 +865,7 @@
 				name="description"
 				bind:value={currentUser.description}
 				class="input input-bordered w-full rounded-2xl bg-slate-50 border-slate-200 focus:border-amogus-blue focus:ring-2 focus:ring-blue-100 transition-all"
-				placeholder="Optional note"
+				placeholder={t('placeholder.optional_note')}
 			/>
 		</div>
 
