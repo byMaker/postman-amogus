@@ -7,7 +7,7 @@ test.describe('UI Interface Tests', () => {
 		await page.goto('/');
 
 		// Wait for load
-		await expect(page.locator('nav')).toBeVisible();
+		await expect(page.locator('.site-header')).toBeVisible();
 
 		// Open Settings modal
 		await page.click('button:has-text("Settings"), button:has-text("Настройки")');
@@ -16,13 +16,13 @@ test.describe('UI Interface Tests', () => {
 		await page.click('button:has-text("RU")');
 		
 		// Verify Russian navigation
-		await expect(page.locator('nav')).toContainText('Домены');
+		await expect(page.locator('.site-header')).toContainText('Домены');
 		
 		// Switch back to English
 		await page.click('button:has-text("EN")');
 		
 		// Verify English navigation
-		await expect(page.locator('nav')).toContainText('Domains');
+		await expect(page.locator('.site-header')).toContainText('Domains');
 	});
 
 	test('Domain Add modal functionality', async ({ page }) => {

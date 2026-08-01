@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { highlightRow } from './highlightRow';
+import * as navigation from '$app/navigation';
+
+vi.mock('$app/navigation', () => ({
+	replaceState: vi.fn()
+}));
 
 describe('highlightRow action', () => {
 	let node: HTMLElement;
@@ -32,7 +37,7 @@ describe('highlightRow action', () => {
 			value: new URL('http://localhost/?highlight=testId&tab=aliases'),
 			writable: true
 		});
-		const replaceStateSpy = vi.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+		vi.mocked(navigation.replaceState).mockClear();
 
 		const action = highlightRow(node);
 		
@@ -47,7 +52,7 @@ describe('highlightRow action', () => {
 		
 		// After 6 intervals it should clear background and replaceState
 		expect(node.style.backgroundColor).toBe('');
-		expect(replaceStateSpy).toHaveBeenCalled();
+		expect(navigation.replaceState).toHaveBeenCalled();
 		
 		action?.destroy?.();
 	});
