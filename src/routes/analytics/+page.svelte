@@ -125,7 +125,12 @@
 				<ChartPieSlice size={36} weight="fill" class="text-indigo-500" />
 				{t('analytics.title')}
 			</h2>
-			<p class="text-slate-500 mt-1">{data.currentEmail ? t('analytics.desc.single') + data.currentEmail : t('analytics.desc.all')}</p>
+			<p class="text-slate-500 mt-1">
+				{data.currentEmail ? t('analytics.desc.single') + data.currentEmail : t('analytics.desc.all')}
+				{#if data.lastRunDate}
+					({formatDate(data.lastRunDate, { dateStyle: 'short', timeStyle: 'short' })})
+				{/if}
+			</p>
 		</div>
 		<div class="w-full sm:w-auto">
 			<div class="dropdown dropdown-end w-full sm:w-auto">

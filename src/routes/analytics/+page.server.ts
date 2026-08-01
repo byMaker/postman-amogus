@@ -131,9 +131,23 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 		return decoded;
 	};
 
+	// Query 8: Last run time
+	let lastRunDate = null;
+	try {
+		const [lastRun] = await db.execute(sql`
+			SELECT value_str FROM analytics_metadata WHERE key_name = 'last_run'
+		`);
+		if (lastRun && (lastRun as unknown as any[]).length > 0) {
+			lastRunDate = (lastRun as unknown as any[])[0].value_str;
+		}
+	} catch (e) {
+		// Table might not exist yet if analyzer never ran
+	}
+
 	return {
 		currentEmail: emailFilter,
 		availableMailboxes: Array.isArray(mailboxes) ? mailboxes.map((m: any) => m.email || m.EMAIL || Object.values(m)[0]) : [],
+		lastRunDate,
 		summary: {
 			totalUnread: Number((mailboxSummary as unknown as any[])[0]?.totalUnread || 0),
 			totalRead: Number((mailboxSummary as unknown as any[])[0]?.totalRead || 0),

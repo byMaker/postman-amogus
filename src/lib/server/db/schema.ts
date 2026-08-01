@@ -94,3 +94,8 @@ export const quota = mysqlTable('quota', {
 	bytes: bigint('bytes', { mode: 'number' }).notNull().default(0),
 	messages: int('messages').notNull().default(0)
 });
+
+export const analyticsMetadata = mysqlTable('analytics_metadata', {
+	keyName: varchar('key_name', { length: 50 }).primaryKey(),
+	valueStr: varchar('value_str', { length: 255 })
+});

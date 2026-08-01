@@ -1,6 +1,6 @@
 # Postman Amogus
 
-![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg) ![Build & Tests](https://github.com/byMaker/postman-amogus/actions/workflows/test.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/Coverage-78%25-yellow.svg) ![Build & Tests](https://github.com/byMaker/postman-amogus/actions/workflows/test.yml/badge.svg)
 
 ![Dashboard Screenshot](./screenshot.png) 
 

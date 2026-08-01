@@ -126,6 +126,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.title': 'Analytics',
 		'analytics.desc.all': 'Aggregated statistics across all mailboxes',
 		'analytics.desc.single': 'Statistics for ',
+		'analytics.last_run': 'Last run:',
 		'analytics.all_mailboxes': 'All Mailboxes',
 		'analytics.stats.storage': 'Total Storage Used',
 		'analytics.stats.storage.desc': 'Used | Total Quota',
@@ -347,6 +348,7 @@ export const translations: Record<string, Record<string, string>> = {
 		'analytics.title': 'Аналитика',
 		'analytics.desc.all': 'Общая статистика по всем ящикам',
 		'analytics.desc.single': 'Статистика для ',
+		'analytics.last_run': 'Последний запуск:',
 		'analytics.all_mailboxes': 'Все ящики',
 		'analytics.stats.storage': 'Занято места',
 		'analytics.stats.storage.desc': 'Использовано | Общая квота',
@@ -466,7 +468,10 @@ export function t(key: TranslationKey | (string & {})): string {
 }
 
 export function formatDate(date: string | number | Date, options?: Intl.DateTimeFormatOptions): string {
-	const lang = settings.computedLanguage;
+	let lang = settings.computedLanguage;
+	if (lang === 'en') {
+		lang = 'en-CA'; // en-CA defaults to YYYY-MM-DD format
+	}
 	try {
 		return new Intl.DateTimeFormat(lang, options).format(new Date(date));
 	} catch (e) {
