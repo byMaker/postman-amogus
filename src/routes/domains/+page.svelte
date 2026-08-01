@@ -50,9 +50,9 @@
 		showModal = true;
 	}
 
-	function openEditModal(d: any) {
+	function openEditModal(d: any, tab: string = 'general') {
 		isEditMode = true;
-		activeTab = 'general';
+		activeTab = tab;
 		originalDomainName = d.domain;
 		currentDomain = { 
 			domain: d.domain, 
@@ -160,11 +160,27 @@
 										{domain.aliasesCount}
 									</div>
 								</Tooltip>
-								<Tooltip text={t('tooltip.domain_aliases')} position="top">
-									<div class="flex items-center gap-1">
+								<Tooltip position="top">
+									{#snippet tooltipContent()}
+										<div class="flex flex-col gap-1 text-left py-1">
+											{#if (domain.domainAliases || []).length > 0}
+												<div class="text-[10px] uppercase text-white/50 mb-1.5 tracking-wider">{t('tooltip.domain_aliases')}</div>
+												{#each domain.domainAliases as alias}
+													<div class="flex items-center gap-2">
+														<div class="w-2 h-2 rounded-full {alias.active ? 'bg-emerald-400' : 'bg-slate-400'}"></div>
+														<span class="font-bold text-white">@{alias.aliasDomain}</span>
+													</div>
+												{/each}
+											{:else}
+												<div class="text-[10px] uppercase text-white/50 mb-1 tracking-wider">{t('tooltip.domain_aliases')}</div>
+												<div class="text-white/70 font-normal">{t('domain.alias.empty')}</div>
+											{/if}
+										</div>
+									{/snippet}
+									<button type="button" onclick={() => openEditModal(domain, 'aliases')} class="flex items-center gap-1 hover:bg-slate-100 px-2 py-1 -ml-2 rounded-lg transition-colors">
 										<span class="text-violet-500"><At size={18} weight="fill" /></span>
 										{(domain.domainAliases || []).length}
-									</div>
+									</button>
 								</Tooltip>
 							</div>
 						</Td>

@@ -1,3 +1,5 @@
+import { replaceState } from '$app/navigation';
+
 export function highlightRow(node: HTMLElement) {
 	if (typeof window === 'undefined') return;
 
@@ -24,7 +26,7 @@ export function highlightRow(node: HTMLElement) {
 					currentUrl.searchParams.delete('highlight');
 					currentUrl.searchParams.delete('tab');
 					try {
-						window.history.replaceState({}, '', currentUrl);
+						replaceState(currentUrl, {});
 					} catch (e) {
 						// Ignore SecurityError in test environments
 					}

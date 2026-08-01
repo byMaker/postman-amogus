@@ -3,12 +3,14 @@
 
 	let { 
 		text, 
-		children, 
+		children,
+		tooltipContent, 
 		position = 'bottom',
 		align = 'center'
 	} = $props<{
-		text: string;
+		text?: string;
 		children: any;
+		tooltipContent?: import('svelte').Snippet;
 		position?: 'top' | 'bottom' | 'left' | 'right';
 		align?: 'left' | 'center' | 'right';
 	}>();
@@ -67,7 +69,11 @@
 				${currentPosition === 'right' ? 'left-full top-1/2 -translate-y-1/2 ml-3' : ''}
 			`}
 		>
-			{text}
+			{#if tooltipContent}
+				{@render tooltipContent()}
+			{:else}
+				{text}
+			{/if}
 			<!-- Arrow -->
 			<div 
 				class={`absolute w-3 h-3 bg-amogus-brown rotate-45 
