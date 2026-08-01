@@ -1,5 +1,6 @@
 <script lang="ts">
 	import "../app.css";
+	import PageMascot from '$lib/components/PageMascot.svelte';
 	import '@fontsource/balsamiq-sans/400.css';
 	import '@fontsource/balsamiq-sans/700.css';
 	import '@fontsource/montserrat-alternates/400.css';
@@ -279,22 +280,7 @@
 	</main>
 
 	<!-- Page Mascot Container -->
-	{#if $page.url.pathname !== "/" && $page.url.pathname !== "/analytics"}
-		<div
-			class="mascot-bg w-full h-[250px] bg-no-repeat bg-right-bottom bg-contain mt-0 md:mt-8 relative z-0"
-			style={$page.url.pathname.startsWith("/mailboxes")
-				? "background-image: url(/scene02.png);"
-				: $page.url.pathname.startsWith("/aliases")
-					? "background-image: url(/scene03.png);"
-					: $page.url.pathname.startsWith("/domains")
-						? "background-image: url(/scene04.png);"
-						: $page.url.pathname.startsWith("/blacklists")
-							? "background-image: url(/scene05.png);"
-							: $page.url.pathname.startsWith("/whitelists")
-								? "background-image: url(/scene01.png);"
-								: ""}
-		></div>
-	{/if}
+	<PageMascot />
 
 	<!-- Toasts Layer -->
 	<Toast />

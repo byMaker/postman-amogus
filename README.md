@@ -1,6 +1,6 @@
 # Postman Amogus
 
-![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg) ![E2E Tests](https://img.shields.io/badge/E2E%20Tests-passing-brightgreen.svg)
+![Coverage](https://img.shields.io/badge/Coverage-81%25-yellow.svg) ![Build & Tests](https://github.com/byMaker/postman-amogus/actions/workflows/test.yml/badge.svg)
 
 ![Dashboard Screenshot](./screenshot.png) 
 
@@ -92,30 +92,21 @@ The repository includes two ready-to-use SQL files for database initialization:
 **To use the mock data**, simply edit `docker-compose.dev.yaml` and change `./mail_nodata.sql` to `./mail_mocked.sql` in the `mariadb` volumes section before starting the container.
 
 
-### Code Quality & Linting
+### Running Tests
 
-You can run the Svelte linter (type checking and template validation) via:
-
-```bash
-docker compose -f docker compose exec app npm run test:unit
-```
-
-### UI E2E Tests (Playwright)
-
-To run the full browser-based E2E tests, use the dedicated Playwright container. This will run tests in headless Chromium against your local development environment:
+We use Vitest for unit testing and Playwright for E2E UI testing.
+The fastest way to run all tests before pushing is to use the included helper script (runs both Unit and E2E tests):
 
 ```bash
-docker compose -f docker-compose.dev.yaml run --rm e2e npm run test:ui
+./scripts/test-all.sh
 ```
 
-## Contributing Tests
+**Manual Test Commands:**
+- **Code Quality & Linting**: `docker compose -f docker-compose.dev.yaml run --rm app npm run check`
+- **Unit Tests & Coverage**: `docker compose -f docker-compose.dev.yaml run --rm app npm run test:coverage`
+- **UI E2E Tests**: `docker compose -f docker-compose.dev.yaml run --rm e2e npm run test:ui`
 
-We use Vitest for unit testing. To run tests and generate a coverage report:
-
-```bash
-docker compose -f docker-compose.dev.yaml exec app npm run test:coverage
-```
-This automatically updates the coverage badge in this README!
+*Note: Running the coverage command will automatically update the coverage badge in this README locally!*
 
 ## Production Build & Deployment
 

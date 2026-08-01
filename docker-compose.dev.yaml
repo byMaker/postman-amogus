@@ -29,6 +29,8 @@ services:
       - amogus-net
     env_file:
       - .env
+    environment:
+      NPM_CONFIG_UPDATE_NOTIFIER: "false"
 
   dbadmin:
     image: phpmyadmin:latest
@@ -51,6 +53,8 @@ services:
       - .:/app
     depends_on:
       - app
+    environment:
+      NPM_CONFIG_UPDATE_NOTIFIER: "false"
     networks:
       - amogus-net
     profiles:

@@ -12,17 +12,6 @@ const WHITELIST = `${PREFIX}white`;
 test.describe.serial('Full E2E CRUD Journey', () => {
 
 	test('Step 1: Domains (Create, Edit)', async ({ page }) => {
-		page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
-		page.on('response', async response => {
-			if (response.url().includes('?/create')) {
-				console.log('CREATE RESPONSE STATUS:', response.status());
-				try {
-					const text = await response.text();
-					console.log('CREATE RESPONSE BODY:', text);
-				} catch (e) {}
-			}
-		});
-
 		await page.goto('/domains');
 
 		// 1. Create Domain
